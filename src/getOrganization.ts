@@ -1,11 +1,5 @@
-import {
-  HttpClient,
-  HttpClientError,
-  HttpClientRequest,
-  HttpClientResponse,
-} from "@effect/platform";
-import { Effect, Schema } from "effect";
-import { API_BASE_URL, PlanetScaleCredentials } from "./credentials";
+import { Schema } from "effect";
+import { ApiErrorCode, makeOperation } from "./client";
 
 // Input Schema
 export const GetOrganizationInput = Schema.Struct({
@@ -38,15 +32,6 @@ export const Organization = Schema.Struct({
 });
 export type Organization = typeof Organization.Type;
 
-// API Error Response Schema - parse just the code, keep the rest as unknown
-const ApiErrorResponse = Schema.Struct({
-  code: Schema.String,
-});
-type ApiErrorResponse = typeof ApiErrorResponse.Type;
-
-// Error code annotation symbol
-export const ApiErrorCode = Symbol.for("planetscale/ApiErrorCode");
-
 // Error Schemas
 export class OrganizationNotFound extends Schema.TaggedError<OrganizationNotFound>()(
   "OrganizationNotFound",
@@ -57,89 +42,11 @@ export class OrganizationNotFound extends Schema.TaggedError<OrganizationNotFoun
   { [ApiErrorCode]: "not_found" },
 ) {}
 
-export class PlanetScaleApiError extends Schema.TaggedError<PlanetScaleApiError>()(
-  "PlanetScaleApiError",
-  {
-    body: Schema.Unknown,
-  },
-) {}
-
-// Error matcher that uses annotations
-const getOrganizationErrors = [OrganizationNotFound] as const;
-
-type GetOrganizationErrors = InstanceType<(typeof getOrganizationErrors)[number]>;
-
-// Helper to get the API error code from a TaggedError class
-const getErrorCode = (ErrorClass: typeof OrganizationNotFound): string | undefined => {
-  const ast = ErrorClass.ast;
-  // TaggedError creates a Transformation, the annotation is on the 'to' node
-  if (ast._tag === "Transformation") {
-    return ast.to.annotations[ApiErrorCode] as string | undefined;
-  }
-  return ast.annotations[ApiErrorCode] as string | undefined;
-};
-
-const matchApiError = (
-  input: GetOrganizationInput,
-  errorBody: unknown,
-): Effect.Effect<never, GetOrganizationErrors | PlanetScaleApiError> => {
-  const parsed = Schema.decodeUnknownSync(ApiErrorResponse)(errorBody);
-  for (const ErrorClass of getOrganizationErrors) {
-    const code = getErrorCode(ErrorClass);
-    if (code === parsed.code) {
-      return Effect.fail(
-        new ErrorClass({
-          name: input.name,
-          message: (errorBody as { message?: string }).message ?? "",
-        }),
-      );
-    }
-  }
-  return Effect.fail(new PlanetScaleApiError({ body: errorBody }));
-};
-
-// Schema parse error wrapper
-export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseError>()(
-  "PlanetScaleParseError",
-  {
-    body: Schema.Unknown,
-    cause: Schema.Unknown,
-  },
-) {}
-
-// The effect function
-export const getOrganization = (
-  input: GetOrganizationInput,
-): Effect.Effect<
-  Organization,
-  | OrganizationNotFound
-  | PlanetScaleApiError
-  | PlanetScaleParseError
-  | HttpClientError.HttpClientError,
-  PlanetScaleCredentials | HttpClient.HttpClient
-> =>
-  Effect.gen(function* () {
-    const { token } = yield* PlanetScaleCredentials;
-    const client = yield* HttpClient.HttpClient;
-
-    const response = yield* HttpClientRequest.get(
-      `${API_BASE_URL}/organizations/${input.name}`,
-    ).pipe(
-      HttpClientRequest.setHeader("Authorization", token),
-      HttpClientRequest.setHeader("Content-Type", "application/json"),
-      client.execute,
-      Effect.scoped,
-    );
-
-    if (response.status >= 400) {
-      const errorBody = yield* response.json;
-      return yield* matchApiError(input, errorBody);
-    }
-
-    const body = yield* response.json;
-    return yield* Schema.decodeUnknown(Organization)(body).pipe(
-      Effect.catchTag("ParseError", (cause) =>
-        Effect.fail(new PlanetScaleParseError({ body, cause })),
-      ),
-    );
-  });
+// The operation
+export const getOrganization = makeOperation({
+  method: "GET",
+  path: (input) => `/organizations/${input.name}`,
+  inputSchema: GetOrganizationInput,
+  outputSchema: Organization,
+  errors: [OrganizationNotFound],
+});
