@@ -25,11 +25,10 @@ describe("getOrganization", () => {
         name: "this-org-does-not-exist-12345",
       }).pipe(Effect.flip);
 
-      console.log("Error:", result);
-      console.log("Error tag:", result._tag);
-
       expect(result).toBeInstanceOf(OrganizationNotFound);
       expect(result._tag).toBe("OrganizationNotFound");
+      expect(result.name).toBe("this-org-does-not-exist-12345");
+      expect(result.message).toBe("Not Found");
     }).pipe(Effect.provide(TestLayer)),
   );
 });

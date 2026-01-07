@@ -4,7 +4,7 @@ import {
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
-import { Effect, ParseResult, Schema } from "effect";
+import { Effect, Schema } from "effect";
 import { API_BASE_URL, PlanetScaleCredentials } from "./credentials";
 
 // Input Schema
@@ -38,11 +38,72 @@ export const Organization = Schema.Struct({
 });
 export type Organization = typeof Organization.Type;
 
-// Error Schema
+// API Error Response Schema - parse just the code, keep the rest as unknown
+const ApiErrorResponse = Schema.Struct({
+  code: Schema.String,
+});
+type ApiErrorResponse = typeof ApiErrorResponse.Type;
+
+// Error code annotation symbol
+export const ApiErrorCode = Symbol.for("planetscale/ApiErrorCode");
+
+// Error Schemas
 export class OrganizationNotFound extends Schema.TaggedError<OrganizationNotFound>()(
   "OrganizationNotFound",
   {
     name: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+export class PlanetScaleApiError extends Schema.TaggedError<PlanetScaleApiError>()(
+  "PlanetScaleApiError",
+  {
+    body: Schema.Unknown,
+  },
+) {}
+
+// Error matcher that uses annotations
+const getOrganizationErrors = [OrganizationNotFound] as const;
+
+type GetOrganizationErrors = InstanceType<(typeof getOrganizationErrors)[number]>;
+
+// Helper to get the API error code from a TaggedError class
+const getErrorCode = (ErrorClass: typeof OrganizationNotFound): string | undefined => {
+  const ast = ErrorClass.ast;
+  // TaggedError creates a Transformation, the annotation is on the 'to' node
+  if (ast._tag === "Transformation") {
+    return ast.to.annotations[ApiErrorCode] as string | undefined;
+  }
+  return ast.annotations[ApiErrorCode] as string | undefined;
+};
+
+const matchApiError = (
+  input: GetOrganizationInput,
+  errorBody: unknown,
+): Effect.Effect<never, GetOrganizationErrors | PlanetScaleApiError> => {
+  const parsed = Schema.decodeUnknownSync(ApiErrorResponse)(errorBody);
+  for (const ErrorClass of getOrganizationErrors) {
+    const code = getErrorCode(ErrorClass);
+    if (code === parsed.code) {
+      return Effect.fail(
+        new ErrorClass({
+          name: input.name,
+          message: (errorBody as { message?: string }).message ?? "",
+        }),
+      );
+    }
+  }
+  return Effect.fail(new PlanetScaleApiError({ body: errorBody }));
+};
+
+// Schema parse error wrapper
+export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseError>()(
+  "PlanetScaleParseError",
+  {
+    body: Schema.Unknown,
+    cause: Schema.Unknown,
   },
 ) {}
 
@@ -51,7 +112,10 @@ export const getOrganization = (
   input: GetOrganizationInput,
 ): Effect.Effect<
   Organization,
-  OrganizationNotFound | HttpClientError.HttpClientError | ParseResult.ParseError,
+  | OrganizationNotFound
+  | PlanetScaleApiError
+  | PlanetScaleParseError
+  | HttpClientError.HttpClientError,
   PlanetScaleCredentials | HttpClient.HttpClient
 > =>
   Effect.gen(function* () {
@@ -67,9 +131,15 @@ export const getOrganization = (
       Effect.scoped,
     );
 
-    if (response.status === 404) {
-      return yield* new OrganizationNotFound({ name: input.name });
+    if (response.status >= 400) {
+      const errorBody = yield* response.json;
+      return yield* matchApiError(input, errorBody);
     }
 
-    return yield* HttpClientResponse.schemaBodyJson(Organization)(response);
+    const body = yield* response.json;
+    return yield* Schema.decodeUnknown(Organization)(body).pipe(
+      Effect.catchTag("ParseError", (cause) =>
+        Effect.fail(new PlanetScaleParseError({ body, cause })),
+      ),
+    );
   });
