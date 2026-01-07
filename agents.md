@@ -27,38 +27,49 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ```
 ├── src/
-│   ├── errors.ts           # PlanetScaleError, ConfigError (Schema.TaggedError)
+│   ├── errors.ts           # ConfigError (Schema.TaggedError)
 │   ├── credentials.ts      # PlanetScaleCredentials service + layer
-│   ├── getOrganization.ts  # getOrganization effect
+│   ├── getOrganization.ts  # getOrganization effect with input/output schemas
 │   └── listDatabases.ts    # listDatabases effect
 ├── tests/
 │   ├── setup.ts            # Loads .env for tests
 │   ├── getOrganization.test.ts
 │   └── listDatabases.test.ts
 ├── specs/
-│   └── openapi.json        # PlanetScale OpenAPI spec (generated)
+│   ├── openapi.json              # PlanetScale OpenAPI spec (generated)
+│   └── patch-getorganization.md  # Documents spec discrepancies
 ├── scripts/
 │   └── setup.ts            # Fetches PlanetScale OpenAPI spec
 └── index.ts                # Barrel file re-exporting src modules
 ```
 
-## Usage
+## API Function Pattern
+
+Each API function follows this pattern:
+
+1. **Input Schema** (`Schema.Struct`) - Defines the input parameters
+2. **Output Schema** (`Schema.Struct`) - Defines the response shape with runtime validation
+3. **Errors** - Uses `@effect/platform` errors (`HttpClientError`, `ParseResult.ParseError`)
+4. **Dependencies** - Requires `PlanetScaleCredentials` and `HttpClient.HttpClient`
+
+Example:
 
 ```typescript
-import { Effect } from "effect";
+import { FetchHttpClient } from "@effect/platform";
+import { Effect, Layer } from "effect";
 import {
   getOrganization,
-  listDatabases,
+  PlanetScaleCredentials,
   PlanetScaleCredentialsLive,
 } from "distilled-planetscale";
 
-const program = Effect.gen(function* () {
-  const org = yield* getOrganization;
-  console.log(org);
+const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
 
-  const databases = yield* listDatabases;
-  console.log(databases);
-}).pipe(Effect.provide(PlanetScaleCredentialsLive));
+const program = Effect.gen(function* () {
+  const { organization } = yield* PlanetScaleCredentials;
+  const org = yield* getOrganization({ name: organization });
+  console.log(org);
+}).pipe(Effect.provide(MainLayer));
 
 Effect.runPromise(program);
 ```
@@ -68,4 +79,4 @@ Effect.runPromise(program);
 - **Runtime**: Bun
 - **Type checking**: tsgo
 - **Testing**: vitest + @effect/vitest
-- **Framework**: Effect
+- **Framework**: Effect + @effect/platform
