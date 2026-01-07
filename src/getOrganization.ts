@@ -17,30 +17,28 @@ export type GetOrganizationInput = typeof GetOrganizationInput.Type;
 export const Organization = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
-  billing_email: Schema.optionalWith(Schema.String, { as: "Option" }),
+  billing_email: Schema.optional(Schema.String),
   created_at: Schema.String,
   updated_at: Schema.String,
-  plan: Schema.optionalWith(Schema.String, { as: "Option" }),
-  valid_billing_info: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  sso: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  sso_directory: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  single_tenancy: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  managed_tenancy: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  has_past_due_invoices: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  database_count: Schema.optionalWith(Schema.Number, { as: "Option" }),
-  sso_portal_url: Schema.optionalWith(Schema.String, { as: "Option" }),
-  features: Schema.optionalWith(
+  plan: Schema.optional(Schema.String),
+  valid_billing_info: Schema.optional(Schema.Boolean),
+  sso: Schema.optional(Schema.Boolean),
+  sso_directory: Schema.optional(Schema.Boolean),
+  single_tenancy: Schema.optional(Schema.Boolean),
+  managed_tenancy: Schema.optional(Schema.Boolean),
+  has_past_due_invoices: Schema.optional(Schema.Boolean),
+  database_count: Schema.optional(Schema.Number),
+  sso_portal_url: Schema.optional(Schema.String),
+  features: Schema.optional(
     Schema.Record({ key: Schema.String, value: Schema.Unknown }),
-    { as: "Option" },
   ),
-  idp_managed_roles: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  invoice_budget_amount: Schema.optionalWith(
+  idp_managed_roles: Schema.optional(Schema.Boolean),
+  invoice_budget_amount: Schema.optional(
     Schema.Union(Schema.Number, Schema.NumberFromString),
-    { as: "Option" },
   ),
-  keyspace_shard_limit: Schema.optionalWith(Schema.Number, { as: "Option" }),
-  has_card: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-  payment_info_required: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
+  keyspace_shard_limit: Schema.optional(Schema.Number),
+  has_card: Schema.optional(Schema.Boolean),
+  payment_info_required: Schema.optional(Schema.Boolean),
 });
 export type Organization = typeof Organization.Type;
 
