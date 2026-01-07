@@ -21,9 +21,9 @@ The spec declares the following fields as **required**, but the API does not alw
 
 ## 2. Incorrect Type: `invoice_budget_amount`
 
-| Field | Spec Type | Actual Type |
-|-------|-----------|-------------|
-| `invoice_budget_amount` | `number` | `string` (e.g., `"50.0"`) |
+| Field                   | Spec Type | Actual Type               |
+| ----------------------- | --------- | ------------------------- |
+| `invoice_budget_amount` | `number`  | `string` (e.g., `"50.0"`) |
 
 **Workaround**: The client schema uses `Schema.Union(Schema.Number, Schema.NumberFromString)` to handle both cases.
 

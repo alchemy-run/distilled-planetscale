@@ -17,11 +17,11 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `bun run setup` | Fetch the latest PlanetScale OpenAPI spec |
-| `bun run typecheck` | Type check with tsgo |
-| `bunx vitest run` | Run tests |
+| Script              | Description                               |
+| ------------------- | ----------------------------------------- |
+| `bun run setup`     | Fetch the latest PlanetScale OpenAPI spec |
+| `bun run typecheck` | Type check with tsgo                      |
+| `bunx vitest run`   | Run tests                                 |
 
 ## Project Structure
 

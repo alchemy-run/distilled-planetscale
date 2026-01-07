@@ -7,18 +7,12 @@
     "x-copyright": "&copy; 2026 PlanetScale, Inc."
   },
   "basePath": "/v1",
-  "consumes": [
-    "application/json"
-  ],
+  "consumes": ["application/json"],
   "paths": {
     "/organizations": {
       "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organizations"],
+        "consumes": ["application/json"],
         "operationId": "list_organizations",
         "summary": "List organizations",
         "parameters": [
@@ -63,12 +57,8 @@
     },
     "/organizations/{organization}": {
       "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organizations"],
+        "consumes": ["application/json"],
         "operationId": "get_organization",
         "summary": "Get an organization",
         "parameters": [
@@ -104,12 +94,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_organization`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| User | `read_organizations` |\n| Organization | `read_organization` |"
       },
       "patch": {
-        "tags": [
-          "Organizations"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organizations"],
+        "consumes": ["application/json"],
         "operationId": "update_organization",
         "summary": "Update an organization",
         "parameters": [
@@ -169,12 +155,8 @@
     },
     "/organizations/{organization}/audit-log": {
       "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organizations"],
+        "consumes": ["application/json"],
         "operationId": "list_audit_logs",
         "summary": "List audit logs",
         "parameters": [
@@ -212,12 +194,8 @@
     },
     "/organizations/{organization}/cluster-size-skus": {
       "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organizations"],
+        "consumes": ["application/json"],
         "operationId": "list_cluster_size_skus",
         "summary": "List available cluster sizes",
         "parameters": [
@@ -231,10 +209,7 @@
           {
             "name": "engine",
             "type": "string",
-            "enum": [
-              "mysql",
-              "postgresql"
-            ],
+            "enum": ["mysql", "postgresql"],
             "in": "query",
             "description": "The database engine to filter by. Defaults to 'mysql'."
           },
@@ -280,12 +255,8 @@
     },
     "/organizations/{organization}/databases": {
       "get": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "list_databases",
         "summary": "List databases",
         "parameters": [
@@ -341,12 +312,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_database`, `delete_database`, `write_database`, `read_branch`, `delete_branch`, `create_branch`, `delete_production_branch`, `connect_branch`, `connect_production_branch`, `delete_branch_password`, `delete_production_branch_password`, `read_deploy_request`, `create_deploy_request`, `approve_deploy_request`, `read_schema_recommendations`, `close_schema_recommendations`, `read_comment`, `create_comment`, `restore_backup`, `restore_production_branch_backup`, `read_backups`, `write_backups`, `delete_backups`, `delete_production_branch_backups`, `write_branch_vschema`, `write_production_branch_vschema`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |"
       },
       "post": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "create_database",
         "summary": "Create a database",
         "parameters": [
@@ -381,10 +348,7 @@
                 },
                 "kind": {
                   "type": "string",
-                  "enum": [
-                    "mysql",
-                    "postgresql"
-                  ],
+                  "enum": ["mysql", "postgresql"],
                   "description": "The kind of database to create."
                 },
                 "major_version": {
@@ -393,10 +357,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name",
-                "cluster_size"
-              ]
+              "required": ["name", "cluster_size"]
             }
           }
         ],
@@ -426,12 +387,8 @@
     },
     "/organizations/{organization}/databases/{database}": {
       "get": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "get_database",
         "summary": "Get a database",
         "parameters": [
@@ -474,12 +431,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_database`, `delete_database`, `write_database`, `read_branch`, `delete_branch`, `create_branch`, `delete_production_branch`, `connect_branch`, `connect_production_branch`, `delete_branch_password`, `delete_production_branch_password`, `read_deploy_request`, `create_deploy_request`, `approve_deploy_request`, `read_schema_recommendations`, `close_schema_recommendations`, `read_comment`, `create_comment`, `restore_backup`, `restore_production_branch_backup`, `read_backups`, `write_backups`, `delete_backups`, `delete_production_branch_backups`, `write_branch_vschema`, `write_production_branch_vschema`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |\n| Database | `read_database` |"
       },
       "patch": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "update_database_settings",
         "summary": "Update database settings",
         "parameters": [
@@ -576,12 +529,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `write_database`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_databases` |\n| Database | `write_database` |"
       },
       "delete": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "delete_database",
         "summary": "Delete a database",
         "parameters": [
@@ -623,12 +572,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches": {
       "get": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "list_branches",
         "summary": "List branches",
         "parameters": [
@@ -667,10 +612,7 @@
           {
             "name": "order",
             "type": "string",
-            "enum": [
-              "asc",
-              "desc"
-            ],
+            "enum": ["asc", "desc"],
             "in": "query",
             "description": "Order branches by created_at time"
           },
@@ -713,12 +655,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "post": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "create_branch",
         "summary": "Create a branch",
         "parameters": [
@@ -764,9 +702,7 @@
                 },
                 "seed_data": {
                   "type": "string",
-                  "enum": [
-                    "last_successful_backup"
-                  ],
+                  "enum": ["last_successful_backup"],
                   "description": "If provided, restores the last successful backup's schema and data to the new branch. Must have `restore_production_branch_backup(s)` or `restore_backup(s)` access to do this, in addition to Data Branching™ being enabled for the branch."
                 },
                 "cluster_size": {
@@ -779,10 +715,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name",
-                "parent_branch"
-              ]
+              "required": ["name", "parent_branch"]
             }
           }
         ],
@@ -812,12 +745,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}": {
       "get": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "get_branch",
         "summary": "Get a branch",
         "parameters": [
@@ -867,12 +796,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "delete": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "delete_branch",
         "summary": "Delete a branch",
         "parameters": [
@@ -921,12 +846,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/backups": {
       "get": {
-        "tags": [
-          "Backups"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Backups"],
+        "consumes": ["application/json"],
         "operationId": "list_backups",
         "summary": "List backups",
         "parameters": [
@@ -960,14 +881,7 @@
           {
             "name": "state",
             "type": "string",
-            "enum": [
-              "pending",
-              "running",
-              "success",
-              "failed",
-              "canceled",
-              "ignored"
-            ],
+            "enum": ["pending", "running", "success", "failed", "canceled", "ignored"],
             "in": "query",
             "description": "Filter backups by state"
           },
@@ -1040,12 +954,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_backups`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_backups` |\n| Database | `read_backups` |\n| Branch | `read_backups` |"
       },
       "post": {
-        "tags": [
-          "Backups"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Backups"],
+        "consumes": ["application/json"],
         "operationId": "create_backup",
         "summary": "Create a backup",
         "parameters": [
@@ -1082,13 +992,7 @@
                 },
                 "retention_unit": {
                   "type": "string",
-                  "enum": [
-                    "hour",
-                    "day",
-                    "week",
-                    "month",
-                    "year"
-                  ],
+                  "enum": ["hour", "day", "week", "month", "year"],
                   "description": "Unit for the retention period of the backup"
                 },
                 "retention_value": {
@@ -1130,12 +1034,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/backups/{id}": {
       "get": {
-        "tags": [
-          "Backups"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Backups"],
+        "consumes": ["application/json"],
         "operationId": "get_backup",
         "summary": "Get a backup",
         "parameters": [
@@ -1192,12 +1092,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_backups`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_backups` |\n| Database | `read_backups` |\n| Branch | `read_backups` |"
       },
       "patch": {
-        "tags": [
-          "Backups"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Backups"],
+        "consumes": ["application/json"],
         "operationId": "update_backup",
         "summary": "Update a backup",
         "parameters": [
@@ -1268,12 +1164,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `write_backups`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_backups` |\n| Database | `write_backups` |\n| Branch | `write_backups` |"
       },
       "delete": {
-        "tags": [
-          "Backups"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Backups"],
+        "consumes": ["application/json"],
         "operationId": "delete_backup",
         "summary": "Delete a backup",
         "parameters": [
@@ -1329,12 +1221,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/bouncer-resizes": {
       "get": {
-        "tags": [
-          "api-branch_bouncer_resizes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["api-branch_bouncer_resizes"],
+        "consumes": ["application/json"],
         "operationId": "list_branch_bouncer_resize_requests",
         "summary": "Get bouncer resize requests",
         "parameters": [
@@ -1400,12 +1288,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers": {
       "get": {
-        "tags": [
-          "Bouncers"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncers"],
+        "consumes": ["application/json"],
         "operationId": "list_bouncers",
         "summary": "List bouncers",
         "parameters": [
@@ -1469,12 +1353,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "post": {
-        "tags": [
-          "Bouncers"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncers"],
+        "consumes": ["application/json"],
         "operationId": "create_bouncer",
         "summary": "Create a bouncer",
         "parameters": [
@@ -1552,12 +1432,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}": {
       "get": {
-        "tags": [
-          "Bouncers"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncers"],
+        "consumes": ["application/json"],
         "operationId": "get_bouncer",
         "summary": "Get a bouncer",
         "parameters": [
@@ -1614,12 +1490,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "delete": {
-        "tags": [
-          "Bouncers"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncers"],
+        "consumes": ["application/json"],
         "operationId": "delete_bouncer",
         "summary": "Delete a bouncer",
         "parameters": [
@@ -1675,12 +1547,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}/resizes": {
       "get": {
-        "tags": [
-          "Bouncer resizes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncer resizes"],
+        "consumes": ["application/json"],
         "operationId": "list_bouncer_resize_requests",
         "summary": "Get bouncer resize requests",
         "parameters": [
@@ -1751,12 +1619,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "patch": {
-        "tags": [
-          "Bouncer resizes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncer resizes"],
+        "consumes": ["application/json"],
         "operationId": "update_bouncer_resize_request",
         "summary": "Upsert a bouncer resize request",
         "parameters": [
@@ -1836,12 +1700,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `write_database`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_databases` |\n| Database | `write_database` |"
       },
       "delete": {
-        "tags": [
-          "Bouncer resizes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Bouncer resizes"],
+        "consumes": ["application/json"],
         "operationId": "cancel_bouncer_resize_request",
         "summary": "Cancel a resize request",
         "parameters": [
@@ -1897,12 +1757,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/changes": {
       "get": {
-        "tags": [
-          "Branch changes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Branch changes"],
+        "consumes": ["application/json"],
         "operationId": "list_branch_change_requests",
         "summary": "Get branch change requests",
         "parameters": [
@@ -1966,12 +1822,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "patch": {
-        "tags": [
-          "Branch changes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Branch changes"],
+        "consumes": ["application/json"],
         "operationId": "update_branch_change_request",
         "summary": "Upsert a change request",
         "parameters": [
@@ -2046,12 +1898,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/changes/{id}": {
       "get": {
-        "tags": [
-          "Branch changes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Branch changes"],
+        "consumes": ["application/json"],
         "operationId": "get_branch_change_request",
         "summary": "Get a branch change request",
         "parameters": [
@@ -2110,12 +1958,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/cluster": {
       "patch": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "update_branch_cluster_config",
         "summary": "Change a branch cluster configuration",
         "parameters": [
@@ -2152,9 +1996,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "cluster_size"
-              ]
+              "required": ["cluster_size"]
             }
           }
         ],
@@ -2181,12 +2023,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/demote": {
       "post": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "demote_branch",
         "summary": "Demote a branch",
         "parameters": [
@@ -2238,12 +2076,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/extensions": {
       "get": {
-        "tags": [
-          "Cluster extensions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Cluster extensions"],
+        "consumes": ["application/json"],
         "operationId": "list_extensions",
         "summary": "List cluster extensions",
         "parameters": [
@@ -2298,12 +2132,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces": {
       "get": {
-        "tags": [
-          "Database branch keyspaces"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch keyspaces"],
+        "consumes": ["application/json"],
         "operationId": "list_keyspaces",
         "summary": "Get keyspaces",
         "parameters": [
@@ -2367,12 +2197,8 @@
         "description": "\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`\n\n"
       },
       "post": {
-        "tags": [
-          "Database branch keyspaces"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch keyspaces"],
+        "consumes": ["application/json"],
         "operationId": "create_keyspace",
         "summary": "Create a keyspace",
         "parameters": [
@@ -2421,10 +2247,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name",
-                "cluster_size"
-              ]
+              "required": ["name", "cluster_size"]
             }
           }
         ],
@@ -2454,12 +2277,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}": {
       "get": {
-        "tags": [
-          "Database branch keyspaces"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch keyspaces"],
+        "consumes": ["application/json"],
         "operationId": "get_keyspace",
         "summary": "Get a keyspace",
         "parameters": [
@@ -2516,12 +2335,8 @@
         "description": "\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`\n\n"
       },
       "patch": {
-        "tags": [
-          "Database branch keyspaces"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch keyspaces"],
+        "consumes": ["application/json"],
         "operationId": "update_keyspace",
         "summary": "Configure keyspace settings",
         "parameters": [
@@ -2578,12 +2393,8 @@
         "description": "\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `create_branch`\n\n"
       },
       "delete": {
-        "tags": [
-          "Database branch keyspaces"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch keyspaces"],
+        "consumes": ["application/json"],
         "operationId": "delete_keyspace",
         "summary": "Delete a keyspace",
         "parameters": [
@@ -2639,12 +2450,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}/rollout-status": {
       "get": {
-        "tags": [
-          "Database branch keyspaces"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch keyspaces"],
+        "consumes": ["application/json"],
         "operationId": "get_keyspace_rollout_status",
         "summary": "Get keyspace rollout status",
         "parameters": [
@@ -2724,11 +2531,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name",
-                "state",
-                "shards"
-              ]
+              "required": ["name", "state", "shards"]
             },
             "headers": {}
           },
@@ -2750,12 +2553,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}/vschema": {
       "get": {
-        "tags": [
-          "Keyspace VSchemas"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Keyspace VSchemas"],
+        "consumes": ["application/json"],
         "operationId": "get_keyspace_vschema",
         "summary": "Get the VSchema for the keyspace",
         "parameters": [
@@ -2800,9 +2599,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "raw"
-              ]
+              "required": ["raw"]
             },
             "headers": {}
           },
@@ -2822,12 +2619,8 @@
         "description": "\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n"
       },
       "patch": {
-        "tags": [
-          "Keyspace VSchemas"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Keyspace VSchemas"],
+        "consumes": ["application/json"],
         "operationId": "update_keyspace_vschema",
         "summary": "Update the VSchema for the keyspace",
         "parameters": [
@@ -2871,9 +2664,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "vschema"
-              ]
+              "required": ["vschema"]
             }
           }
         ],
@@ -2889,9 +2680,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "raw"
-              ]
+              "required": ["raw"]
             },
             "headers": {}
           },
@@ -2916,12 +2705,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/parameters": {
       "get": {
-        "tags": [
-          "Cluster parameters"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Cluster parameters"],
+        "consumes": ["application/json"],
         "operationId": "list_parameters",
         "summary": "List cluster parameters",
         "parameters": [
@@ -2976,12 +2761,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/passwords": {
       "get": {
-        "tags": [
-          "Database branch passwords"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch passwords"],
+        "consumes": ["application/json"],
         "operationId": "list_passwords",
         "summary": "List passwords",
         "parameters": [
@@ -3051,12 +2832,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `manage_passwords`, `manage_production_branch_passwords` |\n| Database | `manage_passwords`, `manage_production_branch_passwords` |\n| Branch | `manage_passwords` |"
       },
       "post": {
-        "tags": [
-          "Database branch passwords"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch passwords"],
+        "consumes": ["application/json"],
         "operationId": "create_password",
         "summary": "Create a password",
         "parameters": [
@@ -3093,12 +2870,7 @@
                 },
                 "role": {
                   "type": "string",
-                  "enum": [
-                    "reader",
-                    "writer",
-                    "admin",
-                    "readwriter"
-                  ],
+                  "enum": ["reader", "writer", "admin", "readwriter"],
                   "description": "The database role of the password (i.e. admin)"
                 },
                 "replica": {
@@ -3154,12 +2926,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}": {
       "get": {
-        "tags": [
-          "Database branch passwords"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch passwords"],
+        "consumes": ["application/json"],
         "operationId": "get_password",
         "summary": "Get a password",
         "parameters": [
@@ -3216,12 +2984,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `manage_passwords`, `manage_production_branch_passwords` |\n| Database | `manage_passwords`, `manage_production_branch_passwords` |\n| Branch | `manage_passwords` |"
       },
       "patch": {
-        "tags": [
-          "Database branch passwords"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch passwords"],
+        "consumes": ["application/json"],
         "operationId": "update_password",
         "summary": "Update a password",
         "parameters": [
@@ -3299,12 +3063,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `manage_passwords`, `manage_production_branch_passwords` |\n| Database | `manage_passwords`, `manage_production_branch_passwords` |\n| Branch | `manage_passwords` |"
       },
       "delete": {
-        "tags": [
-          "Database branch passwords"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch passwords"],
+        "consumes": ["application/json"],
         "operationId": "delete_password",
         "summary": "Delete a password",
         "parameters": [
@@ -3360,12 +3120,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}/renew": {
       "post": {
-        "tags": [
-          "Database branch passwords"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branch passwords"],
+        "consumes": ["application/json"],
         "operationId": "renew_password",
         "summary": "Renew a password",
         "parameters": [
@@ -3424,12 +3180,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/promote": {
       "post": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "promote_branch",
         "summary": "Promote a branch",
         "parameters": [
@@ -3481,12 +3233,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns": {
       "get": {
-        "tags": [
-          "Query Insights reports"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Query Insights reports"],
+        "consumes": ["application/json"],
         "operationId": "list_generated_query_patterns_reports",
         "summary": "List generated query patterns reports",
         "parameters": [
@@ -3536,12 +3284,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "post": {
-        "tags": [
-          "Query Insights reports"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Query Insights reports"],
+        "consumes": ["application/json"],
         "operationId": "create_query_patterns_report",
         "summary": "Create a new query patterns report",
         "parameters": [
@@ -3593,12 +3337,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns/{id}": {
       "get": {
-        "tags": [
-          "Query Insights reports"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Query Insights reports"],
+        "consumes": ["application/json"],
         "operationId": "get_query_patterns_report_status",
         "summary": "Show the status of a query patterns report",
         "parameters": [
@@ -3655,12 +3395,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_branches` |\n| Database | `read_branches` |\n| Branch | `read_branch` |"
       },
       "delete": {
-        "tags": [
-          "Query Insights reports"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Query Insights reports"],
+        "consumes": ["application/json"],
         "operationId": "delete_query_patterns_report",
         "summary": "Delete a query patterns report",
         "parameters": [
@@ -3716,12 +3452,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns/{id}/download": {
       "get": {
-        "tags": [
-          "Query Insights reports"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Query Insights reports"],
+        "consumes": ["application/json"],
         "operationId": "get_query_patterns_report",
         "summary": "Download a finished query patterns report",
         "parameters": [
@@ -3780,12 +3512,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/resizes": {
       "delete": {
-        "tags": [
-          "Branch changes"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Branch changes"],
+        "consumes": ["application/json"],
         "operationId": "cancel_branch_change_request",
         "summary": "Cancel a change request",
         "parameters": [
@@ -3834,12 +3562,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles": {
       "get": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "list_roles",
         "summary": "List roles",
         "parameters": [
@@ -3903,12 +3627,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `manage_passwords`, `manage_production_branch_passwords` |\n| Database | `manage_passwords`, `manage_production_branch_passwords` |\n| Branch | `manage_passwords` |"
       },
       "post": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "create_role",
         "summary": "Create role credentials",
         "parameters": [
@@ -4000,12 +3720,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles/default": {
       "get": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "get_default_role",
         "summary": "Get the default postgres role",
         "parameters": [
@@ -4057,12 +3773,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles/reset-default": {
       "post": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "reset_default_role",
         "summary": "Reset default credentials",
         "parameters": [
@@ -4114,12 +3826,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}": {
       "get": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "get_role",
         "summary": "Get a role",
         "parameters": [
@@ -4176,12 +3884,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_branch`, `delete_branch`, `create_branch`, `connect_production_branch`, `connect_branch`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `manage_passwords`, `manage_production_branch_passwords` |\n| Database | `manage_passwords`, `manage_production_branch_passwords` |\n| Branch | `manage_passwords` |"
       },
       "patch": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "update_role",
         "summary": "Update role name",
         "parameters": [
@@ -4252,12 +3956,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `create_production_branch_password`, `create_branch_password`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `manage_passwords`, `manage_production_branch_passwords` |\n| Database | `manage_passwords`, `manage_production_branch_passwords` |\n| Branch | `manage_passwords` |"
       },
       "delete": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "delete_role",
         "summary": "Delete role credentials",
         "parameters": [
@@ -4327,12 +4027,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/reassign": {
       "post": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "reassign_role_objects",
         "summary": "Reassign objects owned by one role to another role",
         "parameters": [
@@ -4376,9 +4072,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "successor"
-              ]
+              "required": ["successor"]
             }
           }
         ],
@@ -4405,12 +4099,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/renew": {
       "post": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "renew_role",
         "summary": "Renew role expiration",
         "parameters": [
@@ -4469,12 +4159,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/reset": {
       "post": {
-        "tags": [
-          "Roles"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Roles"],
+        "consumes": ["application/json"],
         "operationId": "reset_role",
         "summary": "Reset a role's password",
         "parameters": [
@@ -4533,12 +4219,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/safe-migrations": {
       "post": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "enable_safe_migrations",
         "summary": "Enable safe migrations for a branch",
         "parameters": [
@@ -4588,12 +4270,8 @@
         "description": "\n"
       },
       "delete": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "disable_safe_migrations",
         "summary": "Disable safe migrations for a branch",
         "parameters": [
@@ -4645,12 +4323,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/schema": {
       "get": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "get_branch_schema",
         "summary": "Get a branch schema",
         "parameters": [
@@ -4713,18 +4387,12 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "html",
-                      "raw"
-                    ]
+                    "required": ["name", "html", "raw"]
                   }
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "data"
-              ]
+              "required": ["data"]
             },
             "headers": {}
           },
@@ -4746,12 +4414,8 @@
     },
     "/organizations/{organization}/databases/{database}/branches/{branch}/schema/lint": {
       "get": {
-        "tags": [
-          "Database branches"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database branches"],
+        "consumes": ["application/json"],
         "operationId": "lint_branch_schema",
         "summary": "Lint a branch schema",
         "parameters": [
@@ -4817,12 +4481,8 @@
     },
     "/organizations/{organization}/databases/{database}/cidrs": {
       "get": {
-        "tags": [
-          "Database Postgres IP restrictions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database Postgres IP restrictions"],
+        "consumes": ["application/json"],
         "operationId": "list_database_postgres_cidrs",
         "summary": "List IP restriction entries",
         "parameters": [
@@ -4882,12 +4542,8 @@
         "description": "\n### Authorization\nA   OAuth token must have at least one of the following   scopes in order to use this API endpoint:\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |\n| Database | `read_database` |"
       },
       "post": {
-        "tags": [
-          "Database Postgres IP restrictions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database Postgres IP restrictions"],
+        "consumes": ["application/json"],
         "operationId": "create_database_postgres_cidr",
         "summary": "Create an IP restriction entry",
         "parameters": [
@@ -4928,9 +4584,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "cidrs"
-              ]
+              "required": ["cidrs"]
             }
           }
         ],
@@ -4963,12 +4617,8 @@
     },
     "/organizations/{organization}/databases/{database}/cidrs/{id}": {
       "get": {
-        "tags": [
-          "Database Postgres IP restrictions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database Postgres IP restrictions"],
+        "consumes": ["application/json"],
         "operationId": "get_database_postgres_cidr",
         "summary": "Get an IP restriction entry",
         "parameters": [
@@ -5021,12 +4671,8 @@
         "description": "\n### Authorization\nA   OAuth token must have at least one of the following   scopes in order to use this API endpoint:\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |\n| Database | `read_database` |"
       },
       "put": {
-        "tags": [
-          "Database Postgres IP restrictions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database Postgres IP restrictions"],
+        "consumes": ["application/json"],
         "operationId": "update_database_postgres_cidr",
         "summary": "Update an IP restriction entry",
         "parameters": [
@@ -5104,12 +4750,8 @@
         "description": "\n### Authorization\nA   OAuth token must have at least one of the following   scopes in order to use this API endpoint:\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_databases` |\n| Database | `write_database` |"
       },
       "delete": {
-        "tags": [
-          "Database Postgres IP restrictions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Database Postgres IP restrictions"],
+        "consumes": ["application/json"],
         "operationId": "delete_database_postgres_cidr",
         "summary": "Delete an IP restriction entry",
         "parameters": [
@@ -5161,12 +4803,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-queue": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "get_deploy_queue",
         "summary": "Get the deploy queue",
         "parameters": [
@@ -5211,12 +4849,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "list_deploy_requests",
         "summary": "List deploy requests",
         "parameters": [
@@ -5303,12 +4937,8 @@
         "description": "List deploy requests for a database\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_deploy_request`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_deploy_requests` |\n| Database | `read_deploy_requests` |"
       },
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "create_deploy_request",
         "summary": "Create a deploy request",
         "parameters": [
@@ -5354,10 +4984,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "branch",
-                "into_branch"
-              ]
+              "required": ["branch", "into_branch"]
             }
           }
         ],
@@ -5387,12 +5014,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "get_deploy_request",
         "summary": "Get a deploy request",
         "parameters": [
@@ -5442,12 +5065,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_deploy_request`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_deploy_requests` |\n| Database | `read_deploy_requests` |"
       },
       "patch": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "close_deploy_request",
         "summary": "Close a deploy request",
         "parameters": [
@@ -5480,9 +5099,7 @@
               "properties": {
                 "state": {
                   "type": "string",
-                  "enum": [
-                    "closed"
-                  ],
+                  "enum": ["closed"],
                   "description": "The deploy request will be updated to this state"
                 }
               },
@@ -5516,12 +5133,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/apply-deploy": {
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "complete_gated_deploy_request",
         "summary": "Complete a gated deploy request",
         "parameters": [
@@ -5573,12 +5186,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/auto-apply": {
       "put": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "update_auto_apply",
         "summary": "Update auto-apply for deploy request",
         "parameters": [
@@ -5644,12 +5253,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/auto-delete-branch": {
       "put": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "update_auto_delete_branch",
         "summary": "Update auto-delete branch for deploy request",
         "parameters": [
@@ -5715,12 +5320,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/cancel": {
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "cancel_deploy_request",
         "summary": "Cancel a queued deploy request",
         "parameters": [
@@ -5772,12 +5373,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/complete-deploy": {
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "complete_errored_deploy",
         "summary": "Complete an errored deploy",
         "parameters": [
@@ -5829,12 +5426,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/deploy": {
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "queue_deploy_request",
         "summary": "Queue a deploy request",
         "parameters": [
@@ -5900,12 +5493,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/deployment": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "get_deployment",
         "summary": "Get a deployment",
         "parameters": [
@@ -5957,12 +5546,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/operations": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "list_deploy_operations",
         "summary": "List deploy operations",
         "parameters": [
@@ -6028,12 +5613,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/revert": {
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "complete_revert",
         "summary": "Complete a revert",
         "parameters": [
@@ -6085,12 +5666,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "list_deploy_request_reviews",
         "summary": "List deploy request reviews",
         "parameters": [
@@ -6140,12 +5717,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_deploy_request`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_deploy_requests` |\n| Database | `read_deploy_requests` |"
       },
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "review_deploy_request",
         "summary": "Review a deploy request",
         "parameters": [
@@ -6178,10 +5751,7 @@
               "properties": {
                 "state": {
                   "type": "string",
-                  "enum": [
-                    "commented",
-                    "approved"
-                  ],
+                  "enum": ["commented", "approved"],
                   "description": "Whether the review is a comment or approval. Service tokens must have corresponding access (either `approve_deploy_request` or `review_deploy_request`)"
                 },
                 "body": {
@@ -6219,12 +5789,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/skip-revert": {
       "post": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "skip_revert_period",
         "summary": "Skip revert period",
         "parameters": [
@@ -6276,12 +5842,8 @@
     },
     "/organizations/{organization}/databases/{database}/deploy-requests/{number}/throttler": {
       "get": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "get_deploy_request_throttler",
         "summary": "Get deploy request throttler configurations",
         "parameters": [
@@ -6331,12 +5893,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_deploy_request`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_deploy_requests` |\n| Database | `read_deploy_requests` |"
       },
       "patch": {
-        "tags": [
-          "Deploy requests"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Deploy requests"],
+        "consumes": ["application/json"],
         "operationId": "update_deploy_request_throttler",
         "summary": "Update deploy request throttler configurations",
         "parameters": [
@@ -6409,12 +5967,8 @@
     },
     "/organizations/{organization}/databases/{database}/read-only-regions": {
       "get": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "list_read_only_regions",
         "summary": "List read-only regions",
         "parameters": [
@@ -6473,12 +6027,8 @@
     },
     "/organizations/{organization}/databases/{database}/regions": {
       "get": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "list_database_regions",
         "summary": "List database regions",
         "parameters": [
@@ -6537,12 +6087,8 @@
     },
     "/organizations/{organization}/databases/{database}/throttler": {
       "get": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "get_database_throttler",
         "summary": "Get database throttler configurations",
         "parameters": [
@@ -6585,12 +6131,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_deploy_request`, `create_deploy_request`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |\n| Database | `read_database` |"
       },
       "patch": {
-        "tags": [
-          "Databases"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Databases"],
+        "consumes": ["application/json"],
         "operationId": "update_database_throttler",
         "summary": "Update database throttler configurations",
         "parameters": [
@@ -6656,12 +6198,8 @@
     },
     "/organizations/{organization}/databases/{database}/webhooks": {
       "get": {
-        "tags": [
-          "Webhooks"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Webhooks"],
+        "consumes": ["application/json"],
         "operationId": "list_webhooks",
         "summary": "List webhooks",
         "parameters": [
@@ -6718,12 +6256,8 @@
         "description": "List webhooks for a database\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_database`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |\n| Database | `read_database` |"
       },
       "post": {
-        "tags": [
-          "Webhooks"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Webhooks"],
+        "consumes": ["application/json"],
         "operationId": "create_webhook",
         "summary": "Create a webhook",
         "parameters": [
@@ -6764,9 +6298,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             }
           }
         ],
@@ -6796,12 +6328,8 @@
     },
     "/organizations/{organization}/databases/{database}/webhooks/{id}": {
       "get": {
-        "tags": [
-          "Webhooks"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Webhooks"],
+        "consumes": ["application/json"],
         "operationId": "get_webhook",
         "summary": "Get a webhook",
         "parameters": [
@@ -6851,12 +6379,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_database`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_databases` |\n| Database | `read_database` |"
       },
       "patch": {
-        "tags": [
-          "Webhooks"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Webhooks"],
+        "consumes": ["application/json"],
         "operationId": "update_webhook",
         "summary": "Update a webhook",
         "parameters": [
@@ -6931,12 +6455,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `write_database`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_databases` |\n| Database | `write_database` |"
       },
       "delete": {
-        "tags": [
-          "Webhooks"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Webhooks"],
+        "consumes": ["application/json"],
         "operationId": "delete_webhook",
         "summary": "Delete a webhook",
         "parameters": [
@@ -6985,12 +6505,8 @@
     },
     "/organizations/{organization}/databases/{database}/webhooks/{id}/test": {
       "post": {
-        "tags": [
-          "Webhooks"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Webhooks"],
+        "consumes": ["application/json"],
         "operationId": "test_webhook",
         "summary": "Test a webhook",
         "parameters": [
@@ -7039,12 +6555,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows": {
       "get": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "list_workflows",
         "summary": "List workflows",
         "parameters": [
@@ -7107,12 +6619,8 @@
         "description": "\n"
       },
       "post": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "create_workflow",
         "summary": "Create a workflow",
         "parameters": [
@@ -7158,12 +6666,7 @@
                 },
                 "on_ddl": {
                   "type": "string",
-                  "enum": [
-                    "IGNORE",
-                    "STOP",
-                    "EXEC",
-                    "EXEC_IGNORE"
-                  ],
+                  "enum": ["IGNORE", "STOP", "EXEC", "EXEC_IGNORE"],
                   "description": "The behavior when DDL changes during the workflow"
                 },
                 "tables": {
@@ -7175,12 +6678,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name",
-                "source_keyspace",
-                "target_keyspace",
-                "tables"
-              ]
+              "required": ["name", "source_keyspace", "target_keyspace", "tables"]
             }
           }
         ],
@@ -7210,12 +6708,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}": {
       "get": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "get_workflow",
         "summary": "Get a workflow",
         "parameters": [
@@ -7265,12 +6759,8 @@
         "description": "\n"
       },
       "delete": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_cancel",
         "summary": "Cancel a workflow",
         "parameters": [
@@ -7322,12 +6812,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/complete": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_complete",
         "summary": "Complete a workflow",
         "parameters": [
@@ -7379,12 +6865,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/cutover": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_cutover",
         "summary": "Cutover traffic",
         "parameters": [
@@ -7436,12 +6918,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/retry": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_retry",
         "summary": "Retry a failed workflow",
         "parameters": [
@@ -7493,12 +6971,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/reverse-cutover": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_reverse_cutover",
         "summary": "Reverse traffic cutover",
         "parameters": [
@@ -7550,12 +7024,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/reverse-traffic": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_reverse_traffic",
         "summary": "Reverse traffic",
         "parameters": [
@@ -7607,12 +7077,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/switch-primaries": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_switch_primaries",
         "summary": "Switch primary traffic",
         "parameters": [
@@ -7664,12 +7130,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/switch-replicas": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "workflow_switch_replicas",
         "summary": "Switch replica traffic",
         "parameters": [
@@ -7721,12 +7183,8 @@
     },
     "/organizations/{organization}/databases/{database}/workflows/{number}/verify-data": {
       "patch": {
-        "tags": [
-          "Workflows"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Workflows"],
+        "consumes": ["application/json"],
         "operationId": "verify_workflow",
         "summary": "Verify workflow data",
         "parameters": [
@@ -7778,12 +7236,8 @@
     },
     "/organizations/{organization}/invoices": {
       "get": {
-        "tags": [
-          "Invoices"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Invoices"],
+        "consumes": ["application/json"],
         "operationId": "list_invoices",
         "summary": "Get invoices",
         "parameters": [
@@ -7835,12 +7289,8 @@
     },
     "/organizations/{organization}/invoices/{id}": {
       "get": {
-        "tags": [
-          "Invoices"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Invoices"],
+        "consumes": ["application/json"],
         "operationId": "get_invoice",
         "summary": "Get an invoice",
         "parameters": [
@@ -7885,12 +7335,8 @@
     },
     "/organizations/{organization}/invoices/{id}/line-items": {
       "get": {
-        "tags": [
-          "Invoices"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Invoices"],
+        "consumes": ["application/json"],
         "operationId": "get_invoice_line_items",
         "summary": "Get invoice line items",
         "parameters": [
@@ -7949,12 +7395,8 @@
     },
     "/organizations/{organization}/members": {
       "get": {
-        "tags": [
-          "Organization members"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization members"],
+        "consumes": ["application/json"],
         "operationId": "list_organization_members",
         "summary": "List organization members",
         "parameters": [
@@ -8012,12 +7454,8 @@
     },
     "/organizations/{organization}/members/{id}": {
       "get": {
-        "tags": [
-          "Organization members"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization members"],
+        "consumes": ["application/json"],
         "operationId": "get_organization_membership",
         "summary": "Get an organization member",
         "parameters": [
@@ -8060,12 +7498,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_organization`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_organization` |"
       },
       "patch": {
-        "tags": [
-          "Organization members"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization members"],
+        "consumes": ["application/json"],
         "operationId": "update_organization_membership",
         "summary": "Update organization member role",
         "parameters": [
@@ -8095,9 +7529,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "role"
-              ]
+              "required": ["role"]
             }
           }
         ],
@@ -8125,12 +7557,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `write_organization`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_organization` |"
       },
       "delete": {
-        "tags": [
-          "Organization members"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization members"],
+        "consumes": ["application/json"],
         "operationId": "remove_organization_member",
         "summary": "Remove a member from an organization",
         "parameters": [
@@ -8190,12 +7618,8 @@
     },
     "/organizations/{organization}/oauth-applications": {
       "get": {
-        "tags": [
-          "OAuth applications"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["OAuth applications"],
+        "consumes": ["application/json"],
         "operationId": "list_oauth_applications",
         "summary": "List OAuth applications",
         "parameters": [
@@ -8247,12 +7671,8 @@
     },
     "/organizations/{organization}/oauth-applications/{application_id}": {
       "get": {
-        "tags": [
-          "OAuth applications"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["OAuth applications"],
+        "consumes": ["application/json"],
         "operationId": "get_oauth_application",
         "summary": "Get an OAuth application",
         "parameters": [
@@ -8297,12 +7717,8 @@
     },
     "/organizations/{organization}/oauth-applications/{application_id}/tokens": {
       "get": {
-        "tags": [
-          "OAuth applications"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["OAuth applications"],
+        "consumes": ["application/json"],
         "operationId": "list_oauth_tokens",
         "summary": "List OAuth tokens",
         "parameters": [
@@ -8361,12 +7777,8 @@
     },
     "/organizations/{organization}/oauth-applications/{application_id}/tokens/{token_id}": {
       "get": {
-        "tags": [
-          "OAuth applications"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["OAuth applications"],
+        "consumes": ["application/json"],
         "operationId": "get_oauth_token",
         "summary": "Get an OAuth token",
         "parameters": [
@@ -8416,12 +7828,8 @@
         "description": "\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_oauth_tokens`\n\n"
       },
       "delete": {
-        "tags": [
-          "OAuth applications"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["OAuth applications"],
+        "consumes": ["application/json"],
         "operationId": "delete_oauth_token",
         "summary": "Delete an OAuth token",
         "parameters": [
@@ -8470,12 +7878,8 @@
     },
     "/organizations/{organization}/oauth-applications/{id}/token": {
       "post": {
-        "tags": [
-          "OAuth tokens"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["OAuth tokens"],
+        "consumes": ["application/json"],
         "operationId": "create_oauth_token",
         "summary": "Create or renew an OAuth token",
         "parameters": [
@@ -8509,10 +7913,7 @@
                 },
                 "grant_type": {
                   "type": "string",
-                  "enum": [
-                    "authorization_code",
-                    "refresh_token"
-                  ],
+                  "enum": ["authorization_code", "refresh_token"],
                   "description": "Whether an OAuth grant code or a refresh token is being exchanged for an OAuth token"
                 },
                 "code": {
@@ -8529,11 +7930,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "client_id",
-                "client_secret",
-                "grant_type"
-              ]
+              "required": ["client_id", "client_secret", "grant_type"]
             }
           }
         ],
@@ -8563,12 +7960,8 @@
     },
     "/organizations/{organization}/regions": {
       "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organizations"],
+        "consumes": ["application/json"],
         "operationId": "list_regions_for_organization",
         "summary": "List regions for an organization",
         "parameters": [
@@ -8620,12 +8013,8 @@
     },
     "/organizations/{organization}/service-tokens": {
       "get": {
-        "tags": [
-          "Service tokens"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Service tokens"],
+        "consumes": ["application/json"],
         "operationId": "list_service_tokens",
         "summary": "List service tokens",
         "parameters": [
@@ -8675,12 +8064,8 @@
         "description": "List service tokens for an organization.\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_service_tokens`\n\n"
       },
       "post": {
-        "tags": [
-          "Service tokens"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Service tokens"],
+        "consumes": ["application/json"],
         "operationId": "create_service_token",
         "summary": "Create a service token",
         "parameters": [
@@ -8732,12 +8117,8 @@
     },
     "/organizations/{organization}/service-tokens/{id}": {
       "get": {
-        "tags": [
-          "Service tokens"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Service tokens"],
+        "consumes": ["application/json"],
         "operationId": "get_service_token",
         "summary": "Get a service token",
         "parameters": [
@@ -8780,12 +8161,8 @@
         "description": "Get information about a service token.\n### Authorization\nA service token   must have at least one of the following access   in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_service_tokens`\n\n"
       },
       "delete": {
-        "tags": [
-          "Service tokens"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Service tokens"],
+        "consumes": ["application/json"],
         "operationId": "delete_service_token",
         "summary": "Delete a service token",
         "parameters": [
@@ -8827,12 +8204,8 @@
     },
     "/organizations/{organization}/teams": {
       "get": {
-        "tags": [
-          "Organization teams"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization teams"],
+        "consumes": ["application/json"],
         "operationId": "list_organization_teams",
         "summary": "List teams in an organization",
         "parameters": [
@@ -8880,12 +8253,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_organization`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_organization` |"
       },
       "post": {
-        "tags": [
-          "Organization teams"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization teams"],
+        "consumes": ["application/json"],
         "operationId": "create_organization_team",
         "summary": "Create an organization team",
         "parameters": [
@@ -8912,9 +8281,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name"
-              ]
+              "required": ["name"]
             }
           }
         ],
@@ -8950,12 +8317,8 @@
     },
     "/organizations/{organization}/teams/{team}": {
       "get": {
-        "tags": [
-          "Organization teams"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization teams"],
+        "consumes": ["application/json"],
         "operationId": "get_organization_team",
         "summary": "Get an organization team",
         "parameters": [
@@ -9004,12 +8367,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `read_organization`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `read_organization` |"
       },
       "patch": {
-        "tags": [
-          "Organization teams"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization teams"],
+        "consumes": ["application/json"],
         "operationId": "update_organization_team",
         "summary": "Update an organization team",
         "parameters": [
@@ -9076,12 +8435,8 @@
         "description": "\n### Authorization\nA service token or OAuth token must have at least one of the following access or scopes in order to use this API endpoint:\n\n**Service Token Accesses**\n `write_teams`\n\n**OAuth Scopes**\n\n | Resource | Scopes |\n| :------- | :---------- |\n| Organization | `write_organization` |"
       },
       "delete": {
-        "tags": [
-          "Organization teams"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Organization teams"],
+        "consumes": ["application/json"],
         "operationId": "delete_organization_team",
         "summary": "Delete an organization team",
         "parameters": [
@@ -9129,12 +8484,8 @@
     },
     "/regions": {
       "get": {
-        "tags": [
-          "Regions"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Regions"],
+        "consumes": ["application/json"],
         "operationId": "list_public_regions",
         "summary": "List public regions",
         "parameters": [
@@ -9179,12 +8530,8 @@
     },
     "/user": {
       "get": {
-        "tags": [
-          "Users"
-        ],
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["Users"],
+        "consumes": ["application/json"],
         "operationId": "get_current_user",
         "summary": "Get current user",
         "parameters": [],
@@ -9252,14 +8599,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "running",
-                  "success",
-                  "failed",
-                  "canceled",
-                  "ignored"
-                ],
+                "enum": ["pending", "running", "success", "failed", "canceled", "ignored"],
                 "description": "The current state of the backup"
               },
               "size": {
@@ -9333,13 +8673,7 @@
                     }
                   },
                   "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "name",
-                    "created_at",
-                    "updated_at",
-                    "deleted_at"
-                  ]
+                  "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
                 }
               },
               "actor": {
@@ -9359,11 +8693,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "backup_policy": {
                 "type": "object",
@@ -9378,10 +8708,7 @@
                   },
                   "target": {
                     "type": "string",
-                    "enum": [
-                      "production",
-                      "development"
-                    ],
+                    "enum": ["production", "development"],
                     "description": "Whether the policy is for production or development branches"
                   },
                   "retention_value": {
@@ -9481,14 +8808,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "linted_at",
-                  "url"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "linted_at", "url"]
               },
               "database_branch": {
                 "type": "object",
@@ -9515,13 +8835,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               }
             },
             "additionalProperties": false,
@@ -9572,14 +8886,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "pending",
-            "running",
-            "success",
-            "failed",
-            "canceled",
-            "ignored"
-          ],
+          "enum": ["pending", "running", "success", "failed", "canceled", "ignored"],
           "description": "The current state of the backup"
         },
         "size": {
@@ -9653,13 +8960,7 @@
               }
             },
             "additionalProperties": false,
-            "required": [
-              "id",
-              "name",
-              "created_at",
-              "updated_at",
-              "deleted_at"
-            ]
+            "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
           }
         },
         "actor": {
@@ -9679,11 +8980,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "backup_policy": {
           "type": "object",
@@ -9698,10 +8995,7 @@
             },
             "target": {
               "type": "string",
-              "enum": [
-                "production",
-                "development"
-              ],
+              "enum": ["production", "development"],
               "description": "Whether the policy is for production or development branches"
             },
             "retention_value": {
@@ -9801,14 +9095,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "linted_at",
-            "url"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "linted_at", "url"]
         },
         "database_branch": {
           "type": "object",
@@ -9835,13 +9122,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         }
       },
       "additionalProperties": false,
@@ -9901,12 +9182,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "resizing",
-                  "canceled",
-                  "completed"
-                ],
+                "enum": ["pending", "resizing", "canceled", "completed"],
                 "description": "The state of the bouncer resize"
               },
               "replicas_per_cell": {
@@ -9960,11 +9236,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "bouncer": {
                 "type": "object",
@@ -9991,13 +9263,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "sku": {
                 "type": "object",
@@ -10024,13 +9290,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "name",
-                  "display_name",
-                  "cpu",
-                  "ram",
-                  "sort_order"
-                ]
+                "required": ["name", "display_name", "cpu", "ram", "sort_order"]
               },
               "previous_sku": {
                 "type": "object",
@@ -10057,13 +9317,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "name",
-                  "display_name",
-                  "cpu",
-                  "ram",
-                  "sort_order"
-                ]
+                "required": ["name", "display_name", "cpu", "ram", "sort_order"]
               }
             },
             "additionalProperties": false,
@@ -10137,13 +9391,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "queued",
-                  "pending",
-                  "resizing",
-                  "canceled",
-                  "completed"
-                ],
+                "enum": ["queued", "pending", "resizing", "canceled", "completed"],
                 "description": "The state of the branch change request"
               },
               "started_at": {
@@ -10179,11 +9427,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "cluster_name": {
                 "type": "string",
@@ -10245,11 +9489,7 @@
               },
               "storage_type": {
                 "type": "string",
-                "enum": [
-                  "gp3",
-                  "io2",
-                  "pd_ssd"
-                ],
+                "enum": ["gp3", "io2", "pd_ssd"],
                 "description": "The storage type (gp3 or io2)"
               },
               "storage_iops": {
@@ -10353,13 +9593,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "queued",
-            "pending",
-            "resizing",
-            "canceled",
-            "completed"
-          ],
+          "enum": ["queued", "pending", "resizing", "canceled", "completed"],
           "description": "The state of the branch change request"
         },
         "started_at": {
@@ -10395,11 +9629,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "cluster_name": {
           "type": "string",
@@ -10461,11 +9691,7 @@
         },
         "storage_type": {
           "type": "string",
-          "enum": [
-            "gp3",
-            "io2",
-            "pd_ssd"
-          ],
+          "enum": ["gp3", "io2", "pd_ssd"],
           "description": "The storage type (gp3 or io2)"
         },
         "storage_iops": {
@@ -10599,10 +9825,7 @@
               },
               "kind": {
                 "type": "string",
-                "enum": [
-                  "mysql",
-                  "postgresql"
-                ],
+                "enum": ["mysql", "postgresql"],
                 "description": "The kind of branch"
               },
               "mysql_address": {
@@ -10615,13 +9838,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "sleep_in_progress",
-                  "sleeping",
-                  "awakening",
-                  "ready"
-                ],
+                "enum": ["pending", "sleep_in_progress", "sleeping", "awakening", "ready"],
                 "description": "The current state of the branch"
               },
               "direct_vtgate": {
@@ -10693,11 +9910,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "restored_from_branch": {
                 "type": "object",
@@ -10724,13 +9937,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "private_edge_connectivity": {
                 "type": "boolean",
@@ -10890,10 +10097,7 @@
         },
         "kind": {
           "type": "string",
-          "enum": [
-            "mysql",
-            "postgresql"
-          ],
+          "enum": ["mysql", "postgresql"],
           "description": "The kind of branch"
         },
         "mysql_address": {
@@ -10906,13 +10110,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "pending",
-            "sleep_in_progress",
-            "sleeping",
-            "awakening",
-            "ready"
-          ],
+          "enum": ["pending", "sleep_in_progress", "sleeping", "awakening", "ready"],
           "description": "The current state of the branch"
         },
         "direct_vtgate": {
@@ -10984,11 +10182,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "restored_from_branch": {
           "type": "object",
@@ -11015,13 +10209,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "private_edge_connectivity": {
           "type": "boolean",
@@ -11170,11 +10358,7 @@
               },
               "subject_type": {
                 "type": "string",
-                "enum": [
-                  "table",
-                  "vschema",
-                  "routing_rules"
-                ],
+                "enum": ["table", "vschema", "routing_rules"],
                 "description": "The subject for the errors"
               },
               "keyspace_name": {
@@ -11319,11 +10503,7 @@
               },
               "namespace": {
                 "type": "string",
-                "enum": [
-                  "patroni",
-                  "pgconf",
-                  "pgbouncer"
-                ],
+                "enum": ["patroni", "pgconf", "pgbouncer"],
                 "description": "The namespace of the parameter"
               },
               "category": {
@@ -11422,11 +10602,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               }
             },
             "additionalProperties": false,
@@ -11457,14 +10633,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "id",
-        "name",
-        "description",
-        "internal",
-        "url",
-        "parameters"
-      ]
+      "required": ["id", "name", "description", "internal", "url", "parameters"]
     },
     "PostgresClusterParameter": {
       "type": "object",
@@ -11483,11 +10652,7 @@
         },
         "namespace": {
           "type": "string",
-          "enum": [
-            "patroni",
-            "pgconf",
-            "pgbouncer"
-          ],
+          "enum": ["patroni", "pgconf", "pgbouncer"],
           "description": "The namespace of the parameter"
         },
         "category": {
@@ -11586,11 +10751,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         }
       },
       "additionalProperties": false,
@@ -11719,18 +10880,12 @@
                 "properties": {
                   "strategy": {
                     "type": "string",
-                    "enum": [
-                      "available",
-                      "lag",
-                      "always"
-                    ],
+                    "enum": ["available", "lag", "always"],
                     "description": "The replication durability strategy"
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "strategy"
-                ]
+                "required": ["strategy"]
               },
               "vreplication_flags": {
                 "type": "object",
@@ -11867,18 +11022,12 @@
           "properties": {
             "strategy": {
               "type": "string",
-              "enum": [
-                "available",
-                "lag",
-                "always"
-              ],
+              "enum": ["available", "lag", "always"],
               "description": "The replication durability strategy"
             }
           },
           "additionalProperties": false,
-          "required": [
-            "strategy"
-          ]
+          "required": ["strategy"]
         },
         "vreplication_flags": {
           "type": "object",
@@ -11897,11 +11046,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "optimize_inserts",
-            "allow_no_blob_binlog_row_image",
-            "vplayer_batching"
-          ]
+          "required": ["optimize_inserts", "allow_no_blob_binlog_row_image", "vplayer_batching"]
         }
       },
       "additionalProperties": false,
@@ -11965,12 +11110,7 @@
               },
               "role": {
                 "type": "string",
-                "enum": [
-                  "reader",
-                  "writer",
-                  "admin",
-                  "readwriter"
-                ],
+                "enum": ["reader", "writer", "admin", "readwriter"],
                 "description": "The role for the password"
               },
               "cidrs": {
@@ -12047,11 +11187,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "region": {
                 "type": "object",
@@ -12205,12 +11341,7 @@
         },
         "role": {
           "type": "string",
-          "enum": [
-            "reader",
-            "writer",
-            "admin",
-            "readwriter"
-          ],
+          "enum": ["reader", "writer", "admin", "readwriter"],
           "description": "The role for the password"
         },
         "cidrs": {
@@ -12287,11 +11418,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "region": {
           "type": "object",
@@ -12496,11 +11623,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               }
             },
             "additionalProperties": false,
@@ -12578,11 +11701,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         }
       },
       "additionalProperties": false,
@@ -12709,11 +11828,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "hostname",
-                      "port",
-                      "database"
-                    ]
+                    "required": ["hostname", "port", "database"]
                   }
                 },
                 "additionalProperties": false,
@@ -12883,10 +11998,7 @@
               },
               "kind": {
                 "type": "string",
-                "enum": [
-                  "mysql",
-                  "postgresql"
-                ],
+                "enum": ["mysql", "postgresql"],
                 "description": "The kind of database"
               }
             },
@@ -13032,21 +12144,11 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "hostname",
-                "port",
-                "database"
-              ]
+              "required": ["hostname", "port", "database"]
             }
           },
           "additionalProperties": false,
-          "required": [
-            "state",
-            "import_check_errors",
-            "started_at",
-            "finished_at",
-            "data_source"
-          ]
+          "required": ["state", "import_check_errors", "started_at", "finished_at", "data_source"]
         },
         "region": {
           "type": "object",
@@ -13206,10 +12308,7 @@
         },
         "kind": {
           "type": "string",
-          "enum": [
-            "mysql",
-            "postgresql"
-          ],
+          "enum": ["mysql", "postgresql"],
           "description": "The kind of database"
         }
       },
@@ -13413,11 +12512,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "region": {
                 "type": "object",
@@ -13530,13 +12625,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "configurations": {
           "type": "array",
@@ -13553,19 +12642,12 @@
               }
             },
             "additionalProperties": false,
-            "required": [
-              "keyspace_name",
-              "ratio"
-            ]
+            "required": ["keyspace_name", "ratio"]
           }
         }
       },
       "additionalProperties": false,
-      "required": [
-        "keyspaces",
-        "configurable",
-        "configurations"
-      ]
+      "required": ["keyspaces", "configurable", "configurations"]
     },
     "PaginatedOauthApplication": {
       "type": "object",
@@ -13860,13 +12942,7 @@
                         }
                       },
                       "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "name",
-                        "created_at",
-                        "updated_at",
-                        "deleted_at"
-                      ]
+                      "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
                     }
                   },
                   "additionalProperties": false,
@@ -13910,12 +12986,7 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "id",
-                            "organization",
-                            "url"
-                          ]
+                          "required": ["name", "id", "organization", "url"]
                         }
                       },
                       "accesses": {
@@ -13933,18 +13004,12 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "description"
-                          ]
+                          "required": ["name", "description"]
                         }
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "databases",
-                      "accesses"
-                    ]
+                    "required": ["databases", "accesses"]
                   },
                   "organization": {
                     "type": "object",
@@ -13968,11 +13033,7 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "id",
-                            "url"
-                          ]
+                          "required": ["name", "id", "url"]
                         }
                       },
                       "accesses": {
@@ -13990,18 +13051,12 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "description"
-                          ]
+                          "required": ["name", "description"]
                         }
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "organizations",
-                      "accesses"
-                    ]
+                    "required": ["organizations", "accesses"]
                   },
                   "branch": {
                     "type": "object",
@@ -14033,13 +13088,7 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "id",
-                            "database",
-                            "organization",
-                            "url"
-                          ]
+                          "required": ["name", "id", "database", "organization", "url"]
                         }
                       },
                       "accesses": {
@@ -14057,18 +13106,12 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "description"
-                          ]
+                          "required": ["name", "description"]
                         }
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "branches",
-                      "accesses"
-                    ]
+                    "required": ["branches", "accesses"]
                   },
                   "user": {
                     "type": "object",
@@ -14088,10 +13131,7 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "id"
-                          ]
+                          "required": ["name", "id"]
                         }
                       },
                       "accesses": {
@@ -14109,27 +13149,16 @@
                             }
                           },
                           "additionalProperties": false,
-                          "required": [
-                            "name",
-                            "description"
-                          ]
+                          "required": ["name", "description"]
                         }
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "users",
-                      "accesses"
-                    ]
+                    "required": ["users", "accesses"]
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "database",
-                  "organization",
-                  "branch",
-                  "user"
-                ]
+                "required": ["database", "organization", "branch", "user"]
               }
             },
             "additionalProperties": false,
@@ -14272,13 +13301,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               }
             },
             "additionalProperties": false,
@@ -14322,12 +13345,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "id",
-                      "organization",
-                      "url"
-                    ]
+                    "required": ["name", "id", "organization", "url"]
                   }
                 },
                 "accesses": {
@@ -14345,18 +13363,12 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "description"
-                    ]
+                    "required": ["name", "description"]
                   }
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "databases",
-                "accesses"
-              ]
+              "required": ["databases", "accesses"]
             },
             "organization": {
               "type": "object",
@@ -14380,11 +13392,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "id",
-                      "url"
-                    ]
+                    "required": ["name", "id", "url"]
                   }
                 },
                 "accesses": {
@@ -14402,18 +13410,12 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "description"
-                    ]
+                    "required": ["name", "description"]
                   }
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "organizations",
-                "accesses"
-              ]
+              "required": ["organizations", "accesses"]
             },
             "branch": {
               "type": "object",
@@ -14445,13 +13447,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "id",
-                      "database",
-                      "organization",
-                      "url"
-                    ]
+                    "required": ["name", "id", "database", "organization", "url"]
                   }
                 },
                 "accesses": {
@@ -14469,18 +13465,12 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "description"
-                    ]
+                    "required": ["name", "description"]
                   }
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "branches",
-                "accesses"
-              ]
+              "required": ["branches", "accesses"]
             },
             "user": {
               "type": "object",
@@ -14500,10 +13490,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "id"
-                    ]
+                    "required": ["name", "id"]
                   }
                 },
                 "accesses": {
@@ -14521,27 +13508,16 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "name",
-                      "description"
-                    ]
+                    "required": ["name", "description"]
                   }
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "users",
-                "accesses"
-              ]
+              "required": ["users", "accesses"]
             }
           },
           "additionalProperties": false,
-          "required": [
-            "database",
-            "organization",
-            "branch",
-            "user"
-          ]
+          "required": ["database", "organization", "branch", "user"]
         }
       },
       "additionalProperties": false,
@@ -14655,13 +13631,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "id",
-                      "name",
-                      "created_at",
-                      "updated_at",
-                      "deleted_at"
-                    ]
+                    "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
                   },
                   "sso": {
                     "type": "boolean",
@@ -14699,10 +13669,7 @@
               },
               "role": {
                 "type": "string",
-                "enum": [
-                  "member",
-                  "admin"
-                ],
+                "enum": ["member", "admin"],
                 "description": "The role of the user in the organization"
               },
               "created_at": {
@@ -14715,13 +13682,7 @@
               }
             },
             "additionalProperties": false,
-            "required": [
-              "id",
-              "user",
-              "role",
-              "created_at",
-              "updated_at"
-            ]
+            "required": ["id", "user", "role", "created_at", "updated_at"]
           }
         }
       },
@@ -14802,13 +13763,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "id",
-                "name",
-                "created_at",
-                "updated_at",
-                "deleted_at"
-              ]
+              "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
             },
             "sso": {
               "type": "boolean",
@@ -14846,10 +13801,7 @@
         },
         "role": {
           "type": "string",
-          "enum": [
-            "member",
-            "admin"
-          ],
+          "enum": ["member", "admin"],
           "description": "The role of the user in the organization"
         },
         "created_at": {
@@ -14862,13 +13814,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "id",
-        "user",
-        "role",
-        "created_at",
-        "updated_at"
-      ]
+      "required": ["id", "user", "role", "created_at", "updated_at"]
     },
     "PaginatedOrganization": {
       "type": "object",
@@ -15329,13 +14275,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "has_next",
-        "has_prev",
-        "cursor_start",
-        "cursor_end",
-        "data"
-      ]
+      "required": ["has_next", "has_prev", "cursor_start", "cursor_end", "data"]
     },
     "PostgresBouncerResizeRequest": {
       "type": "object",
@@ -15346,12 +14286,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "pending",
-            "resizing",
-            "canceled",
-            "completed"
-          ],
+          "enum": ["pending", "resizing", "canceled", "completed"],
           "description": "The state of the bouncer resize"
         },
         "replicas_per_cell": {
@@ -15405,11 +14340,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "bouncer": {
           "type": "object",
@@ -15436,13 +14367,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "sku": {
           "type": "object",
@@ -15469,13 +14394,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "name",
-            "display_name",
-            "cpu",
-            "ram",
-            "sort_order"
-          ]
+          "required": ["name", "display_name", "cpu", "ram", "sort_order"]
         },
         "previous_sku": {
           "type": "object",
@@ -15502,13 +14421,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "name",
-            "display_name",
-            "cpu",
-            "ram",
-            "sort_order"
-          ]
+          "required": ["name", "display_name", "cpu", "ram", "sort_order"]
         }
       },
       "additionalProperties": false,
@@ -15590,21 +14503,11 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "name",
-                  "display_name",
-                  "cpu",
-                  "ram",
-                  "sort_order"
-                ]
+                "required": ["name", "display_name", "cpu", "ram", "sort_order"]
               },
               "target": {
                 "type": "string",
-                "enum": [
-                  "primary",
-                  "replica",
-                  "replica_az_affinity"
-                ],
+                "enum": ["primary", "replica", "replica_az_affinity"],
                 "description": "The instance type the bouncer targets"
               },
               "replicas_per_cell": {
@@ -15640,11 +14543,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "branch": {
                 "type": "object",
@@ -15671,13 +14570,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "parameters": {
                 "type": "array",
@@ -15690,9 +14583,7 @@
                     },
                     "namespace": {
                       "type": "string",
-                      "enum": [
-                        "pgbouncer"
-                      ],
+                      "enum": ["pgbouncer"],
                       "description": "The namespace of the parameter"
                     },
                     "name": {
@@ -15791,11 +14682,7 @@
                         }
                       },
                       "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "display_name",
-                        "avatar_url"
-                      ]
+                      "required": ["id", "display_name", "avatar_url"]
                     }
                   },
                   "additionalProperties": false,
@@ -15886,21 +14773,11 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "name",
-            "display_name",
-            "cpu",
-            "ram",
-            "sort_order"
-          ]
+          "required": ["name", "display_name", "cpu", "ram", "sort_order"]
         },
         "target": {
           "type": "string",
-          "enum": [
-            "primary",
-            "replica",
-            "replica_az_affinity"
-          ],
+          "enum": ["primary", "replica", "replica_az_affinity"],
           "description": "The instance type the bouncer targets"
         },
         "replicas_per_cell": {
@@ -15936,11 +14813,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "branch": {
           "type": "object",
@@ -15967,13 +14840,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "parameters": {
           "type": "array",
@@ -15986,9 +14853,7 @@
               },
               "namespace": {
                 "type": "string",
-                "enum": [
-                  "pgbouncer"
-                ],
+                "enum": ["pgbouncer"],
                 "description": "The namespace of the parameter"
               },
               "name": {
@@ -16087,11 +14952,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               }
             },
             "additionalProperties": false,
@@ -16281,13 +15142,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "actor": {
                 "type": "object",
@@ -16306,11 +15161,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               }
             },
             "additionalProperties": false,
@@ -16472,13 +15323,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "actor": {
           "type": "object",
@@ -16497,11 +15342,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         }
       },
       "additionalProperties": false,
@@ -16559,11 +15400,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "completed",
-                  "failed"
-                ],
+                "enum": ["pending", "completed", "failed"],
                 "description": "The state of the download"
               },
               "created_at": {
@@ -16599,34 +15436,16 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               }
             },
             "additionalProperties": false,
-            "required": [
-              "id",
-              "state",
-              "created_at",
-              "finished_at",
-              "url",
-              "download_url",
-              "actor"
-            ]
+            "required": ["id", "state", "created_at", "finished_at", "url", "download_url", "actor"]
           }
         }
       },
       "additionalProperties": false,
-      "required": [
-        "has_next",
-        "has_prev",
-        "cursor_start",
-        "cursor_end",
-        "data"
-      ]
+      "required": ["has_next", "has_prev", "cursor_start", "cursor_end", "data"]
     },
     "QueryPatternsDownload": {
       "type": "object",
@@ -16637,11 +15456,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "pending",
-            "completed",
-            "failed"
-          ],
+          "enum": ["pending", "completed", "failed"],
           "description": "The state of the download"
         },
         "created_at": {
@@ -16677,23 +15492,11 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         }
       },
       "additionalProperties": false,
-      "required": [
-        "id",
-        "state",
-        "created_at",
-        "finished_at",
-        "url",
-        "download_url",
-        "actor"
-      ]
+      "required": ["id", "state", "created_at", "finished_at", "url", "download_url", "actor"]
     },
     "PaginatedPublicPlanetscaleRegionSerializer": {
       "type": "object",
@@ -16838,13 +15641,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "sso": {
           "type": "boolean",
@@ -17003,9 +15800,7 @@
               },
               "workflow_type": {
                 "type": "string",
-                "enum": [
-                  "move_tables"
-                ],
+                "enum": ["move_tables"],
                 "description": "The type of the workflow"
               },
               "workflow_subtype": {
@@ -17018,12 +15813,7 @@
               },
               "on_ddl": {
                 "type": "string",
-                "enum": [
-                  "IGNORE",
-                  "STOP",
-                  "EXEC",
-                  "EXEC_IGNORE"
-                ],
+                "enum": ["IGNORE", "STOP", "EXEC", "EXEC_IGNORE"],
                 "description": "The behavior when DDL changes during the workflow"
               },
               "workflow_errors": {
@@ -17063,11 +15853,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "verify_data_by": {
                 "type": "object",
@@ -17086,11 +15872,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "reversed_by": {
                 "type": "object",
@@ -17109,11 +15891,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "switch_replicas_by": {
                 "type": "object",
@@ -17132,11 +15910,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "switch_primaries_by": {
                 "type": "object",
@@ -17155,11 +15929,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "cancelled_by": {
                 "type": "object",
@@ -17178,11 +15948,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "completed_by": {
                 "type": "object",
@@ -17201,11 +15967,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "retried_by": {
                 "type": "object",
@@ -17224,11 +15986,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "cutover_by": {
                 "type": "object",
@@ -17247,11 +16005,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "reversed_cutover_by": {
                 "type": "object",
@@ -17270,11 +16024,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "branch": {
                 "type": "object",
@@ -17301,13 +16051,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "source_keyspace": {
                 "type": "object",
@@ -17334,13 +16078,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "target_keyspace": {
                 "type": "object",
@@ -17367,13 +16105,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "global_keyspace": {
                 "type": "object",
@@ -17400,13 +16132,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               }
             },
             "additionalProperties": false,
@@ -17564,9 +16290,7 @@
         },
         "workflow_type": {
           "type": "string",
-          "enum": [
-            "move_tables"
-          ],
+          "enum": ["move_tables"],
           "description": "The type of the workflow"
         },
         "workflow_subtype": {
@@ -17579,12 +16303,7 @@
         },
         "on_ddl": {
           "type": "string",
-          "enum": [
-            "IGNORE",
-            "STOP",
-            "EXEC",
-            "EXEC_IGNORE"
-          ],
+          "enum": ["IGNORE", "STOP", "EXEC", "EXEC_IGNORE"],
           "description": "The behavior when DDL changes during the workflow"
         },
         "workflow_errors": {
@@ -17624,11 +16343,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "verify_data_by": {
           "type": "object",
@@ -17647,11 +16362,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "reversed_by": {
           "type": "object",
@@ -17670,11 +16381,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "switch_replicas_by": {
           "type": "object",
@@ -17693,11 +16400,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "switch_primaries_by": {
           "type": "object",
@@ -17716,11 +16419,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "cancelled_by": {
           "type": "object",
@@ -17739,11 +16438,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "completed_by": {
           "type": "object",
@@ -17762,11 +16457,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "retried_by": {
           "type": "object",
@@ -17785,11 +16476,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "cutover_by": {
           "type": "object",
@@ -17808,11 +16495,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "reversed_cutover_by": {
           "type": "object",
@@ -17831,11 +16514,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "branch": {
           "type": "object",
@@ -17862,13 +16541,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "source_keyspace": {
           "type": "object",
@@ -17895,13 +16568,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "target_keyspace": {
           "type": "object",
@@ -17928,13 +16595,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         },
         "global_keyspace": {
           "type": "object",
@@ -17961,13 +16622,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "name",
-            "created_at",
-            "updated_at",
-            "deleted_at"
-          ]
+          "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
         }
       },
       "additionalProperties": false,
@@ -18057,10 +16712,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "commented",
-                  "approved"
-                ],
+                "enum": ["commented", "approved"],
                 "description": "Whether the review is a comment or approval"
               },
               "created_at": {
@@ -18088,23 +16740,11 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               }
             },
             "additionalProperties": false,
-            "required": [
-              "id",
-              "body",
-              "html_body",
-              "state",
-              "created_at",
-              "updated_at",
-              "actor"
-            ]
+            "required": ["id", "body", "html_body", "state", "created_at", "updated_at", "actor"]
           }
         }
       },
@@ -18135,10 +16775,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "commented",
-            "approved"
-          ],
+          "enum": ["commented", "approved"],
           "description": "Whether the review is a comment or approval"
         },
         "created_at": {
@@ -18166,23 +16803,11 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         }
       },
       "additionalProperties": false,
-      "required": [
-        "id",
-        "body",
-        "html_body",
-        "state",
-        "created_at",
-        "updated_at",
-        "actor"
-      ]
+      "required": ["id", "body", "html_body", "state", "created_at", "updated_at", "actor"]
     },
     "PaginatedDatabaseDeployRequest": {
       "type": "object",
@@ -18237,11 +16862,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "closed_by": {
                 "type": "object",
@@ -18260,11 +16881,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "branch": {
                 "type": "string",
@@ -18295,11 +16912,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "branch_deleted_at": {
                 "type": "string",
@@ -18323,10 +16936,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "open",
-                  "closed"
-                ],
+                "enum": ["open", "closed"],
                 "description": "Whether the deploy request is open or closed"
               },
               "deployment_state": {
@@ -18612,13 +17222,7 @@
                         },
                         "state": {
                           "type": "string",
-                          "enum": [
-                            "pending",
-                            "in_progress",
-                            "complete",
-                            "cancelled",
-                            "error"
-                          ],
+                          "enum": ["pending", "in_progress", "complete", "cancelled", "error"],
                           "description": "The state of the deploy operation summary"
                         },
                         "syntax_highlighted_ddl": {
@@ -18791,11 +17395,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "id",
-                      "display_name",
-                      "avatar_url"
-                    ]
+                    "required": ["id", "display_name", "avatar_url"]
                   },
                   "cutover_actor": {
                     "type": "object",
@@ -18814,11 +17414,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "id",
-                      "display_name",
-                      "avatar_url"
-                    ]
+                    "required": ["id", "display_name", "avatar_url"]
                   },
                   "cancelled_actor": {
                     "type": "object",
@@ -18837,11 +17433,7 @@
                       }
                     },
                     "additionalProperties": false,
-                    "required": [
-                      "id",
-                      "display_name",
-                      "avatar_url"
-                    ]
+                    "required": ["id", "display_name", "avatar_url"]
                   },
                   "schema_last_updated_at": {
                     "type": "string",
@@ -19002,11 +17594,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "closed_by": {
           "type": "object",
@@ -19025,11 +17613,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "branch": {
           "type": "string",
@@ -19060,11 +17644,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "branch_deleted_at": {
           "type": "string",
@@ -19088,10 +17668,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "open",
-            "closed"
-          ],
+          "enum": ["open", "closed"],
           "description": "Whether the deploy request is open or closed"
         },
         "deployment_state": {
@@ -19232,14 +17809,7 @@
                   },
                   "state": {
                     "type": "string",
-                    "enum": [
-                      "pending",
-                      "queued",
-                      "in_progress",
-                      "complete",
-                      "cancelled",
-                      "error"
-                    ],
+                    "enum": ["pending", "queued", "in_progress", "complete", "cancelled", "error"],
                     "description": "The state of the deploy operation"
                   },
                   "keyspace_name": {
@@ -19377,13 +17947,7 @@
                   },
                   "state": {
                     "type": "string",
-                    "enum": [
-                      "pending",
-                      "in_progress",
-                      "complete",
-                      "cancelled",
-                      "error"
-                    ],
+                    "enum": ["pending", "in_progress", "complete", "cancelled", "error"],
                     "description": "The state of the deploy operation summary"
                   },
                   "syntax_highlighted_ddl": {
@@ -19467,13 +18031,7 @@
                         }
                       },
                       "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "shard",
-                        "state",
-                        "progress_percentage",
-                        "eta_seconds"
-                      ]
+                      "required": ["id", "shard", "state", "progress_percentage", "eta_seconds"]
                     }
                   }
                 },
@@ -19556,11 +18114,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "id",
-                "display_name",
-                "avatar_url"
-              ]
+              "required": ["id", "display_name", "avatar_url"]
             },
             "cutover_actor": {
               "type": "object",
@@ -19579,11 +18133,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "id",
-                "display_name",
-                "avatar_url"
-              ]
+              "required": ["id", "display_name", "avatar_url"]
             },
             "cancelled_actor": {
               "type": "object",
@@ -19602,11 +18152,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "id",
-                "display_name",
-                "avatar_url"
-              ]
+              "required": ["id", "display_name", "avatar_url"]
             },
             "schema_last_updated_at": {
               "type": "string",
@@ -19839,14 +18385,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "queued",
-                  "in_progress",
-                  "complete",
-                  "cancelled",
-                  "error"
-                ],
+                "enum": ["pending", "queued", "in_progress", "complete", "cancelled", "error"],
                 "description": "The state of the deploy operation"
               },
               "keyspace_name": {
@@ -19984,13 +18523,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "in_progress",
-                  "complete",
-                  "cancelled",
-                  "error"
-                ],
+                "enum": ["pending", "in_progress", "complete", "cancelled", "error"],
                 "description": "The state of the deploy operation summary"
               },
               "syntax_highlighted_ddl": {
@@ -20074,13 +18607,7 @@
                     }
                   },
                   "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "shard",
-                    "state",
-                    "progress_percentage",
-                    "eta_seconds"
-                  ]
+                  "required": ["id", "shard", "state", "progress_percentage", "eta_seconds"]
                 }
               }
             },
@@ -20163,11 +18690,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "cutover_actor": {
           "type": "object",
@@ -20186,11 +18709,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "cancelled_actor": {
           "type": "object",
@@ -20209,11 +18728,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "schema_last_updated_at": {
           "type": "string",
@@ -20307,14 +18822,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "queued",
-                  "in_progress",
-                  "complete",
-                  "cancelled",
-                  "error"
-                ],
+                "enum": ["pending", "queued", "in_progress", "complete", "cancelled", "error"],
                 "description": "The state of the deploy operation"
               },
               "keyspace_name": {
@@ -20706,13 +19214,7 @@
                     },
                     "state": {
                       "type": "string",
-                      "enum": [
-                        "pending",
-                        "in_progress",
-                        "complete",
-                        "cancelled",
-                        "error"
-                      ],
+                      "enum": ["pending", "in_progress", "complete", "cancelled", "error"],
                       "description": "The state of the deploy operation summary"
                     },
                     "syntax_highlighted_ddl": {
@@ -20796,13 +19298,7 @@
                           }
                         },
                         "additionalProperties": false,
-                        "required": [
-                          "id",
-                          "shard",
-                          "state",
-                          "progress_percentage",
-                          "eta_seconds"
-                        ]
+                        "required": ["id", "shard", "state", "progress_percentage", "eta_seconds"]
                       }
                     }
                   },
@@ -20885,11 +19381,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "cutover_actor": {
                 "type": "object",
@@ -20908,11 +19400,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "cancelled_actor": {
                 "type": "object",
@@ -20931,11 +19419,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "schema_last_updated_at": {
                 "type": "string",
@@ -21283,13 +19767,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               }
             },
             "additionalProperties": false,
@@ -21361,12 +19839,7 @@
               }
             },
             "additionalProperties": false,
-            "required": [
-              "id",
-              "total",
-              "billing_period_start",
-              "billing_period_end"
-            ]
+            "required": ["id", "total", "billing_period_start", "billing_period_end"]
           }
         }
       },
@@ -21401,12 +19874,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "id",
-        "total",
-        "billing_period_start",
-        "billing_period_end"
-      ]
+      "required": ["id", "total", "billing_period_start", "billing_period_end"]
     },
     "PaginatedOrganizationTeam": {
       "type": "object",
@@ -21461,11 +19929,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "display_name",
-                  "avatar_url"
-                ]
+                "required": ["id", "display_name", "avatar_url"]
               },
               "members": {
                 "type": "array",
@@ -21529,13 +19993,7 @@
                         }
                       },
                       "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "name",
-                        "created_at",
-                        "updated_at",
-                        "deleted_at"
-                      ]
+                      "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
                     },
                     "sso": {
                       "type": "boolean",
@@ -21595,12 +20053,7 @@
                     }
                   },
                   "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "name",
-                    "url",
-                    "branches_url"
-                  ]
+                  "required": ["id", "name", "url", "branches_url"]
                 }
               },
               "name": {
@@ -21683,11 +20136,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "id",
-            "display_name",
-            "avatar_url"
-          ]
+          "required": ["id", "display_name", "avatar_url"]
         },
         "members": {
           "type": "array",
@@ -21751,13 +20200,7 @@
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "name",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
-                ]
+                "required": ["id", "name", "created_at", "updated_at", "deleted_at"]
               },
               "sso": {
                 "type": "boolean",
@@ -21817,12 +20260,7 @@
               }
             },
             "additionalProperties": false,
-            "required": [
-              "id",
-              "name",
-              "url",
-              "branches_url"
-            ]
+            "required": ["id", "name", "url", "branches_url"]
           }
         },
         "name": {
@@ -21866,9 +20304,7 @@
       ]
     }
   },
-  "schemes": [
-    "https"
-  ],
+  "schemes": ["https"],
   "tags": [
     {
       "name": "Backups",
@@ -21980,15 +20416,11 @@
   },
   "security": [
     {
-      "ApiKeyHeader": [
-        "Authorization"
-      ]
+      "ApiKeyHeader": ["Authorization"]
     }
   ],
   "host": "api.planetscale.com",
-  "produces": [
-    "application/json"
-  ],
+  "produces": ["application/json"],
   "x-readme": {
     "explorer-enabled": false
   }

@@ -8,9 +8,10 @@ export interface PlanetScaleCredentialsService {
   readonly organization: string;
 }
 
-export class PlanetScaleCredentials extends Context.Tag(
-  "PlanetScaleCredentials",
-)<PlanetScaleCredentials, PlanetScaleCredentialsService>() {}
+export class PlanetScaleCredentials extends Context.Tag("PlanetScaleCredentials")<
+  PlanetScaleCredentials,
+  PlanetScaleCredentialsService
+>() {}
 
 export const PlanetScaleCredentialsLive = Layer.effect(
   PlanetScaleCredentials,
