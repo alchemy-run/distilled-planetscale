@@ -2,14 +2,13 @@ import { Effect, Schema } from "effect";
 import { API_BASE_URL, PlanetScaleCredentials } from "./credentials";
 
 // Input Schema
-export class GetOrganizationInput extends Schema.Class<GetOrganizationInput>(
-  "GetOrganizationInput",
-)({
+export const GetOrganizationInput = Schema.Struct({
   name: Schema.String,
-}) {}
+});
+export type GetOrganizationInput = typeof GetOrganizationInput.Type;
 
 // Output Schema
-export class Organization extends Schema.Class<Organization>("Organization")({
+export const Organization = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   billing_email: Schema.optionalWith(Schema.String, { as: "Option" }),
@@ -36,7 +35,8 @@ export class Organization extends Schema.Class<Organization>("Organization")({
   keyspace_shard_limit: Schema.optionalWith(Schema.Number, { as: "Option" }),
   has_card: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
   payment_info_required: Schema.optionalWith(Schema.Boolean, { as: "Option" }),
-}) {}
+});
+export type Organization = typeof Organization.Type;
 
 // Error Schemas
 export class NetworkError extends Schema.TaggedError<NetworkError>()(
