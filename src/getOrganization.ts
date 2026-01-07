@@ -1,4 +1,10 @@
-import { Effect, Schema } from "effect";
+import {
+  HttpClient,
+  HttpClientError,
+  HttpClientRequest,
+  HttpClientResponse,
+} from "@effect/platform";
+import { Effect, ParseResult, Schema } from "effect";
 import { API_BASE_URL, PlanetScaleCredentials } from "./credentials";
 
 // Input Schema
@@ -38,77 +44,25 @@ export const Organization = Schema.Struct({
 });
 export type Organization = typeof Organization.Type;
 
-// Error Schemas
-export class NetworkError extends Schema.TaggedError<NetworkError>()(
-  "NetworkError",
-  {
-    message: Schema.String,
-    cause: Schema.optional(Schema.Unknown),
-  },
-) {}
-
-export class HttpError extends Schema.TaggedError<HttpError>()("HttpError", {
-  message: Schema.String,
-  status: Schema.Number,
-}) {}
-
-export class ParseError extends Schema.TaggedError<ParseError>()("ParseError", {
-  message: Schema.String,
-  cause: Schema.optional(Schema.Unknown),
-}) {}
-
-// All possible errors for this endpoint
-export type GetOrganizationError = NetworkError | HttpError | ParseError;
-
 // The effect function
 export const getOrganization = (
   input: GetOrganizationInput,
 ): Effect.Effect<
   Organization,
-  GetOrganizationError,
-  PlanetScaleCredentials
+  HttpClientError.HttpClientError | ParseResult.ParseError,
+  PlanetScaleCredentials | HttpClient.HttpClient
 > =>
   Effect.gen(function* () {
     const { token } = yield* PlanetScaleCredentials;
+    const client = yield* HttpClient.HttpClient;
 
-    const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(`${API_BASE_URL}/organizations/${input.name}`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        }),
-      catch: (error) =>
-        new NetworkError({
-          message: `Network error fetching organization`,
-          cause: error,
-        }),
-    });
-
-    if (!response.ok) {
-      return yield* new HttpError({
-        message: `Failed to get organization: ${response.statusText}`,
-        status: response.status,
-      });
-    }
-
-    const json = yield* Effect.tryPromise({
-      try: () => response.json(),
-      catch: (error) =>
-        new ParseError({
-          message: "Failed to parse organization response as JSON",
-          cause: error,
-        }),
-    });
-
-    return yield* Schema.decodeUnknown(Organization)(json).pipe(
-      Effect.mapError(
-        (error) =>
-          new ParseError({
-            message: "Failed to decode organization response",
-            cause: error,
-          }),
-      ),
+    return yield* HttpClientRequest.get(
+      `${API_BASE_URL}/organizations/${input.name}`,
+    ).pipe(
+      HttpClientRequest.setHeader("Authorization", token),
+      HttpClientRequest.setHeader("Content-Type", "application/json"),
+      client.execute,
+      Effect.flatMap(HttpClientResponse.schemaBodyJson(Organization)),
+      Effect.scoped,
     );
   });
