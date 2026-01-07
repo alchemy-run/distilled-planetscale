@@ -1,0 +1,28 @@
+{
+  "name": "distilled-planetscale",
+  "private": true,
+  "type": "module",
+  "module": "index.ts",
+  "scripts": {
+    "setup": "bun run scripts/setup.ts",
+    "typecheck": "tsgo",
+    "lint": "oxlint",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check ."
+  },
+  "devDependencies": {
+    "@effect/vitest": "^0.27.0",
+    "@types/bun": "latest",
+    "@typescript/native-preview": "^7.0.0-dev.20260107.1",
+    "dotenv": "^17.2.3",
+    "oxfmt": "^0.23.0",
+    "oxlint": "^1.38.0",
+    "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "effect": "^3.19.14"
+  }
+}
