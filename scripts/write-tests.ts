@@ -213,25 +213,79 @@ async function writeTestWithOpenCode(operationName: string, testContent: string,
   const testFilePath = `tests/${operationName}.test.ts`;
   
   try {
-    console.log(`Writing test for ${operationName}...`);
+    console.log(`Generating test for ${operationName} using OpenCode CLI...`);
     
-    // Write the test file
-    writeFileSync(testFilePath, testContent);
-    
-    // Run the test to verify it works only if verify flag is set
-    if (verify) {
-      console.log(`Running test for ${operationName}...`);
-      try {
-        execSync(`bunx vitest run ${testFilePath}`, { stdio: "inherit" });
-        console.log(`✓ Test written and verified for ${operationName}`);
-      } catch (testError) {
-        console.warn(`⚠ Test written but failed verification for ${operationName}`);
-      }
-    } else {
-      console.log(`✓ Test written for ${operationName}`);
+    // Read the operation file to understand its structure
+    const operationPath = `src/operations/${operationName}.ts`;
+    if (!existsSync(operationPath)) {
+      console.error(`Operation file not found: ${operationPath}`);
+      return false;
     }
     
-    return true;
+    const operationContent = readFileSync(operationPath, "utf-8");
+    
+    // Use OpenCode CLI to generate tests based on the operation
+    const openCodePrompt = `Generate comprehensive tests for the following PlanetScale API operation. The tests should:
+
+1. Use the Effect testing pattern with it.effect
+2. Include success scenarios with proper assertions
+3. Include error scenarios for all defined error types
+4. Use the existing test structure and imports
+5. Follow the project's testing conventions
+
+Operation file content:
+\`\`\`typescript
+${operationContent}
+\`\`\`
+
+Please generate a complete test file that covers all aspects of this operation, including input validation, success cases, and all error cases defined in the operation.`;
+    
+    try {
+      // Call OpenCode CLI to generate the test
+      const generatedTest = execSync(`opencode "${openCodePrompt}"`, { 
+        encoding: "utf-8",
+        stdio: ["pipe", "pipe", "pipe"]
+      });
+      
+      // Write the generated test to file
+      writeFileSync(testFilePath, generatedTest);
+      console.log(`✓ Test generated and written for ${operationName}`);
+      
+      // Run the test to verify it works only if verify flag is set
+      if (verify) {
+        console.log(`Running test for ${operationName}...`);
+        try {
+          execSync(`bunx vitest run ${testFilePath}`, { stdio: "inherit" });
+          console.log(`✓ Test verified for ${operationName}`);
+        } catch (testError) {
+          console.warn(`⚠ Test generated but failed verification for ${operationName}`);
+          return false;
+        }
+      }
+      
+      return true;
+    } catch (openCodeError) {
+      console.warn(`⚠ OpenCode CLI failed, falling back to template generation for ${operationName}`);
+      
+      // Fallback to the original template-based generation
+      writeFileSync(testFilePath, testContent);
+      
+      if (verify) {
+        console.log(`Running test for ${operationName}...`);
+        try {
+          execSync(`bunx vitest run ${testFilePath}`, { stdio: "inherit" });
+          console.log(`✓ Test written and verified for ${operationName}`);
+        } catch (testError) {
+          console.warn(`⚠ Test written but failed verification for ${operationName}`);
+          return false;
+        }
+      } else {
+        console.log(`✓ Test written for ${operationName}`);
+      }
+      
+      return true;
+    }
+    
   } catch (error) {
     console.error(`✗ Failed to write/test ${operationName}:`, error);
     return false;
