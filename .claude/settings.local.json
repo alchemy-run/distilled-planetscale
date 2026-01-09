@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(pnpm run build)",
+      "Bash(bun run build:*)",
+      "Bash(bun run typecheck:*)",
+      "Bash(bun install:*)",
+      "Bash(bun run generate:*)",
+      "Bash(bunx vitest:*)",
+      "Bash(ANTHROPIC_API_KEY=\"\" bun run:*)",
+      "Bash(bun:*)",
+      "Bash(bunx tsc:*)",
+      "Bash(dir /b \"D:\\\\code\\\\OSS\\\\alchemy\\\\distilled-planetscale\\\\src\\\\operations\")",
+      "Bash(ls:*)",
+      "Bash(xargs:*)",
+      "Bash(where claude:*)"
+    ]
+  }
+}

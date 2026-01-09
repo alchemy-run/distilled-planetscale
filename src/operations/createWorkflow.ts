@@ -1,0 +1,167 @@
+import { Schema } from "effect";
+import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+
+// Input Schema
+export const CreateWorkflowInput = Schema.Struct({
+  organization: Schema.String,
+  database: Schema.String,
+  name: Schema.String,
+  source_keyspace: Schema.String,
+  target_keyspace: Schema.String,
+  global_keyspace: Schema.optional(Schema.String),
+  defer_secondary_keys: Schema.optional(Schema.Boolean),
+  on_ddl: Schema.optional(Schema.Literal("IGNORE", "STOP", "EXEC", "EXEC_IGNORE")),
+  tables: Schema.Array(Schema.String),
+}).annotations({
+  [ApiMethod]: "POST",
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows`,
+});
+export type CreateWorkflowInput = typeof CreateWorkflowInput.Type;
+
+// Output Schema
+export const CreateWorkflowOutput = Schema.Struct({
+  id: Schema.String,
+  name: Schema.String,
+  number: Schema.Number,
+  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
+  created_at: Schema.String,
+  updated_at: Schema.String,
+  started_at: Schema.String,
+  completed_at: Schema.String,
+  cancelled_at: Schema.String,
+  reversed_at: Schema.String,
+  retried_at: Schema.String,
+  data_copy_completed_at: Schema.String,
+  cutover_at: Schema.String,
+  replicas_switched: Schema.Boolean,
+  primaries_switched: Schema.Boolean,
+  switch_replicas_at: Schema.String,
+  switch_primaries_at: Schema.String,
+  verify_data_at: Schema.String,
+  workflow_type: Schema.Literal("move_tables"),
+  workflow_subtype: Schema.String,
+  defer_secondary_keys: Schema.Boolean,
+  on_ddl: Schema.Literal("IGNORE", "STOP", "EXEC", "EXEC_IGNORE"),
+  workflow_errors: Schema.String,
+  may_retry: Schema.Boolean,
+  may_restart: Schema.Boolean,
+  verified_data_stale: Schema.Boolean,
+  sequence_tables_applied: Schema.Boolean,
+  actor: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  verify_data_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  reversed_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  switch_replicas_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  switch_primaries_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  cancelled_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  completed_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  retried_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  cutover_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  reversed_cutover_by: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  branch: Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  }),
+  source_keyspace: Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  }),
+  target_keyspace: Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  }),
+  global_keyspace: Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  }),
+});
+export type CreateWorkflowOutput = typeof CreateWorkflowOutput.Type;
+
+// Error Schemas
+export class CreateWorkflowUnauthorized extends Schema.TaggedError<CreateWorkflowUnauthorized>()(
+  "CreateWorkflowUnauthorized",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "unauthorized" },
+) {}
+
+export class CreateWorkflowForbidden extends Schema.TaggedError<CreateWorkflowForbidden>()(
+  "CreateWorkflowForbidden",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "forbidden" },
+) {}
+
+export class CreateWorkflowNotfound extends Schema.TaggedError<CreateWorkflowNotfound>()(
+  "CreateWorkflowNotfound",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// The operation
+export const createWorkflow = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: CreateWorkflowInput,
+  outputSchema: CreateWorkflowOutput,
+  errors: [CreateWorkflowUnauthorized, CreateWorkflowForbidden, CreateWorkflowNotfound],
+}));

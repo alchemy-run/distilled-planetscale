@@ -1,0 +1,66 @@
+import { Schema } from "effect";
+import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+
+// Input Schema
+export const ListPublicRegionsInput = Schema.Struct({
+  page: Schema.optional(Schema.Number),
+  per_page: Schema.optional(Schema.Number),
+}).annotations({
+  [ApiMethod]: "GET",
+  [ApiPath]: () => "/regions",
+});
+export type ListPublicRegionsInput = typeof ListPublicRegionsInput.Type;
+
+// Output Schema
+export const ListPublicRegionsOutput = Schema.Struct({
+  current_page: Schema.Number,
+  next_page: Schema.Number,
+  next_page_url: Schema.String,
+  prev_page: Schema.Number,
+  prev_page_url: Schema.String,
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    provider: Schema.String,
+    enabled: Schema.Boolean,
+    public_ip_addresses: Schema.Array(Schema.String),
+    display_name: Schema.String,
+    location: Schema.String,
+    slug: Schema.String,
+  })),
+});
+export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
+
+// Error Schemas
+export class ListPublicRegionsUnauthorized extends Schema.TaggedError<ListPublicRegionsUnauthorized>()(
+  "ListPublicRegionsUnauthorized",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "unauthorized" },
+) {}
+
+export class ListPublicRegionsForbidden extends Schema.TaggedError<ListPublicRegionsForbidden>()(
+  "ListPublicRegionsForbidden",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "forbidden" },
+) {}
+
+export class ListPublicRegionsNotfound extends Schema.TaggedError<ListPublicRegionsNotfound>()(
+  "ListPublicRegionsNotfound",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// The operation
+export const listPublicRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: ListPublicRegionsInput,
+  outputSchema: ListPublicRegionsOutput,
+  errors: [ListPublicRegionsUnauthorized, ListPublicRegionsForbidden, ListPublicRegionsNotfound],
+}));

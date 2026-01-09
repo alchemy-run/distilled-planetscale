@@ -5,6 +5,8 @@
   "module": "index.ts",
   "scripts": {
     "setup": "bun run scripts/setup.ts",
+    "generate": "bun run scripts/generate-operations.ts",
+    "write-tests": "bun run scripts/write-tests.ts",
     "typecheck": "tsgo",
     "lint": "oxlint",
     "format": "oxfmt --write .",

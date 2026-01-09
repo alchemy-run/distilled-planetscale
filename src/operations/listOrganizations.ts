@@ -1,0 +1,79 @@
+import { Schema } from "effect";
+import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+
+// Input Schema
+export const ListOrganizationsInput = Schema.Struct({
+  page: Schema.optional(Schema.Number),
+  per_page: Schema.optional(Schema.Number),
+}).annotations({
+  [ApiMethod]: "GET",
+  [ApiPath]: () => "/organizations",
+});
+export type ListOrganizationsInput = typeof ListOrganizationsInput.Type;
+
+// Output Schema
+export const ListOrganizationsOutput = Schema.Struct({
+  current_page: Schema.Number,
+  next_page: Schema.Number,
+  next_page_url: Schema.String,
+  prev_page: Schema.Number,
+  prev_page_url: Schema.String,
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    billing_email: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    plan: Schema.String,
+    valid_billing_info: Schema.Boolean,
+    sso: Schema.Boolean,
+    sso_directory: Schema.Boolean,
+    single_tenancy: Schema.Boolean,
+    managed_tenancy: Schema.Boolean,
+    has_past_due_invoices: Schema.Boolean,
+    database_count: Schema.Number,
+    sso_portal_url: Schema.String,
+    features: Schema.Unknown,
+    idp_managed_roles: Schema.Boolean,
+    invoice_budget_amount: Schema.Number,
+    keyspace_shard_limit: Schema.Number,
+    has_card: Schema.Boolean,
+    payment_info_required: Schema.Boolean,
+  })),
+});
+export type ListOrganizationsOutput = typeof ListOrganizationsOutput.Type;
+
+// Error Schemas
+export class ListOrganizationsUnauthorized extends Schema.TaggedError<ListOrganizationsUnauthorized>()(
+  "ListOrganizationsUnauthorized",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "unauthorized" },
+) {}
+
+export class ListOrganizationsForbidden extends Schema.TaggedError<ListOrganizationsForbidden>()(
+  "ListOrganizationsForbidden",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "forbidden" },
+) {}
+
+export class ListOrganizationsNotfound extends Schema.TaggedError<ListOrganizationsNotfound>()(
+  "ListOrganizationsNotfound",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// The operation
+export const listOrganizations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: ListOrganizationsInput,
+  outputSchema: ListOrganizationsOutput,
+  errors: [ListOrganizationsUnauthorized, ListOrganizationsForbidden, ListOrganizationsNotfound],
+}));

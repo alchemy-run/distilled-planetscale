@@ -11,8 +11,13 @@ const ApiErrorResponse = Schema.Struct({
   code: Schema.String,
 });
 
-// Error code annotation symbol
+// Annotation symbols
 export const ApiErrorCode = Symbol.for("planetscale/ApiErrorCode");
+export const ApiMethod = Symbol.for("planetscale/ApiMethod");
+export const ApiPath = Symbol.for("planetscale/ApiPath");
+
+// Type for HTTP methods
+export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 // Generic API Error
 export class PlanetScaleApiError extends Schema.TaggedError<PlanetScaleApiError>()(
@@ -79,64 +84,69 @@ interface OperationConfig<
   O extends Schema.Schema.Any,
   E extends AnnotatedErrorClass,
 > {
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  path: (input: Schema.Schema.Type<I>) => string;
   inputSchema: I;
   outputSchema: O;
   errors: readonly E[];
 }
 
-// Make a generic API operation
-export const makeOperation = <
-  I extends Schema.Schema.Any,
-  O extends Schema.Schema.Any,
-  E extends AnnotatedErrorClass,
->(
-  config: OperationConfig<I, O, E>,
-) => {
-  type Output = Schema.Schema.Type<O>;
-  type Errors = InstanceType<E> | PlanetScaleApiError | PlanetScaleParseError | HttpClientError.HttpClientError;
-  type Context = PlanetScaleCredentials | HttpClient.HttpClient;
+// Helper to get annotation from schema AST
+const getAnnotation = <T>(schema: Schema.Schema.Any, key: symbol): T | undefined => {
+  return schema.ast.annotations[key] as T | undefined;
+};
 
-  const matchApiError = createErrorMatcher(config.errors, (input) => input as Record<string, unknown>);
+// API namespace
+export const API = {
+  make: <
+    I extends Schema.Schema.Any,
+    O extends Schema.Schema.Any,
+    E extends AnnotatedErrorClass,
+  >(
+    configFn: () => OperationConfig<I, O, E>,
+  ) => {
+    const config = configFn();
+    type Input = Schema.Schema.Type<I>;
+    type Output = Schema.Schema.Type<O>;
+    type Errors = InstanceType<E> | PlanetScaleApiError | PlanetScaleParseError | HttpClientError.HttpClientError;
+    type Context = PlanetScaleCredentials | HttpClient.HttpClient;
 
-  return (input: Schema.Schema.Type<I>): Effect.Effect<Output, Errors, Context> =>
-    Effect.gen(function* () {
-      const { token } = yield* PlanetScaleCredentials;
-      const client = yield* HttpClient.HttpClient;
+    // Read method and path from input schema annotations
+    const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
+    const path = getAnnotation<(input: Input) => string>(config.inputSchema, ApiPath);
 
-      const request = (() => {
-        switch (config.method) {
-          case "GET":
-            return HttpClientRequest.get(API_BASE_URL + config.path(input));
-          case "POST":
-            return HttpClientRequest.post(API_BASE_URL + config.path(input));
-          case "PUT":
-            return HttpClientRequest.put(API_BASE_URL + config.path(input));
-          case "PATCH":
-            return HttpClientRequest.patch(API_BASE_URL + config.path(input));
-          case "DELETE":
-            return HttpClientRequest.del(API_BASE_URL + config.path(input));
+    if (!method) {
+      throw new Error("Input schema must have ApiMethod annotation");
+    }
+    if (!path) {
+      throw new Error("Input schema must have ApiPath annotation");
+    }
+
+    const matchApiError = createErrorMatcher(config.errors, (input) => input as Record<string, unknown>);
+
+    return (input: Input): Effect.Effect<Output, Errors, Context> =>
+      Effect.gen(function* () {
+        const { token } = yield* PlanetScaleCredentials;
+        const client = yield* HttpClient.HttpClient;
+
+        const response = yield* HttpClientRequest.make(method)(
+          API_BASE_URL + path(input),
+        ).pipe(
+          HttpClientRequest.setHeader("Authorization", token),
+          HttpClientRequest.setHeader("Content-Type", "application/json"),
+          client.execute,
+          Effect.scoped,
+        );
+
+        if (response.status >= 400) {
+          const errorBody = yield* response.json;
+          return yield* matchApiError(input, errorBody);
         }
-      })();
 
-      const response = yield* request.pipe(
-        HttpClientRequest.setHeader("Authorization", token),
-        HttpClientRequest.setHeader("Content-Type", "application/json"),
-        client.execute,
-        Effect.scoped,
-      );
-
-      if (response.status >= 400) {
-        const errorBody = yield* response.json;
-        return yield* matchApiError(input, errorBody);
-      }
-
-      const body = yield* response.json;
-      return yield* Schema.decodeUnknown(config.outputSchema)(body).pipe(
-        Effect.catchTag("ParseError", (cause) =>
-          Effect.fail(new PlanetScaleParseError({ body, cause })),
-        ),
-      ) as Effect.Effect<Output, Errors>;
-    });
+        const body = yield* response.json;
+        return yield* Schema.decodeUnknown(config.outputSchema)(body).pipe(
+          Effect.catchTag("ParseError", (cause) =>
+            Effect.fail(new PlanetScaleParseError({ body, cause })),
+          ),
+        ) as Effect.Effect<Output, Errors>;
+      });
+  },
 };

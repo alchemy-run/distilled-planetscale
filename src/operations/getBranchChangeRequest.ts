@@ -1,0 +1,99 @@
+import { Schema } from "effect";
+import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+
+// Input Schema
+export const GetBranchChangeRequestInput = Schema.Struct({
+  organization: Schema.String,
+  database: Schema.String,
+  branch: Schema.String,
+  id: Schema.String,
+}).annotations({
+  [ApiMethod]: "GET",
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes/${input.id}`,
+});
+export type GetBranchChangeRequestInput = typeof GetBranchChangeRequestInput.Type;
+
+// Output Schema
+export const GetBranchChangeRequestOutput = Schema.Struct({
+  id: Schema.String,
+  restart: Schema.Array(Schema.Number),
+  state: Schema.Literal("queued", "pending", "resizing", "canceled", "completed"),
+  started_at: Schema.String,
+  completed_at: Schema.String,
+  created_at: Schema.String,
+  updated_at: Schema.String,
+  actor: Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    avatar_url: Schema.String,
+  }),
+  cluster_name: Schema.String,
+  cluster_display_name: Schema.String,
+  cluster_metal: Schema.Boolean,
+  replicas: Schema.Number,
+  parameters: Schema.Unknown,
+  previous_cluster_name: Schema.String,
+  previous_cluster_display_name: Schema.String,
+  previous_cluster_metal: Schema.Boolean,
+  previous_replicas: Schema.Number,
+  previous_parameters: Schema.Unknown,
+  minimum_storage_bytes: Schema.Number,
+  maximum_storage_bytes: Schema.Number,
+  storage_autoscaling: Schema.Boolean,
+  storage_shrinking: Schema.Boolean,
+  storage_type: Schema.Literal("gp3", "io2", "pd_ssd"),
+  storage_iops: Schema.Number,
+  storage_throughput_mibs: Schema.Number,
+  previous_minimum_storage_bytes: Schema.Number,
+  previous_maximum_storage_bytes: Schema.Number,
+  previous_storage_autoscaling: Schema.Boolean,
+  previous_storage_shrinking: Schema.Boolean,
+  previous_storage_type: Schema.String,
+  previous_storage_iops: Schema.Number,
+  previous_storage_throughput_mibs: Schema.Number,
+});
+export type GetBranchChangeRequestOutput = typeof GetBranchChangeRequestOutput.Type;
+
+// Error Schemas
+export class GetBranchChangeRequestUnauthorized extends Schema.TaggedError<GetBranchChangeRequestUnauthorized>()(
+  "GetBranchChangeRequestUnauthorized",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "unauthorized" },
+) {}
+
+export class GetBranchChangeRequestForbidden extends Schema.TaggedError<GetBranchChangeRequestForbidden>()(
+  "GetBranchChangeRequestForbidden",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "forbidden" },
+) {}
+
+export class GetBranchChangeRequestNotfound extends Schema.TaggedError<GetBranchChangeRequestNotfound>()(
+  "GetBranchChangeRequestNotfound",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// The operation
+export const getBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: GetBranchChangeRequestInput,
+  outputSchema: GetBranchChangeRequestOutput,
+  errors: [GetBranchChangeRequestUnauthorized, GetBranchChangeRequestForbidden, GetBranchChangeRequestNotfound],
+}));

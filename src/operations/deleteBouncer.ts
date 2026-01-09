@@ -1,0 +1,62 @@
+import { Schema } from "effect";
+import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+
+// Input Schema
+export const DeleteBouncerInput = Schema.Struct({
+  organization: Schema.String,
+  database: Schema.String,
+  branch: Schema.String,
+  bouncer: Schema.String,
+}).annotations({
+  [ApiMethod]: "DELETE",
+  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}`,
+});
+export type DeleteBouncerInput = typeof DeleteBouncerInput.Type;
+
+// Output Schema
+export const DeleteBouncerOutput = Schema.Void;
+export type DeleteBouncerOutput = typeof DeleteBouncerOutput.Type;
+
+// Error Schemas
+export class DeleteBouncerUnauthorized extends Schema.TaggedError<DeleteBouncerUnauthorized>()(
+  "DeleteBouncerUnauthorized",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    bouncer: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "unauthorized" },
+) {}
+
+export class DeleteBouncerForbidden extends Schema.TaggedError<DeleteBouncerForbidden>()(
+  "DeleteBouncerForbidden",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    bouncer: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "forbidden" },
+) {}
+
+export class DeleteBouncerNotfound extends Schema.TaggedError<DeleteBouncerNotfound>()(
+  "DeleteBouncerNotfound",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    bouncer: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// The operation
+export const deleteBouncer = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: DeleteBouncerInput,
+  outputSchema: DeleteBouncerOutput,
+  errors: [DeleteBouncerUnauthorized, DeleteBouncerForbidden, DeleteBouncerNotfound],
+}));

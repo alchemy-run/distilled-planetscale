@@ -1,0 +1,140 @@
+import { Schema } from "effect";
+import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+
+// Input Schema
+export const ListOauthTokensInput = Schema.Struct({
+  organization: Schema.String,
+  application_id: Schema.String,
+  page: Schema.optional(Schema.Number),
+  per_page: Schema.optional(Schema.Number),
+}).annotations({
+  [ApiMethod]: "GET",
+  [ApiPath]: (input: { organization: string; application_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens`,
+});
+export type ListOauthTokensInput = typeof ListOauthTokensInput.Type;
+
+// Output Schema
+export const ListOauthTokensOutput = Schema.Struct({
+  current_page: Schema.Number,
+  next_page: Schema.Number,
+  next_page_url: Schema.String,
+  prev_page: Schema.Number,
+  prev_page_url: Schema.String,
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    display_name: Schema.String,
+    token: Schema.String,
+    plain_text_refresh_token: Schema.String,
+    avatar_url: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    expires_at: Schema.String,
+    last_used_at: Schema.String,
+    actor_id: Schema.String,
+    actor_display_name: Schema.String,
+    actor_type: Schema.String,
+    service_token_accesses: Schema.Array(Schema.Struct({
+      id: Schema.String,
+      access: Schema.String,
+      description: Schema.String,
+      resource_name: Schema.String,
+      resource_id: Schema.String,
+      resource_type: Schema.String,
+      resource: Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      }),
+    })),
+    oauth_accesses_by_resource: Schema.Struct({
+      database: Schema.Struct({
+        databases: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          organization: Schema.String,
+          url: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
+      }),
+      organization: Schema.Struct({
+        organizations: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          url: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
+      }),
+      branch: Schema.Struct({
+        branches: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          database: Schema.String,
+          organization: Schema.String,
+          url: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
+      }),
+      user: Schema.Struct({
+        users: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
+      }),
+    }),
+  })),
+});
+export type ListOauthTokensOutput = typeof ListOauthTokensOutput.Type;
+
+// Error Schemas
+export class ListOauthTokensUnauthorized extends Schema.TaggedError<ListOauthTokensUnauthorized>()(
+  "ListOauthTokensUnauthorized",
+  {
+    organization: Schema.String,
+    application_id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "unauthorized" },
+) {}
+
+export class ListOauthTokensForbidden extends Schema.TaggedError<ListOauthTokensForbidden>()(
+  "ListOauthTokensForbidden",
+  {
+    organization: Schema.String,
+    application_id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "forbidden" },
+) {}
+
+export class ListOauthTokensNotfound extends Schema.TaggedError<ListOauthTokensNotfound>()(
+  "ListOauthTokensNotfound",
+  {
+    organization: Schema.String,
+    application_id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// The operation
+export const listOauthTokens = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: ListOauthTokensInput,
+  outputSchema: ListOauthTokensOutput,
+  errors: [ListOauthTokensUnauthorized, ListOauthTokensForbidden, ListOauthTokensNotfound],
+}));

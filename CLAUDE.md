@@ -17,11 +17,12 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ## Scripts
 
-| Script              | Description                               |
-| ------------------- | ----------------------------------------- |
-| `bun run setup`     | Fetch the latest PlanetScale OpenAPI spec |
-| `bun run typecheck` | Type check with tsgo                      |
-| `bunx vitest run`   | Run tests                                 |
+| Script              | Description                                          |
+| ------------------- | ---------------------------------------------------- |
+| `bun run setup`     | Fetch the latest PlanetScale OpenAPI spec            |
+| `bun run generate`  | Generate operations from OpenAPI spec using Claude   |
+| `bun run typecheck` | Type check with tsgo                                 |
+| `bunx vitest run`   | Run tests                                          |
 
 ## Project Structure
 
@@ -30,8 +31,9 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │   ├── client.ts           # makeOperation factory + shared error types
 │   ├── errors.ts           # ConfigError (Schema.TaggedError)
 │   ├── credentials.ts      # PlanetScaleCredentials service + layer
-│   ├── getOrganization.ts  # getOrganization operation
-│   └── listDatabases.ts    # listDatabases effect
+│   └── operations          # All Operations
+│       ├── getOrganization.ts  # getOrganization operation
+│       └── listDatabases.ts    # listDatabases effect
 ├── tests/
 │   ├── setup.ts            # Loads .env for tests
 │   ├── getOrganization.test.ts
@@ -40,7 +42,8 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │   ├── openapi.json              # PlanetScale OpenAPI spec (generated)
 │   └── patch-getorganization.md  # Documents spec discrepancies
 ├── scripts/
-│   └── setup.ts            # Fetches PlanetScale OpenAPI spec
+│   ├── setup.ts            # Fetches PlanetScale OpenAPI spec
+│   └── generate-operations.ts  # Generates operations using Claude AI
 └── index.ts                # Barrel file re-exporting src modules
 ```
 
@@ -115,6 +118,22 @@ const program = Effect.gen(function* () {
 
 Effect.runPromise(program);
 ```
+
+## Operation Generation
+
+The `generate` script uses the Claude CLI to automatically generate operations from the OpenAPI spec:
+
+```bash
+# Ensure the Claude CLI is installed and authenticated
+bun run generate
+```
+
+The generator:
+1. Uses Claude Haiku (via CLI) to analyze the OpenAPI spec and discover all operations
+2. Compares against existing operations and tests in `src/operations/` and `tests/`
+3. Uses Claude Opus (via CLI) to generate missing operations and tests
+4. Runs tests after generation - if tests fail, the generated files are cleaned up
+5. Updates `index.ts` with new exports
 
 ## Tools
 
