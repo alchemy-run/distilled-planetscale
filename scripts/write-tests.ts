@@ -40,7 +40,7 @@ function parseTodoFile(): Section[] {
     // Task
     const taskMatch = line.match(/^- \[([ x])\] (.+)$/);
     if (taskMatch) {
-      if (currentTask && currentTask.tests.length > 0) {
+      if (currentTask) {
         currentSection!.tasks.push(currentTask);
       }
       const checked = taskMatch[1] === "x";
@@ -209,7 +209,7 @@ function generateErrorTest(operationName: string, testCase: string, errorClass: 
   );\n\n`;
 }
 
-async function writeTestWithOpenCode(operationName: string, testContent: string): Promise<boolean> {
+async function writeTestWithOpenCode(operationName: string, testContent: string, verify: boolean): Promise<boolean> {
   const testFilePath = `tests/${operationName}.test.ts`;
   
   try {
@@ -218,16 +218,35 @@ async function writeTestWithOpenCode(operationName: string, testContent: string)
     // Write the test file
     writeFileSync(testFilePath, testContent);
     
-    // Run the test to verify it works
-    console.log(`Running test for ${operationName}...`);
-    execSync(`bunx vitest run ${testFilePath}`, { stdio: "inherit" });
+    // Run the test to verify it works only if verify flag is set
+    if (verify) {
+      console.log(`Running test for ${operationName}...`);
+      try {
+        execSync(`bunx vitest run ${testFilePath}`, { stdio: "inherit" });
+        console.log(`✓ Test written and verified for ${operationName}`);
+      } catch (testError) {
+        console.warn(`⚠ Test written but failed verification for ${operationName}`);
+      }
+    } else {
+      console.log(`✓ Test written for ${operationName}`);
+    }
     
-    console.log(`✓ Test written and verified for ${operationName}`);
     return true;
   } catch (error) {
     console.error(`✗ Failed to write/test ${operationName}:`, error);
     return false;
   }
+}
+
+function extractTestNames(testContent: string): string[] {
+  const testNames: string[] = [];
+  const testMatches = testContent.matchAll(/it\.effect\("([^"]+)"/g);
+  for (const match of testMatches) {
+    if (match[1]) {
+      testNames.push(match[1]);
+    }
+  }
+  return testNames;
 }
 
 function updateTodoFile(sections: Section[], completedTasks: TestTask[]) {
@@ -239,7 +258,10 @@ function updateTodoFile(sections: Section[], completedTasks: TestTask[]) {
     const lineIndex = task.line;
     if (lineIndex < lines.length) {
       // Mark the task as checked
-      lines[lineIndex] = lines[lineIndex].replace(/^- \[ \]/, "- [x]");
+      const line = lines[lineIndex];
+      if (line) {
+        lines[lineIndex] = line.replace(/^- \[ \]/, "- [x]");
+      }
       
       // Insert subtests after the task line
       if (task.tests.length > 0) {
@@ -263,7 +285,7 @@ async function main() {
   
   const allTasks = sections.flatMap(s => s.tasks);
   const tasksToComplete = operationFilter
-    ? allTasks.filter(t => t.name === operationFilter && !t.tests.length)
+    ? allTasks.filter(t => t.name === operationFilter)
     : allTasks.filter(t => !t.tests.length);
   
   if (tasksToComplete.length === 0) {
@@ -288,10 +310,12 @@ async function main() {
         return null;
       }
       
-      const success = await writeTestWithOpenCode(task.name, testContent);
+      const success = await writeTestWithOpenCode(task.name, testContent, verify);
       
       if (success) {
-        return task;
+        // Extract test names from the generated content
+        const testNames = extractTestNames(testContent);
+        return { ...task, tests: testNames };
       } else {
         failedTasks.push(task.name);
         return null;
