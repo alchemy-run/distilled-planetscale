@@ -110,7 +110,7 @@
 - [x] updateOrganization
 
 ### Organization Members
-- [ ] getOrganizationMembership
+- [x] getOrganizationMembership
 - [ ] listOrganizationMembers
 - [ ] removeOrganizationMember
 - [ ] updateOrganizationMembership
