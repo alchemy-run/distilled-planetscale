@@ -16,7 +16,7 @@
 - [x] deleteBouncer
 - [x] getBouncer
 - [x] listBouncerResizeRequests
-- [ ] listBouncers
+- [x] listBouncers
 - [ ] listBranchBouncerResizeRequests
 - [ ] updateBouncerResizeRequest
 
