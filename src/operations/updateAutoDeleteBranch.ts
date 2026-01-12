@@ -153,7 +153,7 @@ export class UpdateAutoDeleteBranchUnauthorized extends Schema.TaggedError<Updat
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -164,7 +164,7 @@ export class UpdateAutoDeleteBranchForbidden extends Schema.TaggedError<UpdateAu
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -175,7 +175,7 @@ export class UpdateAutoDeleteBranchNotfound extends Schema.TaggedError<UpdateAut
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
