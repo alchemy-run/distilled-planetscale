@@ -148,7 +148,7 @@
 ### Roles
 - [x] createRole
 - [x] deleteRole
-- [ ] getDefaultRole
+- [x] getDefaultRole
 - [ ] getRole
 - [ ] listRoles
 - [ ] reassignRoleObjects
