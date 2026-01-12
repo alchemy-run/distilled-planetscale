@@ -129,7 +129,7 @@
 - [x] createPassword
 - [x] deletePassword
 - [x] getPassword
-- [ ] listPasswords
+- [x] listPasswords
 - [ ] renewPassword
 - [ ] updatePassword
 
