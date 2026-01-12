@@ -63,7 +63,7 @@
 - [x] completeErroredDeploy
 - [x] completeGatedDeployRequest
 - [x] completeRevert
-- [ ] createDeployRequest
+- [x] createDeployRequest
 - [ ] getDeployment
 - [ ] getDeployQueue
 - [ ] getDeployRequest
