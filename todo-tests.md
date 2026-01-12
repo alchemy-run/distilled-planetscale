@@ -128,7 +128,7 @@
 ### Passwords
 - [x] createPassword
 - [x] deletePassword
-- [ ] getPassword
+- [x] getPassword
 - [ ] listPasswords
 - [ ] renewPassword
 - [ ] updatePassword
