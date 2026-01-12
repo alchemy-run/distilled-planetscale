@@ -11,7 +11,7 @@
 - [x] updateBackup
 
 ### Bouncers
-- [ ] cancelBouncerResizeRequest
+- [x] cancelBouncerResizeRequest
 - [ ] createBouncer
 - [ ] deleteBouncer
 - [ ] getBouncer
