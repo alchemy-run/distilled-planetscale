@@ -173,7 +173,7 @@
 ### Webhooks
 - [x] createWebhook
 - [x] deleteWebhook
-- [ ] getWebhook
+- [x] getWebhook
 - [ ] listWebhooks
 - [ ] testWebhook
 - [ ] updateWebhook
