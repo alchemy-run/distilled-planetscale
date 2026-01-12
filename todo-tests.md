@@ -120,7 +120,7 @@
 - [x] deleteOrganizationTeam
 - [x] getOrganizationTeam
 - [x] listOrganizationTeams
-- [ ] updateOrganizationTeam
+- [x] updateOrganizationTeam
 
 ### Parameters
 - [ ] listParameters
