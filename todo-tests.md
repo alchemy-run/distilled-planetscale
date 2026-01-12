@@ -112,7 +112,7 @@
 ### Organization Members
 - [x] getOrganizationMembership
 - [x] listOrganizationMembers
-- [ ] removeOrganizationMember
+- [x] removeOrganizationMember
 - [ ] updateOrganizationMembership
 
 ### Organization Teams
