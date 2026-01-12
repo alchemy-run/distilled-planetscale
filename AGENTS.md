@@ -17,12 +17,13 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ## Scripts
 
-| Script              | Description                                          |
-| ------------------- | ---------------------------------------------------- |
-| `bun run setup`     | Fetch the latest PlanetScale OpenAPI spec            |
-| `bun run generate`  | Generate operations from OpenAPI spec using Claude   |
-| `bun run typecheck` | Type check with tsgo                                 |
-| `bunx vitest run`   | Run tests                                          |
+| Script                                   | Description                                          |
+| ---------------------------------------- | ---------------------------------------------------- |
+| `bun run setup`                          | Fetch the latest PlanetScale OpenAPI spec            |
+| `bun run generate`                       | Generate operations from OpenAPI spec using Claude   |
+| `bun run typecheck`                      | Type check with tsgo                                 |
+| `bunx vitest run`                        | Run tests                                            |
+| `bun run scripts/write-tests.ts`         | Auto-generate tests for unchecked operations         |
 
 ## Project Structure
 
@@ -43,7 +44,8 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │   └── patch-getorganization.md  # Documents spec discrepancies
 ├── scripts/
 │   ├── setup.ts            # Fetches PlanetScale OpenAPI spec
-│   └── generate-operations.ts  # Generates operations using Claude AI
+│   ├── generate-operations.ts  # Generates operations using Claude AI
+│   └── write-tests.ts      # Auto-generates tests using opencode
 └── index.ts                # Barrel file re-exporting src modules
 ```
 
@@ -134,6 +136,29 @@ The generator:
 3. Uses Claude Opus (via CLI) to generate missing operations and tests
 4. Runs tests after generation - if tests fail, the generated files are cleaned up
 5. Updates `index.ts` with new exports
+
+## Test Generation
+
+The `write-tests.ts` script uses opencode to automatically generate tests for operations listed in `todo-tests.md`:
+
+```bash
+# Generate tests for all unchecked operations
+bun run scripts/write-tests.ts
+
+# Generate tests for a limited number of operations
+bun run scripts/write-tests.ts --limit 5
+bun run scripts/write-tests.ts -l 1
+```
+
+### How it works
+
+1. Reads `todo-tests.md` and extracts all unchecked operations (lines matching `- [ ] operationName`)
+2. For each operation, spawns an opencode instance (using `claude-opus-4-5`) with a prompt to write a test
+3. After opencode completes, marks the operation as complete in `todo-tests.md` (changes `- [ ]` to `- [x]`)
+4. Commits the changes with message `chore(tests): test for <operation-name>`
+5. Repeats for the next operation
+
+The script processes operations sequentially (one at a time) and logs progress with clear separators between each operation.
 
 ## Testing Guidelines
 
