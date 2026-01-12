@@ -159,7 +159,7 @@
 
 ### Safe Migrations
 - [x] disableSafeMigrations
-- [ ] enableSafeMigrations
+- [x] enableSafeMigrations
 
 ### Service Tokens
 - [ ] createServiceToken
