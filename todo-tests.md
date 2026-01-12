@@ -45,7 +45,7 @@
 - [x] listDatabases
 - [x] createDatabase
 - [x] deleteDatabase
-- [ ] getDatabaseThrottler
+- [x] getDatabaseThrottler
 - [x] listDatabaseRegions
 - [x] updateDatabaseSettings
 - [ ] updateDatabaseThrottler
