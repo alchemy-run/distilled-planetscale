@@ -146,7 +146,7 @@
 - [x] listRegionsForOrganization
 
 ### Roles
-- [ ] createRole
+- [x] createRole
 - [ ] deleteRole
 - [ ] getDefaultRole
 - [ ] getRole
