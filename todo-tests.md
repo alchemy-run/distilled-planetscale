@@ -152,7 +152,7 @@
 - [x] getRole
 - [x] listRoles
 - [x] reassignRoleObjects
-- [ ] renewRole
+- [x] renewRole
 - [ ] resetDefaultRole
 - [ ] resetRole
 - [ ] updateRole
