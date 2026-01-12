@@ -154,7 +154,7 @@
 - [x] reassignRoleObjects
 - [x] renewRole
 - [x] resetDefaultRole
-- [ ] resetRole
+- [x] resetRole
 - [ ] updateRole
 
 ### Safe Migrations
