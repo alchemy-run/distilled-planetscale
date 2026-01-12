@@ -188,6 +188,6 @@
 - [x] workflowCutover
 - [x] workflowRetry
 - [x] workflowReverseCutover
-- [ ] workflowReverseTraffic
+- [x] workflowReverseTraffic
 - [ ] workflowSwitchPrimaries
 - [ ] workflowSwitchReplicas
