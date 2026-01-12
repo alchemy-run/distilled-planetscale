@@ -118,7 +118,7 @@
 ### Organization Teams
 - [x] createOrganizationTeam
 - [x] deleteOrganizationTeam
-- [ ] getOrganizationTeam
+- [x] getOrganizationTeam
 - [ ] listOrganizationTeams
 - [ ] updateOrganizationTeam
 
