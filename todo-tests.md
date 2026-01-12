@@ -89,7 +89,7 @@
 ### Keyspaces
 - [x] createKeyspace
 - [x] deleteKeyspace
-- [ ] getKeyspace
+- [x] getKeyspace
 - [ ] getKeyspaceRolloutStatus
 - [ ] getKeyspaceVschema
 - [ ] listKeyspaces
