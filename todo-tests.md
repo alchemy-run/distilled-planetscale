@@ -33,7 +33,7 @@
 
 ### Branch Change Requests
 - [x] cancelBranchChangeRequest
-- [ ] getBranchChangeRequest
+- [x] getBranchChangeRequest
 - [ ] listBranchChangeRequests
 - [ ] updateBranchChangeRequest
 
