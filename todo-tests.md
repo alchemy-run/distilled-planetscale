@@ -18,7 +18,7 @@
 - [x] listBouncerResizeRequests
 - [x] listBouncers
 - [x] listBranchBouncerResizeRequests
-- [ ] updateBouncerResizeRequest
+- [x] updateBouncerResizeRequest
 
 ### Branches
 - [ ] createBranch
