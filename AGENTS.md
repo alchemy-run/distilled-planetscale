@@ -135,6 +135,11 @@ The generator:
 4. Runs tests after generation - if tests fail, the generated files are cleaned up
 5. Updates `index.ts` with new exports
 
+## Testing Guidelines
+
+- **Resource cleanup**: Tests must always clean up any resources they create (databases, branches, passwords, etc.). Use `Effect.ensuring` or cleanup in a finally block to guarantee cleanup runs even if the test fails.
+- **Unique names**: Use timestamps or random suffixes for resource names to avoid conflicts between test runs.
+
 ## Tools
 
 - **Runtime**: Bun

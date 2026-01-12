@@ -48,11 +48,11 @@
   - [x] should list databases successfully
   - [x] should support pagination parameters
   - [x] should return ListDatabasesNotfound for non-existent organization
-- [ ] createDatabase
-- [ ] deleteDatabase
+- [x] createDatabase
+- [x] deleteDatabase
 - [ ] getDatabaseThrottler
-- [ ] listDatabaseRegions
-- [ ] updateDatabaseSettings
+- [x] listDatabaseRegions
+- [x] updateDatabaseSettings
 - [ ] updateDatabaseThrottler
 
 ### Database Postgres CIDRs
