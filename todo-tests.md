@@ -131,7 +131,7 @@
 - [x] getPassword
 - [x] listPasswords
 - [x] renewPassword
-- [ ] updatePassword
+- [x] updatePassword
 
 ### Query Patterns Reports
 - [ ] createQueryPatternsReport
