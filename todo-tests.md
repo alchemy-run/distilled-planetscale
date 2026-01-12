@@ -126,7 +126,7 @@
 - [x] listParameters
 
 ### Passwords
-- [ ] createPassword
+- [x] createPassword
 - [ ] deletePassword
 - [ ] getPassword
 - [ ] listPasswords
