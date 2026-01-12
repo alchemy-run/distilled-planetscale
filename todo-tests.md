@@ -175,7 +175,7 @@
 - [x] deleteWebhook
 - [x] getWebhook
 - [x] listWebhooks
-- [ ] testWebhook
+- [x] testWebhook
 - [ ] updateWebhook
 
 ### Workflows
