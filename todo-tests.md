@@ -123,7 +123,7 @@
 - [x] updateOrganizationTeam
 
 ### Parameters
-- [ ] listParameters
+- [x] listParameters
 
 ### Passwords
 - [ ] createPassword
