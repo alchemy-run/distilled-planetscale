@@ -168,7 +168,7 @@
 - [x] listServiceTokens
 
 ### Users
-- [ ] getCurrentUser
+- [x] getCurrentUser
 
 ### Webhooks
 - [ ] createWebhook
