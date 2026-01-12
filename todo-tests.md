@@ -34,7 +34,7 @@
 ### Branch Change Requests
 - [x] cancelBranchChangeRequest
 - [x] getBranchChangeRequest
-- [ ] listBranchChangeRequests
+- [x] listBranchChangeRequests
 - [ ] updateBranchChangeRequest
 
 ### Cluster
