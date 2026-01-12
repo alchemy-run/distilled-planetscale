@@ -58,7 +58,7 @@
 - [x] updateDatabasePostgresCidr
 
 ### Deploy Requests
-- [ ] cancelDeployRequest
+- [x] cancelDeployRequest
 - [ ] closeDeployRequest
 - [ ] completeErroredDeploy
 - [ ] completeGatedDeployRequest

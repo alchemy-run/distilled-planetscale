@@ -282,6 +282,62 @@ it.effect("should create resource successfully", () =>
 - **Verify error properties** like `_tag`, `organization`, `database`, etc.
 - **Import `./setup`** to load environment variables from `.env`
 
+## Schema Patching
+
+When tests fail due to type mismatches between input schemas and error schemas, you may need to patch the operation.
+
+### Common Issue: Number vs String in Error Schemas
+
+The client passes input properties directly to error constructors. If the input schema has `number: Schema.Number` but the error schema has `number: Schema.String`, the error constructor will fail with a parse error like:
+
+```
+Expected string, actual 1
+```
+
+**Fix**: Use `Schema.NumberFromString` in the error schema to accept both numbers and string representations:
+
+```typescript
+// Before (broken)
+export class OperationNotfound extends Schema.TaggedError<OperationNotfound>()(
+  "OperationNotfound",
+  {
+    organization: Schema.String,
+    number: Schema.String,  // ❌ Fails when input passes a number
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+
+// After (fixed)
+export class OperationNotfound extends Schema.TaggedError<OperationNotfound>()(
+  "OperationNotfound",
+  {
+    organization: Schema.String,
+    number: Schema.NumberFromString,  // ✅ Accepts both numbers and strings
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+) {}
+```
+
+### Documenting Patches
+
+When patching an operation, create a `specs/patch-<operationName>.md` file documenting the discrepancy:
+
+```markdown
+# OpenAPI Spec Discrepancies: <HTTP_METHOD> <path>
+
+## 1. Incorrect Type: `fieldName`
+
+| Field       | Spec Type | Actual Type |
+| ----------- | --------- | ----------- |
+| `fieldName` | `string`  | `number`    |
+
+**Workaround**: The error schemas use `Schema.NumberFromString` to handle both cases.
+```
+
+See `specs/patch-getorganization.md` and `specs/patch-cancelDeployRequest.md` for examples.
+
 ## Tools
 
 - **Runtime**: Bun

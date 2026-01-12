@@ -93,6 +93,15 @@ IMPORTANT:
 - Test both success cases and error handling
 - After writing the test, run it to verify it works
 
+SCHEMA PATCHING:
+If tests fail with errors like "Expected string, actual 1" on error schema fields (e.g., number, id),
+this means there's a type mismatch between input schemas and error schemas. The client passes input
+properties directly to error constructors.
+
+To fix: Change the error schema field from Schema.String to Schema.NumberFromString.
+After patching, create a specs/patch-<operationName>.md file documenting the discrepancy.
+See specs/patch-cancelDeployRequest.md for an example.
+
 Look at existing tests in the tests/ directory for examples.`;
 
     const child = spawn("opencode", ["run", "-m", "anthropic/claude-opus-4-5", prompt], {
