@@ -147,7 +147,7 @@
 
 ### Roles
 - [x] createRole
-- [ ] deleteRole
+- [x] deleteRole
 - [ ] getDefaultRole
 - [ ] getRole
 - [ ] listRoles
