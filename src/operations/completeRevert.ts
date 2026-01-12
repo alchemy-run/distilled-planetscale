@@ -152,7 +152,7 @@ export class CompleteRevertUnauthorized extends Schema.TaggedError<CompleteRever
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -163,7 +163,7 @@ export class CompleteRevertForbidden extends Schema.TaggedError<CompleteRevertFo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -174,7 +174,7 @@ export class CompleteRevertNotfound extends Schema.TaggedError<CompleteRevertNot
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
