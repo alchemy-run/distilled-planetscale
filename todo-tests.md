@@ -29,7 +29,7 @@
 - [x] listBranches
 - [x] lintBranchSchema
 - [x] promoteBranch
-- [ ] updateBranchClusterConfig
+- [x] updateBranchClusterConfig
 
 ### Branch Change Requests
 - [ ] cancelBranchChangeRequest
