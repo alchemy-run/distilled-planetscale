@@ -165,7 +165,7 @@
 - [x] createServiceToken
 - [x] deleteServiceToken
 - [x] getServiceToken
-- [ ] listServiceTokens
+- [x] listServiceTokens
 
 ### Users
 - [ ] getCurrentUser
