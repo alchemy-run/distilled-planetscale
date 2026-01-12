@@ -52,7 +52,7 @@
 
 ### Database Postgres CIDRs
 - [x] createDatabasePostgresCidr
-- [ ] deleteDatabasePostgresCidr
+- [x] deleteDatabasePostgresCidr
 - [ ] getDatabasePostgresCidr
 - [ ] listDatabasePostgresCidrs
 - [ ] updateDatabasePostgresCidr
