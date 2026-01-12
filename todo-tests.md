@@ -142,7 +142,7 @@
 
 ### Regions
 - [x] listPublicRegions
-- [ ] listReadOnlyRegions
+- [x] listReadOnlyRegions
 - [ ] listRegionsForOrganization
 
 ### Roles
