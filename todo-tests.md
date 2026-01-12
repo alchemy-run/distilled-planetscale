@@ -84,7 +84,7 @@
 ### Invoices
 - [x] getInvoice
 - [x] getInvoiceLineItems
-- [ ] listInvoices
+- [x] listInvoices
 
 ### Keyspaces
 - [ ] createKeyspace
