@@ -100,7 +100,7 @@
 - [x] createOauthToken
 - [x] deleteOauthToken
 - [x] getOauthApplication
-- [ ] getOauthToken
+- [x] getOauthToken
 - [ ] listOauthApplications
 - [ ] listOauthTokens
 
