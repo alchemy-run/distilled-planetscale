@@ -32,7 +32,7 @@
 - [x] updateBranchClusterConfig
 
 ### Branch Change Requests
-- [ ] cancelBranchChangeRequest
+- [x] cancelBranchChangeRequest
 - [ ] getBranchChangeRequest
 - [ ] listBranchChangeRequests
 - [ ] updateBranchChangeRequest
