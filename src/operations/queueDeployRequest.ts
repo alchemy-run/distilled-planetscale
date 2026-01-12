@@ -153,7 +153,7 @@ export class QueueDeployRequestUnauthorized extends Schema.TaggedError<QueueDepl
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -164,7 +164,7 @@ export class QueueDeployRequestForbidden extends Schema.TaggedError<QueueDeployR
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -175,7 +175,7 @@ export class QueueDeployRequestNotfound extends Schema.TaggedError<QueueDeployRe
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

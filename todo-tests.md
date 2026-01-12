@@ -71,7 +71,7 @@
 - [x] listDeployOperations
 - [x] listDeployRequestReviews
 - [x] listDeployRequests
-- [ ] queueDeployRequest
+- [x] queueDeployRequest
 - [ ] reviewDeployRequest
 - [ ] skipRevertPeriod
 - [ ] updateAutoApply
