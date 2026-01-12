@@ -152,7 +152,7 @@ export class CompleteErroredDeployUnauthorized extends Schema.TaggedError<Comple
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -163,7 +163,7 @@ export class CompleteErroredDeployForbidden extends Schema.TaggedError<CompleteE
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -174,7 +174,7 @@ export class CompleteErroredDeployNotfound extends Schema.TaggedError<CompleteEr
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
