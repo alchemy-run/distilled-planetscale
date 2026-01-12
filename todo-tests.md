@@ -190,4 +190,4 @@
 - [x] workflowReverseCutover
 - [x] workflowReverseTraffic
 - [x] workflowSwitchPrimaries
-- [ ] workflowSwitchReplicas
+- [x] workflowSwitchReplicas
