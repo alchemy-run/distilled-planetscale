@@ -97,7 +97,7 @@
 - [x] updateKeyspaceVschema
 
 ### OAuth
-- [ ] createOauthToken
+- [x] createOauthToken
 - [ ] deleteOauthToken
 - [ ] getOauthApplication
 - [ ] getOauthToken
