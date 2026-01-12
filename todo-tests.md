@@ -119,7 +119,7 @@
 - [x] createOrganizationTeam
 - [x] deleteOrganizationTeam
 - [x] getOrganizationTeam
-- [ ] listOrganizationTeams
+- [x] listOrganizationTeams
 - [ ] updateOrganizationTeam
 
 ### Parameters
