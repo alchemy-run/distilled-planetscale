@@ -70,7 +70,7 @@
 - [x] getDeployRequestThrottler
 - [x] listDeployOperations
 - [x] listDeployRequestReviews
-- [ ] listDeployRequests
+- [x] listDeployRequests
 - [ ] queueDeployRequest
 - [ ] reviewDeployRequest
 - [ ] skipRevertPeriod
