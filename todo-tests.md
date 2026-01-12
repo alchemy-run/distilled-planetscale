@@ -105,7 +105,7 @@
 - [x] listOauthTokens
 
 ### Organizations
-- [ ] getOrganization
+- [x] getOrganization
 - [ ] listOrganizations
 - [ ] updateOrganization
 
