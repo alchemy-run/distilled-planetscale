@@ -87,7 +87,7 @@
 - [x] listInvoices
 
 ### Keyspaces
-- [ ] createKeyspace
+- [x] createKeyspace
 - [ ] deleteKeyspace
 - [ ] getKeyspace
 - [ ] getKeyspaceRolloutStatus
