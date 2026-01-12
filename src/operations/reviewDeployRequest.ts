@@ -36,7 +36,7 @@ export class ReviewDeployRequestUnauthorized extends Schema.TaggedError<ReviewDe
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -47,7 +47,7 @@ export class ReviewDeployRequestForbidden extends Schema.TaggedError<ReviewDeplo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -58,7 +58,7 @@ export class ReviewDeployRequestNotfound extends Schema.TaggedError<ReviewDeploy
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
