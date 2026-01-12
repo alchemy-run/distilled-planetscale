@@ -98,7 +98,7 @@
 
 ### OAuth
 - [x] createOauthToken
-- [ ] deleteOauthToken
+- [x] deleteOauthToken
 - [ ] getOauthApplication
 - [ ] getOauthToken
 - [ ] listOauthApplications
