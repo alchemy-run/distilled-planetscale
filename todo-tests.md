@@ -88,7 +88,7 @@
 
 ### Keyspaces
 - [x] createKeyspace
-- [ ] deleteKeyspace
+- [x] deleteKeyspace
 - [ ] getKeyspace
 - [ ] getKeyspaceRolloutStatus
 - [ ] getKeyspaceVschema
