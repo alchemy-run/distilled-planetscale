@@ -155,7 +155,7 @@
 - [x] renewRole
 - [x] resetDefaultRole
 - [x] resetRole
-- [ ] updateRole
+- [x] updateRole
 
 ### Safe Migrations
 - [ ] disableSafeMigrations
