@@ -141,7 +141,7 @@
 - [x] listGeneratedQueryPatternsReports
 
 ### Regions
-- [ ] listPublicRegions
+- [x] listPublicRegions
 - [ ] listReadOnlyRegions
 - [ ] listRegionsForOrganization
 
