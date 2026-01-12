@@ -101,7 +101,7 @@
 - [x] deleteOauthToken
 - [x] getOauthApplication
 - [x] getOauthToken
-- [ ] listOauthApplications
+- [x] listOauthApplications
 - [ ] listOauthTokens
 
 ### Organizations
