@@ -48,7 +48,7 @@
 - [x] getDatabaseThrottler
 - [x] listDatabaseRegions
 - [x] updateDatabaseSettings
-- [ ] updateDatabaseThrottler
+- [x] updateDatabaseThrottler
 
 ### Database Postgres CIDRs
 - [ ] createDatabasePostgresCidr
