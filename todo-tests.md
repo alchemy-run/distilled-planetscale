@@ -106,7 +106,7 @@
 
 ### Organizations
 - [x] getOrganization
-- [ ] listOrganizations
+- [x] listOrganizations
 - [ ] updateOrganization
 
 ### Organization Members
