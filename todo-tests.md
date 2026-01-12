@@ -38,7 +38,7 @@
 - [x] updateBranchChangeRequest
 
 ### Cluster
-- [ ] listClusterSizeSkus
+- [x] listClusterSizeSkus
 
 ### Databases
 - [x] getDatabase
