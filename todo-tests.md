@@ -55,7 +55,7 @@
 - [x] deleteDatabasePostgresCidr
 - [x] getDatabasePostgresCidr
 - [x] listDatabasePostgresCidrs
-- [ ] updateDatabasePostgresCidr
+- [x] updateDatabasePostgresCidr
 
 ### Deploy Requests
 - [ ] cancelDeployRequest
