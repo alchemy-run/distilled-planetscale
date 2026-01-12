@@ -49,7 +49,7 @@ export type ListDeployOperationsOutput = typeof ListDeployOperationsOutput.Type;
 export class ListDeployOperationsUnauthorized extends Schema.TaggedError<ListDeployOperationsUnauthorized>()(
   "ListDeployOperationsUnauthorized",
   {
-    number: Schema.String,
+    number: Schema.NumberFromString,
     organization: Schema.String,
     database: Schema.String,
     message: Schema.String,
@@ -60,7 +60,7 @@ export class ListDeployOperationsUnauthorized extends Schema.TaggedError<ListDep
 export class ListDeployOperationsForbidden extends Schema.TaggedError<ListDeployOperationsForbidden>()(
   "ListDeployOperationsForbidden",
   {
-    number: Schema.String,
+    number: Schema.NumberFromString,
     organization: Schema.String,
     database: Schema.String,
     message: Schema.String,
@@ -71,7 +71,7 @@ export class ListDeployOperationsForbidden extends Schema.TaggedError<ListDeploy
 export class ListDeployOperationsNotfound extends Schema.TaggedError<ListDeployOperationsNotfound>()(
   "ListDeployOperationsNotfound",
   {
-    number: Schema.String,
+    number: Schema.NumberFromString,
     organization: Schema.String,
     database: Schema.String,
     message: Schema.String,
