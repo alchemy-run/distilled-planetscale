@@ -138,7 +138,7 @@
 - [x] deleteQueryPatternsReport
 - [x] getQueryPatternsReport
 - [x] getQueryPatternsReportStatus
-- [ ] listGeneratedQueryPatternsReports
+- [x] listGeneratedQueryPatternsReports
 
 ### Regions
 - [ ] listPublicRegions
