@@ -91,7 +91,7 @@
 - [x] deleteKeyspace
 - [x] getKeyspace
 - [x] getKeyspaceRolloutStatus
-- [ ] getKeyspaceVschema
+- [x] getKeyspaceVschema
 - [ ] listKeyspaces
 - [ ] updateKeyspace
 - [ ] updateKeyspaceVschema
