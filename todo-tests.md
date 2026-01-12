@@ -162,7 +162,7 @@
 - [x] enableSafeMigrations
 
 ### Service Tokens
-- [ ] createServiceToken
+- [x] createServiceToken
 - [ ] deleteServiceToken
 - [ ] getServiceToken
 - [ ] listServiceTokens
