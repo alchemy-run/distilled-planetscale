@@ -21,7 +21,7 @@
 - [x] updateBouncerResizeRequest
 
 ### Branches
-- [ ] createBranch
+- [x] createBranch
 - [ ] deleteBranch
 - [ ] demoteBranch
 - [ ] getBranch
