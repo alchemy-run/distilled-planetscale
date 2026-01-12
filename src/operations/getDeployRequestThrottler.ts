@@ -35,7 +35,7 @@ export class GetDeployRequestThrottlerUnauthorized extends Schema.TaggedError<Ge
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -46,7 +46,7 @@ export class GetDeployRequestThrottlerForbidden extends Schema.TaggedError<GetDe
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -57,7 +57,7 @@ export class GetDeployRequestThrottlerNotfound extends Schema.TaggedError<GetDep
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

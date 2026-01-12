@@ -67,7 +67,7 @@
 - [x] getDeployment
 - [x] getDeployQueue
 - [x] getDeployRequest
-- [ ] getDeployRequestThrottler
+- [x] getDeployRequestThrottler
 - [ ] listDeployOperations
 - [ ] listDeployRequestReviews
 - [ ] listDeployRequests
