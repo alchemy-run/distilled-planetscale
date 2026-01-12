@@ -54,7 +54,7 @@
 - [x] createDatabasePostgresCidr
 - [x] deleteDatabasePostgresCidr
 - [x] getDatabasePostgresCidr
-- [ ] listDatabasePostgresCidrs
+- [x] listDatabasePostgresCidrs
 - [ ] updateDatabasePostgresCidr
 
 ### Deploy Requests
