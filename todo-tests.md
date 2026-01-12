@@ -163,7 +163,7 @@
 
 ### Service Tokens
 - [x] createServiceToken
-- [ ] deleteServiceToken
+- [x] deleteServiceToken
 - [ ] getServiceToken
 - [ ] listServiceTokens
 
