@@ -164,7 +164,7 @@
 ### Service Tokens
 - [x] createServiceToken
 - [x] deleteServiceToken
-- [ ] getServiceToken
+- [x] getServiceToken
 - [ ] listServiceTokens
 
 ### Users
