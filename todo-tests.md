@@ -35,7 +35,7 @@
 - [x] cancelBranchChangeRequest
 - [x] getBranchChangeRequest
 - [x] listBranchChangeRequests
-- [ ] updateBranchChangeRequest
+- [x] updateBranchChangeRequest
 
 ### Cluster
 - [ ] listClusterSizeSkus
