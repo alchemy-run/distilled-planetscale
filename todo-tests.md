@@ -79,7 +79,7 @@
 - [x] updateDeployRequestThrottler
 
 ### Extensions
-- [ ] listExtensions
+- [x] listExtensions
 
 ### Invoices
 - [ ] getInvoice
