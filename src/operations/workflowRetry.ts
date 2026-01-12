@@ -128,7 +128,7 @@ export class WorkflowRetryUnauthorized extends Schema.TaggedError<WorkflowRetryU
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -139,7 +139,7 @@ export class WorkflowRetryForbidden extends Schema.TaggedError<WorkflowRetryForb
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -150,7 +150,7 @@ export class WorkflowRetryNotfound extends Schema.TaggedError<WorkflowRetryNotfo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

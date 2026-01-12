@@ -186,7 +186,7 @@
 - [x] workflowCancel
 - [x] workflowComplete
 - [x] workflowCutover
-- [ ] workflowRetry
+- [x] workflowRetry
 - [ ] workflowReverseCutover
 - [ ] workflowReverseTraffic
 - [ ] workflowSwitchPrimaries
