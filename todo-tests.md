@@ -102,7 +102,7 @@
 - [x] getOauthApplication
 - [x] getOauthToken
 - [x] listOauthApplications
-- [ ] listOauthTokens
+- [x] listOauthTokens
 
 ### Organizations
 - [ ] getOrganization
