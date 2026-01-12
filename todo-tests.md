@@ -158,7 +158,7 @@
 - [x] updateRole
 
 ### Safe Migrations
-- [ ] disableSafeMigrations
+- [x] disableSafeMigrations
 - [ ] enableSafeMigrations
 
 ### Service Tokens
