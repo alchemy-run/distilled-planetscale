@@ -59,7 +59,7 @@
 
 ### Deploy Requests
 - [x] cancelDeployRequest
-- [ ] closeDeployRequest
+- [x] closeDeployRequest
 - [ ] completeErroredDeploy
 - [ ] completeGatedDeployRequest
 - [ ] completeRevert

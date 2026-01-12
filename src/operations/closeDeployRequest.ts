@@ -153,7 +153,7 @@ export class CloseDeployRequestUnauthorized extends Schema.TaggedError<CloseDepl
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -164,7 +164,7 @@ export class CloseDeployRequestForbidden extends Schema.TaggedError<CloseDeployR
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -175,7 +175,7 @@ export class CloseDeployRequestNotfound extends Schema.TaggedError<CloseDeployRe
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
