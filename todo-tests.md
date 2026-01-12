@@ -94,7 +94,7 @@
 - [x] getKeyspaceVschema
 - [x] listKeyspaces
 - [x] updateKeyspace
-- [ ] updateKeyspaceVschema
+- [x] updateKeyspaceVschema
 
 ### OAuth
 - [ ] createOauthToken
