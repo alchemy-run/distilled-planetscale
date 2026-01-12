@@ -111,7 +111,7 @@
 
 ### Organization Members
 - [x] getOrganizationMembership
-- [ ] listOrganizationMembers
+- [x] listOrganizationMembers
 - [ ] removeOrganizationMember
 - [ ] updateOrganizationMembership
 
