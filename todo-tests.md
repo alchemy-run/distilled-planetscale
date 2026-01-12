@@ -27,7 +27,7 @@
 - [x] getBranch
 - [x] getBranchSchema
 - [x] listBranches
-- [ ] lintBranchSchema
+- [x] lintBranchSchema
 - [ ] promoteBranch
 - [ ] updateBranchClusterConfig
 
