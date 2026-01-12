@@ -13,7 +13,7 @@
 ### Bouncers
 - [x] cancelBouncerResizeRequest
 - [x] createBouncer
-- [ ] deleteBouncer
+- [x] deleteBouncer
 - [ ] getBouncer
 - [ ] listBouncerResizeRequests
 - [ ] listBouncers
