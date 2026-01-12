@@ -153,7 +153,7 @@ export class UpdateAutoApplyUnauthorized extends Schema.TaggedError<UpdateAutoAp
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -164,7 +164,7 @@ export class UpdateAutoApplyForbidden extends Schema.TaggedError<UpdateAutoApply
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -175,7 +175,7 @@ export class UpdateAutoApplyNotfound extends Schema.TaggedError<UpdateAutoApplyN
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
