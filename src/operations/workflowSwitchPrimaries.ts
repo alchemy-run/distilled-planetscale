@@ -128,7 +128,7 @@ export class WorkflowSwitchPrimariesUnauthorized extends Schema.TaggedError<Work
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -139,7 +139,7 @@ export class WorkflowSwitchPrimariesForbidden extends Schema.TaggedError<Workflo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -150,7 +150,7 @@ export class WorkflowSwitchPrimariesNotfound extends Schema.TaggedError<Workflow
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
