@@ -149,7 +149,7 @@
 - [x] createRole
 - [x] deleteRole
 - [x] getDefaultRole
-- [ ] getRole
+- [x] getRole
 - [ ] listRoles
 - [ ] reassignRoleObjects
 - [ ] renewRole
