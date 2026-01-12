@@ -115,7 +115,7 @@ export class GetDeploymentUnauthorized extends Schema.TaggedError<GetDeploymentU
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -126,7 +126,7 @@ export class GetDeploymentForbidden extends Schema.TaggedError<GetDeploymentForb
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -137,7 +137,7 @@ export class GetDeploymentNotfound extends Schema.TaggedError<GetDeploymentNotfo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

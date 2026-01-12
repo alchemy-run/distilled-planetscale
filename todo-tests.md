@@ -64,7 +64,7 @@
 - [x] completeGatedDeployRequest
 - [x] completeRevert
 - [x] createDeployRequest
-- [ ] getDeployment
+- [x] getDeployment
 - [ ] getDeployQueue
 - [ ] getDeployRequest
 - [ ] getDeployRequestThrottler
