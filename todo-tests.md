@@ -8,7 +8,7 @@
 - [x] deleteBackup
 - [x] getBackup
 - [x] listBackups
-- [ ] updateBackup
+- [x] updateBackup
 
 ### Bouncers
 - [ ] cancelBouncerResizeRequest
