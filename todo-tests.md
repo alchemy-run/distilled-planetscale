@@ -76,7 +76,7 @@
 - [x] skipRevertPeriod
 - [x] updateAutoApply
 - [x] updateAutoDeleteBranch
-- [ ] updateDeployRequestThrottler
+- [x] updateDeployRequestThrottler
 
 ### Extensions
 - [ ] listExtensions

@@ -37,7 +37,7 @@ export class UpdateDeployRequestThrottlerUnauthorized extends Schema.TaggedError
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -48,7 +48,7 @@ export class UpdateDeployRequestThrottlerForbidden extends Schema.TaggedError<Up
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -59,7 +59,7 @@ export class UpdateDeployRequestThrottlerNotfound extends Schema.TaggedError<Upd
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
