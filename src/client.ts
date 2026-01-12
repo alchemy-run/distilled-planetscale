@@ -1,8 +1,4 @@
-import {
-  HttpClient,
-  HttpClientError,
-  HttpClientRequest,
-} from "@effect/platform";
+import { HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
 import { Effect, Schema } from "effect";
 import { API_BASE_URL, PlanetScaleCredentials } from "./credentials";
 
@@ -96,17 +92,17 @@ const getAnnotation = <T>(schema: Schema.Schema.Any, key: symbol): T | undefined
 
 // API namespace
 export const API = {
-  make: <
-    I extends Schema.Schema.Any,
-    O extends Schema.Schema.Any,
-    E extends AnnotatedErrorClass,
-  >(
+  make: <I extends Schema.Schema.Any, O extends Schema.Schema.Any, E extends AnnotatedErrorClass>(
     configFn: () => OperationConfig<I, O, E>,
   ) => {
     const config = configFn();
     type Input = Schema.Schema.Type<I>;
     type Output = Schema.Schema.Type<O>;
-    type Errors = InstanceType<E> | PlanetScaleApiError | PlanetScaleParseError | HttpClientError.HttpClientError;
+    type Errors =
+      | InstanceType<E>
+      | PlanetScaleApiError
+      | PlanetScaleParseError
+      | HttpClientError.HttpClientError;
     type Context = PlanetScaleCredentials | HttpClient.HttpClient;
 
     // Read method and path from input schema annotations
@@ -120,16 +116,17 @@ export const API = {
       throw new Error("Input schema must have ApiPath annotation");
     }
 
-    const matchApiError = createErrorMatcher(config.errors, (input) => input as Record<string, unknown>);
+    const matchApiError = createErrorMatcher(
+      config.errors,
+      (input) => input as Record<string, unknown>,
+    );
 
     return (input: Input): Effect.Effect<Output, Errors, Context> =>
       Effect.gen(function* () {
         const { token } = yield* PlanetScaleCredentials;
         const client = yield* HttpClient.HttpClient;
 
-        const response = yield* HttpClientRequest.make(method)(
-          API_BASE_URL + path(input),
-        ).pipe(
+        const response = yield* HttpClientRequest.make(method)(API_BASE_URL + path(input)).pipe(
           HttpClientRequest.setHeader("Authorization", token),
           HttpClientRequest.setHeader("Content-Type", "application/json"),
           client.execute,

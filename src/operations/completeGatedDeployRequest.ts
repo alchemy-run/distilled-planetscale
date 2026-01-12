@@ -152,7 +152,7 @@ export class CompleteGatedDeployRequestUnauthorized extends Schema.TaggedError<C
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -163,7 +163,7 @@ export class CompleteGatedDeployRequestForbidden extends Schema.TaggedError<Comp
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -174,7 +174,7 @@ export class CompleteGatedDeployRequestNotfound extends Schema.TaggedError<Compl
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
