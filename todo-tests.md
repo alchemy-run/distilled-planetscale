@@ -171,7 +171,7 @@
 - [x] getCurrentUser
 
 ### Webhooks
-- [ ] createWebhook
+- [x] createWebhook
 - [ ] deleteWebhook
 - [ ] getWebhook
 - [ ] listWebhooks
