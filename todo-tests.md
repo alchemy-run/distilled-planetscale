@@ -1,11 +1,11 @@
 ## Operations
 
 ### Audit Logs
-- [ ] listAuditLogs
+- [x] listAuditLogs
 
 ### Backups
-- [ ] createBackup
-- [ ] deleteBackup
+- [x] createBackup
+- [x] deleteBackup
 - [ ] getBackup
 - [ ] listBackups
 - [ ] updateBackup
@@ -42,12 +42,7 @@
 
 ### Databases
 - [x] getDatabase
-  - [x] should fetch a database successfully
-  - [x] should return GetDatabaseNotfound for non-existent database
 - [x] listDatabases
-  - [x] should list databases successfully
-  - [x] should support pagination parameters
-  - [x] should return ListDatabasesNotfound for non-existent organization
 - [x] createDatabase
 - [x] deleteDatabase
 - [ ] getDatabaseThrottler

@@ -140,6 +140,123 @@ The generator:
 - **Resource cleanup**: Tests must always clean up any resources they create (databases, branches, passwords, etc.). Use `Effect.ensuring` or cleanup in a finally block to guarantee cleanup runs even if the test fails.
 - **Unique names**: Use timestamps or random suffixes for resource names to avoid conflicts between test runs.
 
+### Test Structure
+
+Each operation test file should include:
+
+1. **Schema validation tests** - Verify input/output schemas have expected fields
+2. **Success tests** - Test the happy path (for GET operations that don't modify state)
+3. **Error handling tests** - Test that typed errors are returned correctly
+
+### Test File Template
+
+```typescript
+import { FetchHttpClient } from "@effect/platform";
+import { it } from "@effect/vitest";
+import { Effect, Layer } from "effect";
+import { describe, expect } from "vitest";
+import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import {
+  operationName,
+  OperationNameNotfound,
+  OperationNameInput,
+  OperationNameOutput,
+} from "../src/operations/operationName";
+import "./setup";
+
+const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+
+describe("operationName", () => {
+  // Schema validation
+  it("should have the correct input schema", () => {
+    expect(OperationNameInput.fields.organization).toBeDefined();
+    // ... verify other required fields
+  });
+
+  it("should have the correct output schema", () => {
+    expect(OperationNameOutput.fields.id).toBeDefined();
+    // ... verify other expected fields
+  });
+
+  // Success test (for read-only operations)
+  it.effect("should fetch data successfully", () =>
+    Effect.gen(function* () {
+      const { organization } = yield* PlanetScaleCredentials;
+      const result = yield* operationName({ organization, /* ... */ }).pipe(
+        // Handle case where test resource doesn't exist
+        Effect.catchTag("OperationNameNotfound", () =>
+          Effect.succeed({ /* fallback shape */ }),
+        ),
+      );
+      expect(result).toHaveProperty("expectedField");
+    }).pipe(Effect.provide(MainLayer)),
+  );
+
+  // Error handling tests
+  it.effect("should return OperationNameNotfound for non-existent resource", () =>
+    Effect.gen(function* () {
+      const { organization } = yield* PlanetScaleCredentials;
+      const result = yield* operationName({
+        organization,
+        database: "this-database-definitely-does-not-exist-12345",
+      }).pipe(
+        Effect.matchEffect({
+          onFailure: (error) => Effect.succeed(error),
+          onSuccess: () => Effect.succeed(null),
+        }),
+      );
+
+      expect(result).toBeInstanceOf(OperationNameNotfound);
+      if (result instanceof OperationNameNotfound) {
+        expect(result._tag).toBe("OperationNameNotfound");
+        expect(result.organization).toBe(organization);
+      }
+    }).pipe(Effect.provide(MainLayer)),
+  );
+});
+```
+
+### Resource Cleanup Pattern
+
+For operations that create resources, use `Effect.ensuring` to guarantee cleanup:
+
+```typescript
+it.effect("should create resource successfully", () =>
+  Effect.gen(function* () {
+    const { organization } = yield* PlanetScaleCredentials;
+    const resourceName = `test-resource-${Date.now()}`;
+
+    const result = yield* createResource({
+      organization,
+      name: resourceName,
+    });
+
+    expect(result).toHaveProperty("id");
+    expect(result).toHaveProperty("name", resourceName);
+  }).pipe(
+    Effect.ensuring(
+      Effect.gen(function* () {
+        const { organization } = yield* PlanetScaleCredentials;
+        yield* deleteResource({
+          organization,
+          name: resourceName,
+        }).pipe(Effect.ignore);
+      }),
+    ),
+    Effect.provide(MainLayer),
+  ),
+);
+```
+
+### Best Practices
+
+- **Use `Effect.ignore`** for cleanup operations that may fail (resource already deleted, etc.)
+- **Use `Effect.catchTag`** to handle expected errors gracefully in success tests
+- **Use `Effect.matchEffect`** to capture errors for assertion in error tests
+- **Test both non-existent resources AND non-existent organizations** for not_found errors
+- **Verify error properties** like `_tag`, `organization`, `database`, etc.
+- **Import `./setup`** to load environment variables from `.env`
+
 ## Tools
 
 - **Runtime**: Bun

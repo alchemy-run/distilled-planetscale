@@ -1,0 +1,152 @@
+import { FetchHttpClient } from "@effect/platform";
+import { it } from "@effect/vitest";
+import { Effect, Layer } from "effect";
+import { describe, expect } from "vitest";
+import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import {
+  createBackup,
+  CreateBackupNotfound,
+  CreateBackupInput,
+  CreateBackupOutput,
+} from "../src/operations/createBackup";
+import { deleteBackup } from "../src/operations/deleteBackup";
+import "./setup";
+
+const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+
+describe("createBackup", () => {
+  it("should have the correct input schema", () => {
+    expect(CreateBackupInput.fields.organization).toBeDefined();
+    expect(CreateBackupInput.fields.database).toBeDefined();
+    expect(CreateBackupInput.fields.branch).toBeDefined();
+    expect(CreateBackupInput.fields.name).toBeDefined();
+    expect(CreateBackupInput.fields.retention_unit).toBeDefined();
+    expect(CreateBackupInput.fields.retention_value).toBeDefined();
+    expect(CreateBackupInput.fields.emergency).toBeDefined();
+  });
+
+  it("should have the correct output schema", () => {
+    expect(CreateBackupOutput.fields.id).toBeDefined();
+    expect(CreateBackupOutput.fields.name).toBeDefined();
+    expect(CreateBackupOutput.fields.state).toBeDefined();
+    expect(CreateBackupOutput.fields.size).toBeDefined();
+    expect(CreateBackupOutput.fields.created_at).toBeDefined();
+    expect(CreateBackupOutput.fields.expires_at).toBeDefined();
+    expect(CreateBackupOutput.fields.actor).toBeDefined();
+    expect(CreateBackupOutput.fields.backup_policy).toBeDefined();
+    expect(CreateBackupOutput.fields.database_branch).toBeDefined();
+  });
+
+  it.effect("should return CreateBackupNotfound for non-existent organization", () =>
+    Effect.gen(function* () {
+      const result = yield* createBackup({
+        organization: "this-org-definitely-does-not-exist-12345",
+        database: "test-db",
+        branch: "main",
+      }).pipe(
+        Effect.matchEffect({
+          onFailure: (error) => Effect.succeed(error),
+          onSuccess: () => Effect.succeed(null),
+        }),
+      );
+
+      expect(result).toBeInstanceOf(CreateBackupNotfound);
+      if (result instanceof CreateBackupNotfound) {
+        expect(result._tag).toBe("CreateBackupNotfound");
+        expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
+      }
+    }).pipe(Effect.provide(MainLayer)),
+  );
+
+  it.effect("should return CreateBackupNotfound for non-existent database", () =>
+    Effect.gen(function* () {
+      const { organization } = yield* PlanetScaleCredentials;
+      const result = yield* createBackup({
+        organization,
+        database: "this-database-definitely-does-not-exist-12345",
+        branch: "main",
+      }).pipe(
+        Effect.matchEffect({
+          onFailure: (error) => Effect.succeed(error),
+          onSuccess: () => Effect.succeed(null),
+        }),
+      );
+
+      expect(result).toBeInstanceOf(CreateBackupNotfound);
+      if (result instanceof CreateBackupNotfound) {
+        expect(result._tag).toBe("CreateBackupNotfound");
+        expect(result.organization).toBe(organization);
+        expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
+      }
+    }).pipe(Effect.provide(MainLayer)),
+  );
+
+  it.effect("should return CreateBackupNotfound for non-existent branch", () =>
+    Effect.gen(function* () {
+      const { organization } = yield* PlanetScaleCredentials;
+      // Use a test database name - adjust based on your PlanetScale setup
+      const database = "test";
+      const result = yield* createBackup({
+        organization,
+        database,
+        branch: "this-branch-definitely-does-not-exist-12345",
+      }).pipe(
+        Effect.matchEffect({
+          onFailure: (error) => Effect.succeed(error),
+          onSuccess: () => Effect.succeed(null),
+        }),
+      );
+
+      expect(result).toBeInstanceOf(CreateBackupNotfound);
+      if (result instanceof CreateBackupNotfound) {
+        expect(result._tag).toBe("CreateBackupNotfound");
+        expect(result.organization).toBe(organization);
+        expect(result.database).toBe(database);
+        expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
+      }
+    }).pipe(Effect.provide(MainLayer)),
+  );
+
+  // Note: This test creates an actual backup and cleans it up.
+  // It requires a valid database with a branch to exist.
+  it.skip("should create a backup successfully and clean up", () => {
+    let createdBackupId: string | undefined;
+    // Use a test database name - adjust based on your PlanetScale setup
+    const database = "test";
+    const branch = "main";
+
+    return Effect.gen(function* () {
+      const { organization } = yield* PlanetScaleCredentials;
+
+      const result = yield* createBackup({
+        organization,
+        database,
+        branch,
+        retention_unit: "day",
+        retention_value: 1,
+      });
+
+      createdBackupId = result.id;
+
+      expect(result).toHaveProperty("id");
+      expect(result).toHaveProperty("name");
+      expect(result).toHaveProperty("state");
+      expect(result).toHaveProperty("created_at");
+    }).pipe(
+      Effect.ensuring(
+        Effect.gen(function* () {
+          if (createdBackupId) {
+            const { organization } = yield* PlanetScaleCredentials;
+            yield* deleteBackup({
+              id: createdBackupId,
+              organization,
+              database,
+              branch,
+            }).pipe(Effect.ignore);
+          }
+        }),
+      ),
+      Effect.provide(MainLayer),
+    );
+  });
+});
