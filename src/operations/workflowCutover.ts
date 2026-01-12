@@ -128,7 +128,7 @@ export class WorkflowCutoverUnauthorized extends Schema.TaggedError<WorkflowCuto
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -139,7 +139,7 @@ export class WorkflowCutoverForbidden extends Schema.TaggedError<WorkflowCutover
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -150,7 +150,7 @@ export class WorkflowCutoverNotfound extends Schema.TaggedError<WorkflowCutoverN
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

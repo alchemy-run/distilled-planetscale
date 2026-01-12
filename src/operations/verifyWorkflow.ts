@@ -128,7 +128,7 @@ export class VerifyWorkflowUnauthorized extends Schema.TaggedError<VerifyWorkflo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -139,7 +139,7 @@ export class VerifyWorkflowForbidden extends Schema.TaggedError<VerifyWorkflowFo
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -150,7 +150,7 @@ export class VerifyWorkflowNotfound extends Schema.TaggedError<VerifyWorkflowNot
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

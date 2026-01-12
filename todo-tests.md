@@ -180,12 +180,12 @@
 
 ### Workflows
 - [x] createWorkflow
-- [ ] getWorkflow
-- [ ] listWorkflows
-- [ ] verifyWorkflow
-- [ ] workflowCancel
-- [ ] workflowComplete
-- [ ] workflowCutover
+- [x] getWorkflow
+- [x] listWorkflows
+- [x] verifyWorkflow
+- [x] workflowCancel
+- [x] workflowComplete
+- [x] workflowCutover
 - [ ] workflowRetry
 - [ ] workflowReverseCutover
 - [ ] workflowReverseTraffic

@@ -37,10 +37,7 @@ export const markOperationComplete = (operationName: string) =>
     const content = yield* Effect.tryPromise(() => file.text());
 
     // Replace "- [ ] operationName" with "- [x] operationName"
-    const updated = content.replace(
-      new RegExp(`^(- \\[) (\\] ${operationName})$`, "m"),
-      "$1x$2",
-    );
+    const updated = content.replace(new RegExp(`^(- \\[) (\\] ${operationName})$`, "m"), "$1x$2");
 
     yield* Effect.tryPromise(() => Bun.write(TODO_FILE_PATH, updated));
   });
