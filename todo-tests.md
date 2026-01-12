@@ -82,7 +82,7 @@
 - [x] listExtensions
 
 ### Invoices
-- [ ] getInvoice
+- [x] getInvoice
 - [ ] getInvoiceLineItems
 - [ ] listInvoices
 
