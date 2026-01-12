@@ -23,7 +23,7 @@
 ### Branches
 - [x] createBranch
 - [x] deleteBranch
-- [ ] demoteBranch
+- [x] demoteBranch
 - [ ] getBranch
 - [ ] getBranchSchema
 - [ ] listBranches
