@@ -179,7 +179,7 @@
 - [x] updateWebhook
 
 ### Workflows
-- [ ] createWorkflow
+- [x] createWorkflow
 - [ ] getWorkflow
 - [ ] listWorkflows
 - [ ] verifyWorkflow
