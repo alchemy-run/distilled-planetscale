@@ -93,7 +93,7 @@
 - [x] getKeyspaceRolloutStatus
 - [x] getKeyspaceVschema
 - [x] listKeyspaces
-- [ ] updateKeyspace
+- [x] updateKeyspace
 - [ ] updateKeyspaceVschema
 
 ### OAuth
