@@ -51,7 +51,7 @@
 - [x] updateDatabaseThrottler
 
 ### Database Postgres CIDRs
-- [ ] createDatabasePostgresCidr
+- [x] createDatabasePostgresCidr
 - [ ] deleteDatabasePostgresCidr
 - [ ] getDatabasePostgresCidr
 - [ ] listDatabasePostgresCidrs
