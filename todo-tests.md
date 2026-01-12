@@ -134,7 +134,7 @@
 - [x] updatePassword
 
 ### Query Patterns Reports
-- [ ] createQueryPatternsReport
+- [x] createQueryPatternsReport
 - [ ] deleteQueryPatternsReport
 - [ ] getQueryPatternsReport
 - [ ] getQueryPatternsReportStatus
