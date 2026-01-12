@@ -176,7 +176,7 @@
 - [x] getWebhook
 - [x] listWebhooks
 - [x] testWebhook
-- [ ] updateWebhook
+- [x] updateWebhook
 
 ### Workflows
 - [ ] createWorkflow
