@@ -152,7 +152,7 @@ export class SkipRevertPeriodUnauthorized extends Schema.TaggedError<SkipRevertP
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -163,7 +163,7 @@ export class SkipRevertPeriodForbidden extends Schema.TaggedError<SkipRevertPeri
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -174,7 +174,7 @@ export class SkipRevertPeriodNotfound extends Schema.TaggedError<SkipRevertPerio
   {
     organization: Schema.String,
     database: Schema.String,
-    number: Schema.String,
+    number: Schema.NumberFromString,
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

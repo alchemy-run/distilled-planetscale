@@ -73,7 +73,7 @@
 - [x] listDeployRequests
 - [x] queueDeployRequest
 - [x] reviewDeployRequest
-- [ ] skipRevertPeriod
+- [x] skipRevertPeriod
 - [ ] updateAutoApply
 - [ ] updateAutoDeleteBranch
 - [ ] updateDeployRequestThrottler
