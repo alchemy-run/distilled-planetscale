@@ -92,7 +92,7 @@
 - [x] getKeyspace
 - [x] getKeyspaceRolloutStatus
 - [x] getKeyspaceVschema
-- [ ] listKeyspaces
+- [x] listKeyspaces
 - [ ] updateKeyspace
 - [ ] updateKeyspaceVschema
 
