@@ -135,7 +135,7 @@
 
 ### Query Patterns Reports
 - [x] createQueryPatternsReport
-- [ ] deleteQueryPatternsReport
+- [x] deleteQueryPatternsReport
 - [ ] getQueryPatternsReport
 - [ ] getQueryPatternsReportStatus
 - [ ] listGeneratedQueryPatternsReports
