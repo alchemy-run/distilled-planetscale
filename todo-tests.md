@@ -6,8 +6,8 @@
 ### Backups
 - [x] createBackup
 - [x] deleteBackup
-- [ ] getBackup
-- [ ] listBackups
+- [x] getBackup
+- [x] listBackups
 - [ ] updateBackup
 
 ### Bouncers

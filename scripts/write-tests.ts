@@ -46,6 +46,39 @@ export const markOperationComplete = (operationName: string) =>
   });
 
 /**
+ * Commits all changes with a message for the given operation
+ */
+export const commitOperation = (operationName: string) =>
+  Effect.async<void, Error>((resume) => {
+    const child = spawn("git", ["add", "-A"], {
+      stdio: ["inherit", "inherit", "inherit"],
+    });
+
+    child.on("error", (err) => resume(Effect.fail(err)));
+    child.on("close", (code) => {
+      if (code !== 0) {
+        resume(Effect.fail(new Error(`git add exited with code ${code}`)));
+        return;
+      }
+
+      const commitChild = spawn(
+        "git",
+        ["commit", "-m", `chore(tests): test for ${operationName}`],
+        { stdio: ["inherit", "inherit", "inherit"] },
+      );
+
+      commitChild.on("error", (err) => resume(Effect.fail(err)));
+      commitChild.on("close", (commitCode) => {
+        if (commitCode === 0) {
+          resume(Effect.succeed(undefined));
+        } else {
+          resume(Effect.fail(new Error(`git commit exited with code ${commitCode}`)));
+        }
+      });
+    });
+  });
+
+/**
  * Spawns an opencode instance to write a test for the given operation.
  * Output is streamed to the console.
  */
@@ -113,6 +146,8 @@ async function main() {
       yield* writeTestForOperation(operation);
       yield* markOperationComplete(operation);
       console.log(`Marked ${operation} as complete in ${TODO_FILE_PATH}`);
+      yield* commitOperation(operation);
+      console.log(`Committed changes for ${operation}`);
     }
 
     console.log("\n" + "=".repeat(60));
