@@ -130,7 +130,7 @@
 - [x] deletePassword
 - [x] getPassword
 - [x] listPasswords
-- [ ] renewPassword
+- [x] renewPassword
 - [ ] updatePassword
 
 ### Query Patterns Reports
