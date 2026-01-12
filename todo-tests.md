@@ -25,7 +25,7 @@
 - [x] deleteBranch
 - [x] demoteBranch
 - [x] getBranch
-- [ ] getBranchSchema
+- [x] getBranchSchema
 - [ ] listBranches
 - [ ] lintBranchSchema
 - [ ] promoteBranch
