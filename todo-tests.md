@@ -28,7 +28,7 @@
 - [x] getBranchSchema
 - [x] listBranches
 - [x] lintBranchSchema
-- [ ] promoteBranch
+- [x] promoteBranch
 - [ ] updateBranchClusterConfig
 
 ### Branch Change Requests
