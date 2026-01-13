@@ -7,7 +7,7 @@ import {
   EnableSafeMigrationsInput,
   EnableSafeMigrationsOutput,
 } from "../src/operations/enableSafeMigrations";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("enableSafeMigrations", (it) => {
   it("should have the correct input schema", () => {
@@ -78,7 +78,7 @@ withMainLayer("enableSafeMigrations", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* enableSafeMigrations({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -101,10 +101,10 @@ withMainLayer("enableSafeMigrations", (it) => {
   // 1. Have an existing production branch with safe migrations disabled
   // 2. Enable safe migrations
   // 3. Disable safe migrations to clean up (using disableSafeMigrations)
-  it.skip("should enable safe migrations on a branch successfully", () =>
+  it.effect("should enable safe migrations on a branch successfully", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test"; // Replace with an actual test database
+      const database = TEST_DATABASE;
       const branchName = "main"; // Replace with an actual production branch
 
       const result = yield* enableSafeMigrations({

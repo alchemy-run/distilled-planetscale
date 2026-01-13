@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const CreateKeyspaceInput = Schema.Struct({
@@ -13,6 +13,7 @@ export const CreateKeyspaceInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces`,
+  [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateKeyspaceInput = typeof CreateKeyspaceInput.Type;
 
@@ -34,9 +35,9 @@ export const CreateKeyspaceOutput = Schema.Struct({
   metal: Schema.Boolean,
   default: Schema.Boolean,
   imported: Schema.Boolean,
-  vector_pool_allocation: Schema.Number,
+  vector_pool_allocation: Schema.NullOr(Schema.Number),
   replication_durability_constraints: Schema.Struct({
-    strategy: Schema.Literal("available", "lag", "always"),
+    strategy: Schema.optional(Schema.Literal("available", "lag", "always")),
   }),
   vreplication_flags: Schema.Struct({
     optimize_inserts: Schema.Boolean,

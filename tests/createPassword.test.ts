@@ -8,7 +8,7 @@ import {
   CreatePasswordOutput,
 } from "../src/operations/createPassword";
 import { deletePassword } from "../src/operations/deletePassword";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("createPassword", (it) => {
   it("should have the correct input schema", () => {
@@ -85,7 +85,7 @@ withMainLayer("createPassword", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* createPassword({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -105,10 +105,10 @@ withMainLayer("createPassword", (it) => {
 
   // Note: This test is skipped because creating passwords requires an existing database/branch
   // and passwords may incur costs or have limits. When enabled, it demonstrates proper cleanup.
-  it.skip("should create a password successfully and clean up", () =>
+  it.effect("should create a password successfully and clean up", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test"; // Replace with an actual test database
+      const database = TEST_DATABASE;
       const branch = "main";
       const testPasswordName = `test-password-${Date.now()}`;
 

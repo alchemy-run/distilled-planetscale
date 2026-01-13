@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const UpdateKeyspaceInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const UpdateKeyspaceInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "PATCH",
   [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}`,
+  [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type UpdateKeyspaceInput = typeof UpdateKeyspaceInput.Type;
 
@@ -31,9 +32,9 @@ export const UpdateKeyspaceOutput = Schema.Struct({
   metal: Schema.Boolean,
   default: Schema.Boolean,
   imported: Schema.Boolean,
-  vector_pool_allocation: Schema.Number,
+  vector_pool_allocation: Schema.NullOr(Schema.Number),
   replication_durability_constraints: Schema.Struct({
-    strategy: Schema.Literal("available", "lag", "always"),
+    strategy: Schema.optional(Schema.Literal("available", "lag", "always")),
   }),
   vreplication_flags: Schema.Struct({
     optimize_inserts: Schema.Boolean,

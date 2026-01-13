@@ -7,7 +7,7 @@ import {
   ListDatabaseRegionsInput,
   ListDatabaseRegionsOutput,
 } from "../src/operations/listDatabaseRegions";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listDatabaseRegions", (it) => {
   it("should have the correct input schema", () => {
@@ -31,7 +31,7 @@ withMainLayer("listDatabaseRegions", (it) => {
       // Use the "test" database which should exist based on other tests
       const result = yield* listDatabaseRegions({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
       }).pipe(
         Effect.catchTag("ListDatabaseRegionsNotfound", () =>
           Effect.succeed({ data: [], current_page: 1, next_page: 0, next_page_url: "", prev_page: 0, prev_page_url: "" }),
@@ -50,7 +50,7 @@ withMainLayer("listDatabaseRegions", (it) => {
 
       const result = yield* listDatabaseRegions({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         page: 1,
         per_page: 5,
       }).pipe(

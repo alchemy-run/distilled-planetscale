@@ -7,7 +7,7 @@ import {
   ResetRoleInput,
   ResetRoleOutput,
 } from "../src/operations/resetRole";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("resetRole", (it) => {
   it("should have the correct input schema", () => {
@@ -90,7 +90,7 @@ withMainLayer("resetRole", (it) => {
   it.effect("should return ResetRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* resetRole({
         organization,
         database,
@@ -116,7 +116,7 @@ withMainLayer("resetRole", (it) => {
   it.effect("should return ResetRoleNotfound for non-existent role id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* resetRole({
         organization,

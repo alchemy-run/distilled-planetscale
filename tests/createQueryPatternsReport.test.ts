@@ -7,7 +7,7 @@ import {
   CreateQueryPatternsReportInput,
   CreateQueryPatternsReportOutput,
 } from "../src/operations/createQueryPatternsReport";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("createQueryPatternsReport", (it) => {
   it("should have the correct input schema", () => {
@@ -75,7 +75,7 @@ withMainLayer("createQueryPatternsReport", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* createQueryPatternsReport({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({

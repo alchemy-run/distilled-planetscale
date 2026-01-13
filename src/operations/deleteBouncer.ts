@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const DeleteBouncerInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const DeleteBouncerInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "DELETE",
   [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}`,
+  [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
 });
 export type DeleteBouncerInput = typeof DeleteBouncerInput.Type;
 

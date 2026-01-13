@@ -7,7 +7,7 @@ import {
   CompleteErroredDeployInput,
   CompleteErroredDeployOutput,
 } from "../src/operations/completeErroredDeploy";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("completeErroredDeploy", (it) => {
   it("should have the correct input schema", () => {
@@ -72,7 +72,7 @@ withMainLayer("completeErroredDeploy", (it) => {
   it.effect("should return CompleteErroredDeployNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* completeErroredDeploy({
         organization,
         database,

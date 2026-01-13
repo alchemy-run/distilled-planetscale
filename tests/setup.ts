@@ -9,3 +9,9 @@ config();
 const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
 
 export const withMainLayer = layer(MainLayer);
+
+/**
+ * Test database name - tests that need a database should use this
+ * Set PLANETSCALE_TEST_DATABASE env var, or defaults to "database"
+ */
+export const TEST_DATABASE = process.env.PLANETSCALE_TEST_DATABASE || "database";

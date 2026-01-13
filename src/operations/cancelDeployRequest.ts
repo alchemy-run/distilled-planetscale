@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const CancelDeployRequestInput = Schema.Struct({
@@ -9,6 +9,7 @@ export const CancelDeployRequestInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/cancel`,
+  [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type CancelDeployRequestInput = typeof CancelDeployRequestInput.Type;
 

@@ -7,7 +7,7 @@ import {
   GetDeployQueueOutput,
   GetDeployQueueNotfound,
 } from "../src/operations/getDeployQueue";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getDeployQueue", (it) => {
   it("should have the correct input schema", () => {
@@ -28,7 +28,7 @@ withMainLayer("getDeployQueue", (it) => {
 
       const result = yield* getDeployQueue({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
       }).pipe(
         Effect.catchTag("GetDeployQueueNotfound", () =>
           Effect.succeed({

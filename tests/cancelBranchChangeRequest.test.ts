@@ -7,7 +7,7 @@ import {
   CancelBranchChangeRequestInput,
   CancelBranchChangeRequestOutput,
 } from "../src/operations/cancelBranchChangeRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("cancelBranchChangeRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -68,7 +68,7 @@ withMainLayer("cancelBranchChangeRequest", (it) => {
   it.effect("should return CancelBranchChangeRequestNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* cancelBranchChangeRequest({
         organization,
         database,

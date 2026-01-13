@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const GetOrganizationInput = Schema.Struct({
@@ -7,6 +7,7 @@ export const GetOrganizationInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}`,
+  [ApiPathParams]: ["organization"] as const,
 });
 export type GetOrganizationInput = typeof GetOrganizationInput.Type;
 

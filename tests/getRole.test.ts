@@ -7,7 +7,7 @@ import {
   GetRoleInput,
   GetRoleOutput,
 } from "../src/operations/getRole";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getRole", (it) => {
   it("should have the correct input schema", () => {
@@ -90,7 +90,7 @@ withMainLayer("getRole", (it) => {
   it.effect("should return GetRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* getRole({
         organization,
         database,
@@ -116,7 +116,7 @@ withMainLayer("getRole", (it) => {
   it.effect("should return GetRoleNotfound for non-existent role id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* getRole({
         organization,

@@ -7,7 +7,7 @@ import {
   ResetDefaultRoleInput,
   ResetDefaultRoleOutput,
 } from "../src/operations/resetDefaultRole";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("resetDefaultRole", (it) => {
   it("should have the correct input schema", () => {
@@ -80,7 +80,7 @@ withMainLayer("resetDefaultRole", (it) => {
   it.effect("should return ResetDefaultRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* resetDefaultRole({
         organization,
         database,

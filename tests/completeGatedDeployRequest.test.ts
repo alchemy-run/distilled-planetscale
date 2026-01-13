@@ -7,7 +7,7 @@ import {
   CompleteGatedDeployRequestInput,
   CompleteGatedDeployRequestOutput,
 } from "../src/operations/completeGatedDeployRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("completeGatedDeployRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -73,7 +73,7 @@ withMainLayer("completeGatedDeployRequest", (it) => {
   it.effect("should return CompleteGatedDeployRequestNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* completeGatedDeployRequest({
         organization,
         database,

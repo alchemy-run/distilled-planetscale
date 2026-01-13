@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const GetDatabaseThrottlerInput = Schema.Struct({
@@ -8,6 +8,7 @@ export const GetDatabaseThrottlerInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/throttler`,
+  [ApiPathParams]: ["organization", "database"] as const,
 });
 export type GetDatabaseThrottlerInput = typeof GetDatabaseThrottlerInput.Type;
 

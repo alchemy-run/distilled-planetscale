@@ -7,7 +7,7 @@ import {
   ListReadOnlyRegionsInput,
   ListReadOnlyRegionsOutput,
 } from "../src/operations/listReadOnlyRegions";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listReadOnlyRegions", (it) => {
   it("should have the correct input schema", () => {
@@ -33,7 +33,7 @@ withMainLayer("listReadOnlyRegions", (it) => {
       // Use the "test" database which should exist based on other tests
       const result = yield* listReadOnlyRegions({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
       }).pipe(
         Effect.catchTag("ListReadOnlyRegionsNotfound", () =>
           Effect.succeed({ data: [], current_page: 1, next_page: 0, next_page_url: "", prev_page: 0, prev_page_url: "" }),
@@ -52,7 +52,7 @@ withMainLayer("listReadOnlyRegions", (it) => {
 
       const result = yield* listReadOnlyRegions({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         page: 1,
         per_page: 5,
       }).pipe(

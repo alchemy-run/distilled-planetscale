@@ -7,7 +7,7 @@ import {
   CompleteRevertInput,
   CompleteRevertOutput,
 } from "../src/operations/completeRevert";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("completeRevert", (it) => {
   it("should have the correct input schema", () => {
@@ -72,7 +72,7 @@ withMainLayer("completeRevert", (it) => {
   it.effect("should return CompleteRevertNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* completeRevert({
         organization,
         database,

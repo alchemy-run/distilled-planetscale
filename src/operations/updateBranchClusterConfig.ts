@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const UpdateBranchClusterConfigInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const UpdateBranchClusterConfigInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "PATCH",
   [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/cluster`,
+  [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type UpdateBranchClusterConfigInput = typeof UpdateBranchClusterConfigInput.Type;
 

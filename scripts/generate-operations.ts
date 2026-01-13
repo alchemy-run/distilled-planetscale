@@ -379,11 +379,17 @@ function generateInputSchema(
     ? `(input: ${inputType}) => \`${pathTemplate.replace(/{(\w+)}/g, "${input.$1}")}\``
     : `() => "${pathTemplate}"`;
 
+  // Build path params array for body extraction
+  const pathParamsArray = pathParamNames.length
+    ? `[${pathParamNames.map((n) => `"${n}"`).join(", ")}] as const`
+    : "[] as const";
+
   const inputSchemaCode = `export const ${inputSchemaName} = Schema.Struct({
 ${fields.join("\n")}
 }).annotations({
   [ApiMethod]: "${method.toUpperCase()}",
   [ApiPath]: ${pathFn},
+  [ApiPathParams]: ${pathParamsArray},
 });
 export type ${inputSchemaName} = typeof ${inputSchemaName}.Type;`;
 
@@ -535,7 +541,7 @@ export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
 
   // Combine all code
   const imports = `import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";`;
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";`;
 
   const code = [
     imports,

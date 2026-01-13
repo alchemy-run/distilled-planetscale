@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const TestWebhookInput = Schema.Struct({
@@ -9,6 +9,7 @@ export const TestWebhookInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}/test`,
+  [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type TestWebhookInput = typeof TestWebhookInput.Type;
 

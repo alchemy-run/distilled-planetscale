@@ -7,7 +7,7 @@ import {
   QueueDeployRequestInput,
   QueueDeployRequestOutput,
 } from "../src/operations/queueDeployRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("queueDeployRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -75,7 +75,7 @@ withMainLayer("queueDeployRequest", (it) => {
   it.effect("should return QueueDeployRequestNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* queueDeployRequest({
         organization,
         database,

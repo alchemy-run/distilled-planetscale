@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const UpdateDatabaseSettingsInput = Schema.Struct({
@@ -19,6 +19,7 @@ export const UpdateDatabaseSettingsInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "PATCH",
   [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}`,
+  [ApiPathParams]: ["organization", "database"] as const,
 });
 export type UpdateDatabaseSettingsInput = typeof UpdateDatabaseSettingsInput.Type;
 

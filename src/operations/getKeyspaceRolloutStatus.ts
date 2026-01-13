@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const GetKeyspaceRolloutStatusInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const GetKeyspaceRolloutStatusInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/rollout-status`,
+  [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type GetKeyspaceRolloutStatusInput = typeof GetKeyspaceRolloutStatusInput.Type;
 

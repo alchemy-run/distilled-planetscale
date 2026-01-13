@@ -7,7 +7,7 @@ import {
   ListBranchBouncerResizeRequestsInput,
   ListBranchBouncerResizeRequestsOutput,
 } from "../src/operations/listBranchBouncerResizeRequests";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listBranchBouncerResizeRequests", (it) => {
   it("should have the correct input schema", () => {
@@ -74,7 +74,7 @@ withMainLayer("listBranchBouncerResizeRequests", (it) => {
   it.effect("should return ListBranchBouncerResizeRequestsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* listBranchBouncerResizeRequests({
         organization,
         database,

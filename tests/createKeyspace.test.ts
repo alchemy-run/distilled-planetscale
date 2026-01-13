@@ -8,7 +8,7 @@ import {
   CreateKeyspaceOutput,
 } from "../src/operations/createKeyspace";
 import { deleteKeyspace } from "../src/operations/deleteKeyspace";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("createKeyspace", (it) => {
   it("should have the correct input schema", () => {
@@ -96,7 +96,7 @@ withMainLayer("createKeyspace", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* createKeyspace({
         organization,
-        database: "test", // Assuming a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
         name: "test-keyspace",
         cluster_size: "PS-10",
@@ -118,10 +118,10 @@ withMainLayer("createKeyspace", (it) => {
 
   // Note: This test is skipped because creating keyspaces requires an existing database/branch
   // and may incur costs. When enabled, it demonstrates proper cleanup using Effect.ensuring.
-  it.skip("should create a keyspace successfully and clean up", () =>
+  it.effect("should create a keyspace successfully and clean up", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test"; // Replace with an actual test database
+      const database = TEST_DATABASE;
       const branch = "main";
       const testKeyspaceName = `test-keyspace-${Date.now()}`;
 
@@ -144,7 +144,7 @@ withMainLayer("createKeyspace", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           const { organization } = yield* PlanetScaleCredentials;
-          const database = "test";
+          const database = TEST_DATABASE;
           const branch = "main";
           const testKeyspaceName = `test-keyspace-${Date.now()}`;
           yield* deleteKeyspace({
@@ -155,7 +155,6 @@ withMainLayer("createKeyspace", (it) => {
           }).pipe(Effect.ignore);
         }),
       ),
-      Effect.provide(MainLayer),
     ),
   );
 });

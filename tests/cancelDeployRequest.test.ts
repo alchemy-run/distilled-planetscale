@@ -7,7 +7,7 @@ import {
   CancelDeployRequestInput,
   CancelDeployRequestOutput,
 } from "../src/operations/cancelDeployRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("cancelDeployRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -72,7 +72,7 @@ withMainLayer("cancelDeployRequest", (it) => {
   it.effect("should return CancelDeployRequestNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* cancelDeployRequest({
         organization,
         database,

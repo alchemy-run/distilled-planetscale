@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const CreateBranchInput = Schema.Struct({
@@ -16,6 +16,7 @@ export const CreateBranchInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/branches`,
+  [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateBranchInput = typeof CreateBranchInput.Type;
 
@@ -25,8 +26,8 @@ export const CreateBranchOutput = Schema.Struct({
   name: Schema.String,
   created_at: Schema.String,
   updated_at: Schema.String,
-  deleted_at: Schema.String,
-  restore_checklist_completed_at: Schema.String,
+  deleted_at: Schema.NullOr(Schema.String),
+  restore_checklist_completed_at: Schema.NullOr(Schema.String),
   schema_last_updated_at: Schema.String,
   kind: Schema.Literal("mysql", "postgresql"),
   mysql_address: Schema.String,
@@ -36,7 +37,7 @@ export const CreateBranchOutput = Schema.Struct({
   vtgate_size: Schema.String,
   vtgate_count: Schema.Number,
   cluster_name: Schema.String,
-  cluster_iops: Schema.Number,
+  cluster_iops: Schema.NullOr(Schema.Number),
   ready: Schema.Boolean,
   schema_ready: Schema.Boolean,
   metal: Schema.Boolean,
@@ -50,13 +51,13 @@ export const CreateBranchOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  restored_from_branch: Schema.Struct({
+  restored_from_branch: Schema.NullOr(Schema.Struct({
     id: Schema.String,
     name: Schema.String,
     created_at: Schema.String,
     updated_at: Schema.String,
     deleted_at: Schema.String,
-  }),
+  })),
   private_edge_connectivity: Schema.Boolean,
   has_replicas: Schema.Boolean,
   has_read_only_replicas: Schema.Boolean,
@@ -72,7 +73,7 @@ export const CreateBranchOutput = Schema.Struct({
     slug: Schema.String,
     current_default: Schema.Boolean,
   }),
-  parent_branch: Schema.String,
+  parent_branch: Schema.NullOr(Schema.String),
 });
 export type CreateBranchOutput = typeof CreateBranchOutput.Type;
 

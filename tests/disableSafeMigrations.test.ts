@@ -7,7 +7,7 @@ import {
   DisableSafeMigrationsInput,
   DisableSafeMigrationsOutput,
 } from "../src/operations/disableSafeMigrations";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("disableSafeMigrations", (it) => {
   it("should have the correct input schema", () => {
@@ -77,7 +77,7 @@ withMainLayer("disableSafeMigrations", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* disableSafeMigrations({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -90,7 +90,7 @@ withMainLayer("disableSafeMigrations", (it) => {
       if (result instanceof DisableSafeMigrationsNotfound) {
         expect(result._tag).toBe("DisableSafeMigrationsNotfound");
         expect(result.organization).toBe(organization);
-        expect(result.database).toBe("test");
+        expect(result.database).toBe(TEST_DATABASE);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
     }),

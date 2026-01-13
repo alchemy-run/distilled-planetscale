@@ -7,7 +7,7 @@ import {
   GetBranchSchemaInput,
   GetBranchSchemaOutput,
 } from "../src/operations/getBranchSchema";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getBranchSchema", (it) => {
   it("should have the correct input schema", () => {
@@ -27,7 +27,7 @@ withMainLayer("getBranchSchema", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getBranchSchema({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         branch: "main",
       }).pipe(
         Effect.catchTag("GetBranchSchemaNotfound", () =>
@@ -88,7 +88,7 @@ withMainLayer("getBranchSchema", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getBranchSchema({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -101,7 +101,7 @@ withMainLayer("getBranchSchema", (it) => {
       if (result instanceof GetBranchSchemaNotfound) {
         expect(result._tag).toBe("GetBranchSchemaNotfound");
         expect(result.organization).toBe(organization);
-        expect(result.database).toBe("test");
+        expect(result.database).toBe(TEST_DATABASE);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
     }),

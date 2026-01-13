@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const ReviewDeployRequestInput = Schema.Struct({
@@ -11,6 +11,7 @@ export const ReviewDeployRequestInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
+  [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type ReviewDeployRequestInput = typeof ReviewDeployRequestInput.Type;
 

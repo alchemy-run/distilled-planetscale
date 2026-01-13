@@ -7,7 +7,7 @@ import {
   GetKeyspaceRolloutStatusInput,
   GetKeyspaceRolloutStatusOutput,
 } from "../src/operations/getKeyspaceRolloutStatus";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getKeyspaceRolloutStatus", (it) => {
   it("should have the correct input schema", () => {
@@ -74,7 +74,7 @@ withMainLayer("getKeyspaceRolloutStatus", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getKeyspaceRolloutStatus({
         organization,
-        database: "test", // Assuming a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
         keyspace: "test-keyspace",
       }).pipe(
@@ -98,7 +98,7 @@ withMainLayer("getKeyspaceRolloutStatus", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getKeyspaceRolloutStatus({
         organization,
-        database: "test", // Assuming a test database exists
+        database: TEST_DATABASE,
         branch: "main",
         keyspace: "this-keyspace-definitely-does-not-exist-12345",
       }).pipe(

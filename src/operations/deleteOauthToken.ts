@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const DeleteOauthTokenInput = Schema.Struct({
@@ -9,6 +9,7 @@ export const DeleteOauthTokenInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "DELETE",
   [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
+  [ApiPathParams]: ["organization", "application_id", "token_id"] as const,
 });
 export type DeleteOauthTokenInput = typeof DeleteOauthTokenInput.Type;
 

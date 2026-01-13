@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const LintBranchSchemaInput = Schema.Struct({
@@ -11,6 +11,7 @@ export const LintBranchSchemaInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/schema/lint`,
+  [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type LintBranchSchemaInput = typeof LintBranchSchemaInput.Type;
 

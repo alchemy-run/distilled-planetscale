@@ -7,7 +7,7 @@ import {
   GetKeyspaceVschemaInput,
   GetKeyspaceVschemaOutput,
 } from "../src/operations/getKeyspaceVschema";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getKeyspaceVschema", (it) => {
   it("should have the correct input schema", () => {
@@ -72,7 +72,7 @@ withMainLayer("getKeyspaceVschema", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getKeyspaceVschema({
         organization,
-        database: "test", // Assuming a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
         keyspace: "test-keyspace",
       }).pipe(
@@ -96,7 +96,7 @@ withMainLayer("getKeyspaceVschema", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getKeyspaceVschema({
         organization,
-        database: "test", // Assuming a test database exists
+        database: TEST_DATABASE,
         branch: "main",
         keyspace: "this-keyspace-definitely-does-not-exist-12345",
       }).pipe(

@@ -7,7 +7,7 @@ import {
   ListBouncersNotfound,
   ListBouncersOutput,
 } from "../src/operations/listBouncers";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listBouncers", (it) => {
   // Schema validation
@@ -33,7 +33,7 @@ withMainLayer("listBouncers", (it) => {
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
       // Use a test database name - adjust based on your PlanetScale setup
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
 
       const result = yield* listBouncers({
@@ -110,7 +110,7 @@ withMainLayer("listBouncers", (it) => {
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
       // Use a test database name - adjust based on your PlanetScale setup
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* listBouncers({
         organization,
         database,

@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const GetCurrentUserInput = Schema.Struct({
@@ -7,6 +7,7 @@ export const GetCurrentUserInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: () => "/user",
+  [ApiPathParams]: [] as const,
 });
 export type GetCurrentUserInput = typeof GetCurrentUserInput.Type;
 

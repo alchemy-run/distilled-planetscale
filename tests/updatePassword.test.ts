@@ -9,7 +9,7 @@ import {
 } from "../src/operations/updatePassword";
 import { createPassword } from "../src/operations/createPassword";
 import { deletePassword } from "../src/operations/deletePassword";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("updatePassword", (it) => {
   it("should have the correct input schema", () => {
@@ -86,7 +86,7 @@ withMainLayer("updatePassword", (it) => {
   it.effect("should return UpdatePasswordNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* updatePassword({
         organization,
         database,
@@ -112,7 +112,7 @@ withMainLayer("updatePassword", (it) => {
   it.effect("should return UpdatePasswordNotfound for non-existent password id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* updatePassword({
         organization,
@@ -139,8 +139,8 @@ withMainLayer("updatePassword", (it) => {
 
   // Note: This test creates a password, updates it, then cleans up.
   // It requires a valid database with a branch to exist.
-  it.skip("should update a password successfully", () => {
-    const database = "test";
+  it.effect("should update a password successfully", () => {
+    const database = TEST_DATABASE;
     const branch = "main";
     let createdPasswordId: string | undefined;
 
@@ -191,7 +191,6 @@ withMainLayer("updatePassword", (it) => {
           }
         }),
       ),
-      Effect.provide(MainLayer),
     );
   });
 });

@@ -7,7 +7,7 @@ import {
   ListParametersNotfound,
   ListParametersOutput,
 } from "../src/operations/listParameters";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listParameters", (it) => {
   // Schema validation
@@ -25,7 +25,7 @@ withMainLayer("listParameters", (it) => {
   it.effect("should list parameters successfully", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
 
       const result = yield* listParameters({
@@ -102,7 +102,7 @@ withMainLayer("listParameters", (it) => {
   it.effect("should return ListParametersNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* listParameters({
         organization,
         database,

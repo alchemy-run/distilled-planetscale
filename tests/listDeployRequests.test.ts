@@ -7,7 +7,7 @@ import {
   ListDeployRequestsInput,
   ListDeployRequestsOutput,
 } from "../src/operations/listDeployRequests";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listDeployRequests", (it) => {
   it("should have the correct input schema", () => {
@@ -35,7 +35,7 @@ withMainLayer("listDeployRequests", (it) => {
 
       const result = yield* listDeployRequests({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
       }).pipe(
         // Handle case where database doesn't exist or has no deploy requests
         Effect.catchTag("ListDeployRequestsNotfound", () =>
@@ -55,7 +55,7 @@ withMainLayer("listDeployRequests", (it) => {
 
       const result = yield* listDeployRequests({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         page: 1,
         per_page: 5,
       }).pipe(

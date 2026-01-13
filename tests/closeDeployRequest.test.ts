@@ -7,7 +7,7 @@ import {
   CloseDeployRequestInput,
   CloseDeployRequestOutput,
 } from "../src/operations/closeDeployRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("closeDeployRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -73,7 +73,7 @@ withMainLayer("closeDeployRequest", (it) => {
   it.effect("should return CloseDeployRequestNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* closeDeployRequest({
         organization,
         database,

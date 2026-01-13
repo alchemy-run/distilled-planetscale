@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const UpdateAutoApplyInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const UpdateAutoApplyInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "PUT",
   [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/auto-apply`,
+  [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type UpdateAutoApplyInput = typeof UpdateAutoApplyInput.Type;
 

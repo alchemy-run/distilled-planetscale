@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const CreateBackupInput = Schema.Struct({
@@ -13,6 +13,7 @@ export const CreateBackupInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups`,
+  [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateBackupInput = typeof CreateBackupInput.Type;
 

@@ -7,7 +7,7 @@ import {
   GetDeployRequestInput,
   GetDeployRequestOutput,
 } from "../src/operations/getDeployRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getDeployRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -76,7 +76,7 @@ withMainLayer("getDeployRequest", (it) => {
   it.effect("should return GetDeployRequestNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* getDeployRequest({
         organization,
         database,

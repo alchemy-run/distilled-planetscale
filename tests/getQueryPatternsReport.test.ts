@@ -7,7 +7,7 @@ import {
   GetQueryPatternsReportInput,
   GetQueryPatternsReportOutput,
 } from "../src/operations/getQueryPatternsReport";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getQueryPatternsReport", (it) => {
   it("should have the correct input schema", () => {
@@ -73,7 +73,7 @@ withMainLayer("getQueryPatternsReport", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getQueryPatternsReport({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
         id: "non-existent-report-id",
       }).pipe(
@@ -97,7 +97,7 @@ withMainLayer("getQueryPatternsReport", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getQueryPatternsReport({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "main",
         id: "this-report-id-definitely-does-not-exist-12345",
       }).pipe(

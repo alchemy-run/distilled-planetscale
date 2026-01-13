@@ -7,7 +7,7 @@ import {
   ListExtensionsNotfound,
   ListExtensionsOutput,
 } from "../src/operations/listExtensions";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listExtensions", (it) => {
   // Schema validation
@@ -25,7 +25,7 @@ withMainLayer("listExtensions", (it) => {
   it.effect("should list extensions successfully", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
 
       const result = yield* listExtensions({
@@ -90,7 +90,7 @@ withMainLayer("listExtensions", (it) => {
   it.effect("should return ListExtensionsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* listExtensions({
         organization,
         database,

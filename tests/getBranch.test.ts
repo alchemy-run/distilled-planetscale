@@ -7,7 +7,7 @@ import {
   GetBranchInput,
   GetBranchOutput,
 } from "../src/operations/getBranch";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getBranch", (it) => {
   it("should have the correct input schema", () => {
@@ -77,7 +77,7 @@ withMainLayer("getBranch", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* getBranch({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -90,7 +90,7 @@ withMainLayer("getBranch", (it) => {
       if (result instanceof GetBranchNotfound) {
         expect(result._tag).toBe("GetBranchNotfound");
         expect(result.organization).toBe(organization);
-        expect(result.database).toBe("test");
+        expect(result.database).toBe(TEST_DATABASE);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
     }),

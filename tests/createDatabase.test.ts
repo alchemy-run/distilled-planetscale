@@ -46,10 +46,7 @@ withMainLayer("createDatabase", (it) => {
       }
     }),
   );
-
-  // Note: This test is skipped because the current client.ts doesn't send request bodies for POST.
-  // When that's fixed, this test demonstrates proper cleanup using Effect.ensuring.
-  it.skip("should create a database successfully and clean up", () =>
+  it.effect("should create a database successfully and clean up", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
       const testDbName = `test-db-${Date.now()}`;
@@ -75,7 +72,6 @@ withMainLayer("createDatabase", (it) => {
           }).pipe(Effect.ignore);
         }),
       ),
-      Effect.provide(MainLayer),
     ),
   );
 });

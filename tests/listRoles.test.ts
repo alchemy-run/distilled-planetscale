@@ -7,7 +7,7 @@ import {
   ListRolesInput,
   ListRolesOutput,
 } from "../src/operations/listRoles";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listRoles", (it) => {
   it("should have the correct input schema", () => {
@@ -76,7 +76,7 @@ withMainLayer("listRoles", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* listRoles({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -99,7 +99,7 @@ withMainLayer("listRoles", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* listRoles({
         organization,
-        database: "test", // Assumes a test database exists
+        database: TEST_DATABASE,
         branch: "main",
       }).pipe(
         // Handle case where test database/branch doesn't exist

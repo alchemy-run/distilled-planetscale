@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const ListParametersInput = Schema.Struct({
@@ -9,6 +9,7 @@ export const ListParametersInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/parameters`,
+  [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type ListParametersInput = typeof ListParametersInput.Type;
 

@@ -7,7 +7,7 @@ import {
   ListDeployOperationsInput,
   ListDeployOperationsOutput,
 } from "../src/operations/listDeployOperations";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listDeployOperations", (it) => {
   it("should have the correct input schema", () => {
@@ -74,7 +74,7 @@ withMainLayer("listDeployOperations", (it) => {
   it.effect("should return ListDeployOperationsNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* listDeployOperations({
         organization,
         database,

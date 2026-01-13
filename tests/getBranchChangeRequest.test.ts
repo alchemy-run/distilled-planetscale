@@ -7,7 +7,7 @@ import {
   GetBranchChangeRequestInput,
   GetBranchChangeRequestOutput,
 } from "../src/operations/getBranchChangeRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getBranchChangeRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -78,7 +78,7 @@ withMainLayer("getBranchChangeRequest", (it) => {
   it.effect("should return GetBranchChangeRequestNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* getBranchChangeRequest({
         organization,
         database,
@@ -104,7 +104,7 @@ withMainLayer("getBranchChangeRequest", (it) => {
   it.effect("should return GetBranchChangeRequestNotfound for non-existent change request id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* getBranchChangeRequest({
         organization,

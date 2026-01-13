@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const GetOauthApplicationInput = Schema.Struct({
@@ -8,6 +8,7 @@ export const GetOauthApplicationInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; application_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}`,
+  [ApiPathParams]: ["organization", "application_id"] as const,
 });
 export type GetOauthApplicationInput = typeof GetOauthApplicationInput.Type;
 

@@ -7,7 +7,7 @@ import {
   ReassignRoleObjectsInput,
   ReassignRoleObjectsOutput,
 } from "../src/operations/reassignRoleObjects";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("reassignRoleObjects", (it) => {
   it("should have the correct input schema", () => {
@@ -75,7 +75,7 @@ withMainLayer("reassignRoleObjects", (it) => {
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
       // Use a test database name - adjust based on your PlanetScale setup
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* reassignRoleObjects({
         organization,
         database,
@@ -103,7 +103,7 @@ withMainLayer("reassignRoleObjects", (it) => {
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
       // Use a test database name - adjust based on your PlanetScale setup
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* reassignRoleObjects({
         organization,

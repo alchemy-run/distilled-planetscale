@@ -5,7 +5,7 @@ import {
   getDatabase,
   GetDatabaseNotfound,
 } from "../src/operations/getDatabase";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getDatabase", (it) => {
   it.effect("should fetch a database successfully", () =>
@@ -15,7 +15,7 @@ withMainLayer("getDatabase", (it) => {
       // Use a test database name - adjust based on your PlanetScale setup
       const result = yield* getDatabase({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
       }).pipe(
         Effect.catchTag("GetDatabaseNotfound", () =>
           Effect.succeed({ name: "not-found", state: "ready" as const }),

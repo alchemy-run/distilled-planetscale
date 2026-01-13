@@ -7,7 +7,7 @@ import {
   ListBranchChangeRequestsNotfound,
   ListBranchChangeRequestsOutput,
 } from "../src/operations/listBranchChangeRequests";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("listBranchChangeRequests", (it) => {
   // Schema validation
@@ -32,7 +32,7 @@ withMainLayer("listBranchChangeRequests", (it) => {
   it.effect("should list branch change requests successfully", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
 
       const result = yield* listBranchChangeRequests({
@@ -108,7 +108,7 @@ withMainLayer("listBranchChangeRequests", (it) => {
   it.effect("should return ListBranchChangeRequestsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* listBranchChangeRequests({
         organization,
         database,

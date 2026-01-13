@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const CreateBouncerInput = Schema.Struct({
@@ -13,6 +13,7 @@ export const CreateBouncerInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers`,
+  [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateBouncerInput = typeof CreateBouncerInput.Type;
 

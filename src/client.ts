@@ -1,4 +1,4 @@
-import { HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
+import { HttpBody, HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
 import { Effect, Schema } from "effect";
 import { PlanetScaleCredentials } from "./credentials";
 
@@ -11,6 +11,7 @@ const ApiErrorResponse = Schema.Struct({
 export const ApiErrorCode = Symbol.for("planetscale/ApiErrorCode");
 export const ApiMethod = Symbol.for("planetscale/ApiMethod");
 export const ApiPath = Symbol.for("planetscale/ApiPath");
+export const ApiPathParams = Symbol.for("planetscale/ApiPathParams");
 
 // Type for HTTP methods
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -102,12 +103,14 @@ export const API = {
       | InstanceType<E>
       | PlanetScaleApiError
       | PlanetScaleParseError
-      | HttpClientError.HttpClientError;
+      | HttpClientError.HttpClientError
+      | HttpBody.HttpBodyError;
     type Context = PlanetScaleCredentials | HttpClient.HttpClient;
 
     // Read method and path from input schema annotations
     const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
     const path = getAnnotation<(input: Input) => string>(config.inputSchema, ApiPath);
+    const pathParams = getAnnotation<readonly string[]>(config.inputSchema, ApiPathParams) ?? [];
 
     if (!method) {
       throw new Error("Input schema must have ApiMethod annotation");
@@ -121,27 +124,44 @@ export const API = {
       (input) => input as Record<string, unknown>,
     );
 
+    // Helper to extract body params (non-path params) from input
+    const getBodyParams = (input: Input): Record<string, unknown> | undefined => {
+      if (method === "GET") return undefined;
+      const pathParamSet = new Set(pathParams);
+      const body: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+        if (!pathParamSet.has(key) && value !== undefined) {
+          body[key] = value;
+        }
+      }
+      return Object.keys(body).length > 0 ? body : undefined;
+    };
+
     return (input: Input): Effect.Effect<Output, Errors, Context> =>
       Effect.gen(function* () {
         const { token, apiBaseUrl } = yield* PlanetScaleCredentials;
         const client = yield* HttpClient.HttpClient;
 
-        const response = yield* HttpClientRequest.make(method)(apiBaseUrl + path(input)).pipe(
+        const requestBody = getBodyParams(input);
+        let request = HttpClientRequest.make(method)(apiBaseUrl + path(input)).pipe(
           HttpClientRequest.setHeader("Authorization", token),
           HttpClientRequest.setHeader("Content-Type", "application/json"),
-          client.execute,
-          Effect.scoped,
         );
+        if (requestBody) {
+          request = yield* HttpClientRequest.bodyJson(requestBody)(request);
+        }
+
+        const response = yield* client.execute(request).pipe(Effect.scoped);
 
         if (response.status >= 400) {
           const errorBody = yield* response.json;
           return yield* matchApiError(input, errorBody);
         }
 
-        const body = yield* response.json;
-        return yield* Schema.decodeUnknown(config.outputSchema)(body).pipe(
+        const responseBody = yield* response.json;
+        return yield* Schema.decodeUnknown(config.outputSchema)(responseBody).pipe(
           Effect.catchTag("ParseError", (cause) =>
-            Effect.fail(new PlanetScaleParseError({ body, cause })),
+            Effect.fail(new PlanetScaleParseError({ body: responseBody, cause })),
           ),
         ) as Effect.Effect<Output, Errors>;
       });

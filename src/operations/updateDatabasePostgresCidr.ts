@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const UpdateDatabasePostgresCidrInput = Schema.Struct({
@@ -12,6 +12,7 @@ export const UpdateDatabasePostgresCidrInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "PUT",
   [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
+  [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type UpdateDatabasePostgresCidrInput = typeof UpdateDatabasePostgresCidrInput.Type;
 

@@ -7,7 +7,7 @@ import {
   UpdateBranchChangeRequestInput,
   UpdateBranchChangeRequestOutput,
 } from "../src/operations/updateBranchChangeRequest";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("updateBranchChangeRequest", (it) => {
   it("should have the correct input schema", () => {
@@ -80,7 +80,7 @@ withMainLayer("updateBranchChangeRequest", (it) => {
   it.effect("should return UpdateBranchChangeRequestNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* updateBranchChangeRequest({
         organization,
         database,

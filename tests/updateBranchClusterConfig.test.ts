@@ -7,7 +7,7 @@ import {
   UpdateBranchClusterConfigInput,
   UpdateBranchClusterConfigOutput,
 } from "../src/operations/updateBranchClusterConfig";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("updateBranchClusterConfig", (it) => {
   it("should have the correct input schema", () => {
@@ -73,7 +73,7 @@ withMainLayer("updateBranchClusterConfig", (it) => {
       const { organization } = yield* PlanetScaleCredentials;
       const result = yield* updateBranchClusterConfig({
         organization,
-        database: "test",
+        database: TEST_DATABASE,
         branch: "this-branch-definitely-does-not-exist-12345",
         cluster_size: "PS-10",
       }).pipe(
@@ -87,7 +87,7 @@ withMainLayer("updateBranchClusterConfig", (it) => {
       if (result instanceof UpdateBranchClusterConfigNotfound) {
         expect(result._tag).toBe("UpdateBranchClusterConfigNotfound");
         expect(result.organization).toBe(organization);
-        expect(result.database).toBe("test");
+        expect(result.database).toBe(TEST_DATABASE);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
     }),

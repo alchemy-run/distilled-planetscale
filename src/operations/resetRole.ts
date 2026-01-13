@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const ResetRoleInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const ResetRoleInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "POST",
   [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reset`,
+  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type ResetRoleInput = typeof ResetRoleInput.Type;
 

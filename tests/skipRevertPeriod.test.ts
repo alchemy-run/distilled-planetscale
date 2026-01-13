@@ -7,7 +7,7 @@ import {
   SkipRevertPeriodInput,
   SkipRevertPeriodOutput,
 } from "../src/operations/skipRevertPeriod";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("skipRevertPeriod", (it) => {
   it("should have the correct input schema", () => {
@@ -72,7 +72,7 @@ withMainLayer("skipRevertPeriod", (it) => {
   it.effect("should return SkipRevertPeriodNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* skipRevertPeriod({
         organization,
         database,

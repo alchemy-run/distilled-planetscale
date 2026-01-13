@@ -7,7 +7,7 @@ import {
   UpdateAutoDeleteBranchInput,
   UpdateAutoDeleteBranchOutput,
 } from "../src/operations/updateAutoDeleteBranch";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("updateAutoDeleteBranch", (it) => {
   it("should have the correct input schema", () => {
@@ -76,7 +76,7 @@ withMainLayer("updateAutoDeleteBranch", (it) => {
   it.effect("should return UpdateAutoDeleteBranchNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* updateAutoDeleteBranch({
         organization,
         database,

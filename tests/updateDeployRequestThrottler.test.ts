@@ -7,7 +7,7 @@ import {
   UpdateDeployRequestThrottlerInput,
   UpdateDeployRequestThrottlerOutput,
 } from "../src/operations/updateDeployRequestThrottler";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("updateDeployRequestThrottler", (it) => {
   it("should have the correct input schema", () => {
@@ -71,7 +71,7 @@ withMainLayer("updateDeployRequestThrottler", (it) => {
   it.effect("should return UpdateDeployRequestThrottlerNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* updateDeployRequestThrottler({
         organization,
         database,

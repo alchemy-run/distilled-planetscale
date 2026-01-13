@@ -8,7 +8,7 @@ import {
   CreateBranchOutput,
 } from "../src/operations/createBranch";
 import { deleteBranch } from "../src/operations/deleteBranch";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("createBranch", (it) => {
   it("should have the correct input schema", () => {
@@ -84,10 +84,10 @@ withMainLayer("createBranch", (it) => {
 
   // Note: This test is skipped because creating branches requires an existing database
   // and may incur costs. When enabled, it demonstrates proper cleanup using Effect.ensuring.
-  it.skip("should create a branch successfully and clean up", () =>
+  it.effect("should create a branch successfully and clean up", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test"; // Replace with an actual test database
+      const database = TEST_DATABASE;
       const testBranchName = `test-branch-${Date.now()}`;
 
       const result = yield* createBranch({
@@ -106,7 +106,7 @@ withMainLayer("createBranch", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           const { organization } = yield* PlanetScaleCredentials;
-          const database = "test";
+          const database = TEST_DATABASE;
           const testBranchName = `test-branch-${Date.now()}`;
           yield* deleteBranch({
             organization,
@@ -115,7 +115,6 @@ withMainLayer("createBranch", (it) => {
           }).pipe(Effect.ignore);
         }),
       ),
-      Effect.provide(MainLayer),
     ),
   );
 });

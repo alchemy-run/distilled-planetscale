@@ -7,7 +7,7 @@ import {
   DeleteQueryPatternsReportInput,
   DeleteQueryPatternsReportOutput,
 } from "../src/operations/deleteQueryPatternsReport";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("deleteQueryPatternsReport", (it) => {
   it("should have the correct input schema", () => {
@@ -71,7 +71,7 @@ withMainLayer("deleteQueryPatternsReport", (it) => {
   it.effect("should return DeleteQueryPatternsReportNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* deleteQueryPatternsReport({
         organization,
         database,
@@ -97,7 +97,7 @@ withMainLayer("deleteQueryPatternsReport", (it) => {
   it.effect("should return DeleteQueryPatternsReportNotfound for non-existent report id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* deleteQueryPatternsReport({
         organization,

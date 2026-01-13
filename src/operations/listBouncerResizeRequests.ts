@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const ListBouncerResizeRequestsInput = Schema.Struct({
@@ -12,6 +12,7 @@ export const ListBouncerResizeRequestsInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
+  [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
 });
 export type ListBouncerResizeRequestsInput = typeof ListBouncerResizeRequestsInput.Type;
 

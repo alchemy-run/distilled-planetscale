@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const GetPasswordInput = Schema.Struct({
@@ -10,6 +10,7 @@ export const GetPasswordInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
+  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type GetPasswordInput = typeof GetPasswordInput.Type;
 
@@ -18,15 +19,15 @@ export const GetPasswordOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   role: Schema.Literal("reader", "writer", "admin", "readwriter"),
-  cidrs: Schema.Array(Schema.String),
+  cidrs: Schema.NullOr(Schema.Array(Schema.String)),
   created_at: Schema.String,
-  deleted_at: Schema.String,
-  expires_at: Schema.String,
-  last_used_at: Schema.String,
+  deleted_at: Schema.NullOr(Schema.String),
+  expires_at: Schema.NullOr(Schema.String),
+  last_used_at: Schema.NullOr(Schema.String),
   expired: Schema.Boolean,
   direct_vtgate: Schema.Boolean,
   direct_vtgate_addresses: Schema.Array(Schema.String),
-  ttl_seconds: Schema.Number,
+  ttl_seconds: Schema.NullOr(Schema.Number),
   access_host_url: Schema.String,
   access_host_regional_url: Schema.String,
   access_host_regional_urls: Schema.Array(Schema.String),
@@ -46,7 +47,7 @@ export const GetPasswordOutput = Schema.Struct({
     current_default: Schema.Boolean,
   }),
   username: Schema.String,
-  plain_text: Schema.String,
+  plain_text: Schema.NullOr(Schema.String),
   replica: Schema.Boolean,
   renewable: Schema.Boolean,
   database_branch: Schema.Struct({

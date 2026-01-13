@@ -9,7 +9,7 @@ import {
 } from "../src/operations/renewPassword";
 import { createPassword } from "../src/operations/createPassword";
 import { deletePassword } from "../src/operations/deletePassword";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("renewPassword", (it) => {
   it("should have the correct input schema", () => {
@@ -86,7 +86,7 @@ withMainLayer("renewPassword", (it) => {
   it.effect("should return RenewPasswordNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* renewPassword({
         organization,
         database,
@@ -112,7 +112,7 @@ withMainLayer("renewPassword", (it) => {
   it.effect("should return RenewPasswordNotfound for non-existent password id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* renewPassword({
         organization,
@@ -140,8 +140,8 @@ withMainLayer("renewPassword", (it) => {
   // Note: This test creates a renewable password, renews it, then cleans up.
   // It requires a valid database with a branch to exist.
   // Passwords must be created with a TTL to be renewable.
-  it.skip("should renew a password successfully", () => {
-    const database = "test";
+  it.effect("should renew a password successfully", () => {
+    const database = TEST_DATABASE;
     const branch = "main";
     let createdPasswordId: string | undefined;
 
@@ -194,7 +194,6 @@ withMainLayer("renewPassword", (it) => {
           }
         }),
       ),
-      Effect.provide(MainLayer),
     );
   });
 });

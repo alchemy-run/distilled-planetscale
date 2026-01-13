@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
 export const WorkflowRetryInput = Schema.Struct({
@@ -9,6 +9,7 @@ export const WorkflowRetryInput = Schema.Struct({
 }).annotations({
   [ApiMethod]: "PATCH",
   [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/retry`,
+  [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type WorkflowRetryInput = typeof WorkflowRetryInput.Type;
 

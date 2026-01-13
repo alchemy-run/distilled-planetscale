@@ -7,7 +7,7 @@ import {
   RenewRoleInput,
   RenewRoleOutput,
 } from "../src/operations/renewRole";
-import { withMainLayer } from "./setup";
+import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("renewRole", (it) => {
   it("should have the correct input schema", () => {
@@ -90,7 +90,7 @@ withMainLayer("renewRole", (it) => {
   it.effect("should return RenewRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const result = yield* renewRole({
         organization,
         database,
@@ -116,7 +116,7 @@ withMainLayer("renewRole", (it) => {
   it.effect("should return RenewRoleNotfound for non-existent role id", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const database = "test";
+      const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* renewRole({
         organization,
