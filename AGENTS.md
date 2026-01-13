@@ -41,7 +41,7 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │   └── listDatabases.test.ts
 ├── specs/
 │   ├── openapi.json              # PlanetScale OpenAPI spec (generated)
-│   └── patch-getorganization.md  # Documents spec discrepancies
+│   └── *.patch.json              # JSON Patch files for spec fixes
 ├── scripts/
 │   ├── setup.ts            # Fetches PlanetScale OpenAPI spec
 │   ├── generate-operations.ts  # Generates operations using Claude AI
@@ -284,59 +284,95 @@ it.effect("should create resource successfully", () =>
 
 ## Schema Patching
 
-When tests fail due to type mismatches between input schemas and error schemas, you may need to patch the operation.
+When the OpenAPI spec has discrepancies with the actual API behavior, use JSON Patch files to fix the spec during generation.
 
-### Common Issue: Number vs String in Error Schemas
+### Patch File Format
 
-The client passes input properties directly to error constructors. If the input schema has `number: Schema.Number` but the error schema has `number: Schema.String`, the error constructor will fail with a parse error like:
+Patches use the [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902) format. Create a `.patch.json` file in the `specs/` directory:
 
-```
-Expected string, actual 1
-```
-
-**Fix**: Use `Schema.NumberFromString` in the error schema to accept both numbers and string representations:
-
-```typescript
-// Before (broken)
-export class OperationNotfound extends Schema.TaggedError<OperationNotfound>()(
-  "OperationNotfound",
-  {
-    organization: Schema.String,
-    number: Schema.String,  // ❌ Fails when input passes a number
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-) {}
-
-// After (fixed)
-export class OperationNotfound extends Schema.TaggedError<OperationNotfound>()(
-  "OperationNotfound",
-  {
-    organization: Schema.String,
-    number: Schema.NumberFromString,  // ✅ Accepts both numbers and strings
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-) {}
+```json
+{
+  "description": "Brief description of what this patch fixes",
+  "patches": [
+    {
+      "op": "replace",
+      "path": "/definitions/SomeSchema/properties/field/type",
+      "value": "string"
+    },
+    {
+      "op": "add",
+      "path": "/definitions/SomeSchema/properties/field/x-nullable",
+      "value": true
+    },
+    {
+      "op": "remove",
+      "path": "/definitions/SomeSchema/required/2"
+    }
+  ]
+}
 ```
 
-### Documenting Patches
+### Supported Operations
 
-When patching an operation, create a `specs/patch-<operationName>.md` file documenting the discrepancy:
+| Operation | Description |
+|-----------|-------------|
+| `add` | Add a new property or array element |
+| `remove` | Remove a property or array element |
+| `replace` | Replace an existing value |
+| `move` | Move a value from one location to another |
+| `copy` | Copy a value to a new location |
+| `test` | Test that a value matches (fails if not) |
 
-```markdown
-# OpenAPI Spec Discrepancies: <HTTP_METHOD> <path>
+### Common Patches
 
-## 1. Incorrect Type: `fieldName`
-
-| Field       | Spec Type | Actual Type |
-| ----------- | --------- | ----------- |
-| `fieldName` | `string`  | `number`    |
-
-**Workaround**: The error schemas use `Schema.NumberFromString` to handle both cases.
+**Make a field optional** (remove from required array):
+```json
+{
+  "op": "replace",
+  "path": "/definitions/Schema/required",
+  "value": ["field1", "field2"]
+}
 ```
 
-See `specs/patch-getorganization.md` and `specs/patch-cancelDeployRequest.md` for examples.
+**Make a field nullable** (add x-nullable extension):
+```json
+{
+  "op": "add",
+  "path": "/definitions/Schema/properties/fieldName/x-nullable",
+  "value": true
+}
+```
+
+**Change a field type**:
+```json
+{
+  "op": "replace",
+  "path": "/definitions/Schema/properties/fieldName/type",
+  "value": "string"
+}
+```
+
+### Applying Patches
+
+Patches are automatically applied when running `bun run generate`. You can also test patches standalone:
+
+```bash
+bun run scripts/apply-patches.ts
+```
+
+### JSON Pointer Syntax
+
+Paths use [JSON Pointer (RFC 6901)](https://tools.ietf.org/html/rfc6901) syntax:
+- `/` separates path segments
+- `~0` escapes `~` characters
+- `~1` escapes `/` characters
+- Array indices are numbers (e.g., `/required/0`)
+- `-` refers to the end of an array (for `add` operations)
+
+Example paths:
+- `/definitions/Organization/required` - the required array
+- `/definitions/Organization/properties/name/type` - a property's type
+- `/paths/~1organizations~1{organization}/get/responses/200` - a response (note `~1` escapes `/`)
 
 ## Tools
 

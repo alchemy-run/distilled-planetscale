@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { applyAllPatches } from "./apply-patches";
 
 // ============================================================================
 // Types for OpenAPI Spec
@@ -56,6 +57,7 @@ interface SchemaObject {
   additionalProperties?: boolean | SchemaObject;
   description?: string;
   default?: unknown;
+  "x-nullable"?: boolean;
 }
 
 // ============================================================================
@@ -128,35 +130,49 @@ function openApiTypeToEffectSchema(
   // Handle enum
   if (prop.enum && prop.enum.length > 0) {
     const literals = prop.enum.map((v) => `"${v}"`).join(", ");
-    return `Schema.Literal(${literals})`;
+    const baseSchema = `Schema.Literal(${literals})`;
+    return prop["x-nullable"] ? `Schema.NullOr(${baseSchema})` : baseSchema;
   }
 
   // Handle type
+  let baseSchema: string;
   switch (prop.type) {
     case "string":
-      return "Schema.String";
+      baseSchema = "Schema.String";
+      break;
     case "integer":
     case "number":
-      return "Schema.Number";
+      baseSchema = "Schema.Number";
+      break;
     case "boolean":
-      return "Schema.Boolean";
+      baseSchema = "Schema.Boolean";
+      break;
     case "array":
       if (prop.items) {
         const itemSchema = openApiTypeToEffectSchema(prop.items, spec, indent, seenRefs);
-        return `Schema.Array(${itemSchema})`;
+        baseSchema = `Schema.Array(${itemSchema})`;
+      } else {
+        baseSchema = "Schema.Array(Schema.Unknown)";
       }
-      return "Schema.Array(Schema.Unknown)";
+      break;
     case "object":
       if (prop.properties) {
-        return generateStructSchema(prop, spec, indent, seenRefs);
+        baseSchema = generateStructSchema(prop, spec, indent, seenRefs);
+      } else {
+        baseSchema = "Schema.Unknown";
       }
-      return "Schema.Unknown";
+      break;
     default:
       if (prop.properties) {
-        return generateStructSchema(prop, spec, indent, seenRefs);
+        baseSchema = generateStructSchema(prop, spec, indent, seenRefs);
+      } else {
+        baseSchema = "Schema.Unknown";
       }
-      return "Schema.Unknown";
+      break;
   }
+
+  // Wrap with NullOr if x-nullable is true
+  return prop["x-nullable"] ? `Schema.NullOr(${baseSchema})` : baseSchema;
 }
 
 function generateStructSchema(
@@ -200,7 +216,7 @@ function generateInputSchema(
   pathTemplate: string,
   parameters: Parameter[],
   spec: OpenAPISpec,
-): { inputSchemaCode: string; inputSchemaName: string; pathParams: string[]; inputType: string } {
+): { inputSchemaCode: string; inputSchemaName: string; pathParamInfos: PathParamInfo[]; inputType: string } {
   const inputSchemaName = `${toPascalCase(operationId)}Input`;
   const pathParams = parameters.filter((p) => p.in === "path");
   const queryParams = parameters.filter((p) => p.in === "query");
@@ -250,8 +266,12 @@ function generateInputSchema(
     }
   }
 
-  // Build input type for path function
-  const pathParamNames = pathParams.map((p) => p.name);
+  // Build path param info for error schemas
+  const pathParamInfos: PathParamInfo[] = pathParams.map((p) => ({
+    name: p.name,
+    type: p.type || "string",
+  }));
+  const pathParamNames = pathParamInfos.map((p) => p.name);
   const inputTypeFields = pathParamNames.map((n) => `${n}: string`).join("; ");
   const inputType = inputTypeFields ? `{ ${inputTypeFields} }` : "Record<string, never>";
 
@@ -268,7 +288,7 @@ ${fields.join("\n")}
 });
 export type ${inputSchemaName} = typeof ${inputSchemaName}.Type;`;
 
-  return { inputSchemaCode, inputSchemaName, pathParams: pathParamNames, inputType };
+  return { inputSchemaCode, inputSchemaName, pathParamInfos, inputType };
 }
 
 function generateOutputSchema(
@@ -305,10 +325,15 @@ export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
   };
 }
 
+interface PathParamInfo {
+  name: string;
+  type: string;
+}
+
 function generateErrorClasses(
   operationId: string,
   responses: Record<string, Response>,
-  pathParams: string[],
+  pathParamInfos: PathParamInfo[],
 ): { errorCode: string; errorNames: string[] } {
   const className = toPascalCase(operationId);
   const errorNames: string[] = [];
@@ -330,7 +355,14 @@ function generateErrorClasses(
     const errorName = `${className}${toPascalCase(code.replace(/_/g, " ").replace(/ /g, ""))}`;
     errorNames.push(errorName);
 
-    const paramFields = pathParams.map((p) => `    ${p}: Schema.String,`).join("\n");
+    // Use NumberFromString for integer params so error constructors accept
+    // both the numeric input value and potential string API responses
+    const paramFields = pathParamInfos
+      .map((p) => {
+        const schema = p.type === "integer" ? "Schema.NumberFromString" : "Schema.String";
+        return `    ${p.name}: ${schema},`;
+      })
+      .join("\n");
 
     errorClasses.push(`export class ${errorName} extends Schema.TaggedError<${errorName}>()(
   "${errorName}",
@@ -359,7 +391,7 @@ function generateOperation(
   const parameters = operation.parameters || [];
 
   // Generate input schema
-  const { inputSchemaCode, inputSchemaName, pathParams } = generateInputSchema(
+  const { inputSchemaCode, inputSchemaName, pathParamInfos } = generateInputSchema(
     operationId,
     method,
     pathTemplate,
@@ -380,7 +412,7 @@ function generateOperation(
   );
 
   // Generate error classes
-  const { errorCode, errorNames } = generateErrorClasses(operationId, operation.responses, pathParams);
+  const { errorCode, errorNames } = generateErrorClasses(operationId, operation.responses, pathParamInfos);
 
   // Generate the operation function
   const errorsArray =
@@ -430,7 +462,8 @@ import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";`;
 // ============================================================================
 
 async function main() {
-  const specPath = path.join(process.cwd(), "specs/openapi.json");
+  const specsDir = path.join(process.cwd(), "specs");
+  const specPath = path.join(specsDir, "openapi.json");
   const operationsDir = path.join(process.cwd(), "src/operations");
   const indexPath = path.join(process.cwd(), "index.ts");
 
@@ -438,6 +471,21 @@ async function main() {
   console.log("Reading OpenAPI spec...");
   const specContent = fs.readFileSync(specPath, "utf-8");
   const spec: OpenAPISpec = JSON.parse(specContent);
+
+  // Apply patches
+  console.log("Applying patches...");
+  const { applied, errors } = applyAllPatches(spec, specsDir);
+  for (const msg of applied) {
+    console.log(`  ✓ ${msg}`);
+  }
+  if (errors.length > 0) {
+    console.log("\nPatch errors:");
+    for (const msg of errors) {
+      console.log(`  ✗ ${msg}`);
+    }
+    process.exit(1);
+  }
+  console.log("");
 
   // Create operations directory if it doesn't exist
   if (!fs.existsSync(operationsDir)) {

@@ -14,8 +14,8 @@ export type ListAuditLogsInput = typeof ListAuditLogsInput.Type;
 export const ListAuditLogsOutput = Schema.Struct({
   has_next: Schema.Boolean,
   has_prev: Schema.Boolean,
-  cursor_start: Schema.String,
-  cursor_end: Schema.String,
+  cursor_start: Schema.NullOr(Schema.String),
+  cursor_end: Schema.NullOr(Schema.String),
   data: Schema.Array(Schema.Struct({
     id: Schema.String,
     actor_id: Schema.String,

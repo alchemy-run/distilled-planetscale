@@ -14,7 +14,7 @@ export type GetInvoiceInput = typeof GetInvoiceInput.Type;
 // Output Schema
 export const GetInvoiceOutput = Schema.Struct({
   id: Schema.String,
-  total: Schema.Number,
+  total: Schema.String,
   billing_period_start: Schema.String,
   billing_period_end: Schema.String,
 });
