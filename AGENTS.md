@@ -93,6 +93,97 @@ export const getOrganization = makeOperation({
 - **`PlanetScaleParseError`** - Schema validation failures (body + cause)
 - **`HttpClientError`** - Network/connection errors from @effect/platform
 
+## Error Categories
+
+Errors can be annotated with categories for semantic grouping and handling. Categories are defined in `src/category.ts` and allow you to catch errors by type rather than specific class.
+
+### Available Categories
+
+| Category | Description | Built-in Errors |
+|----------|-------------|-----------------|
+| `AuthError` | Authentication/authorization failures (401, 403) | - |
+| `BadRequestError` | Invalid request parameters (400) | - |
+| `ConflictError` | Resource conflicts (409) | - |
+| `NotFoundError` | Resource not found (404) | - |
+| `QuotaError` | Quota/limit exceeded | - |
+| `ServerError` | Server-side errors (5xx) | `PlanetScaleApiError`, `PlanetScaleError` |
+| `ThrottlingError` | Rate limiting (429) | - |
+| `NetworkError` | Connection/network failures | - |
+| `ParseError` | Response parsing failures | `PlanetScaleParseError` |
+| `ConfigurationError` | Missing configuration | `ConfigError` |
+
+### Adding Categories to Errors
+
+Use `withCategory` or convenience decorators with `.pipe()`:
+
+```typescript
+import { Schema } from "effect";
+import * as Category from "./category";
+import { ApiErrorCode } from "./client";
+
+export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationNotfound>()(
+  "GetOrganizationNotfound",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "not_found" },
+).pipe(Category.withNotFoundError) {}
+
+// Multiple categories
+export class RateLimitError extends Schema.TaggedError<RateLimitError>()(
+  "RateLimitError",
+  { retryAfter: Schema.Number },
+).pipe(Category.withCategory(Category.ThrottlingError, Category.ServerError)) {}
+```
+
+### Catching Errors by Category
+
+```typescript
+import { Effect } from "effect";
+import { Category } from "distilled-planetscale";
+
+// Catch a single category
+const program = getOrganization({ organization: "test" }).pipe(
+  Category.catchNotFoundError((err) =>
+    Effect.succeed({ fallback: true })
+  ),
+);
+
+// Catch multiple categories
+const program2 = getOrganization({ organization: "test" }).pipe(
+  Category.catchErrors(
+    Category.NotFoundError,
+    Category.AuthError,
+    (err) => Effect.succeed({ fallback: true })
+  ),
+);
+```
+
+### Category Predicates
+
+Use predicates for retry logic or conditional handling:
+
+```typescript
+import { Category } from "distilled-planetscale";
+
+// Individual predicates
+Category.isAuthError(error);       // true if has AuthError category
+Category.isNotFoundError(error);   // true if has NotFoundError category
+Category.isServerError(error);     // true if has ServerError category
+
+// Transient errors (good for retry logic)
+Category.isTransientError(error);  // true if ThrottlingError | ServerError | NetworkError
+
+// Use with Effect.retry
+const program = myOperation().pipe(
+  Effect.retry({
+    times: 3,
+    while: Category.isTransientError,
+  }),
+);
+```
+
 ## Usage
 
 ```typescript

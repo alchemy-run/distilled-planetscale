@@ -1,5 +1,6 @@
 import { HttpBody, HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
 import { Effect, Schema } from "effect";
+import * as Category from "./category";
 import { PlanetScaleCredentials } from "./credentials";
 
 // API Error Response Schema - parse just the code, keep the rest as unknown
@@ -16,13 +17,13 @@ export const ApiPathParams = Symbol.for("planetscale/ApiPathParams");
 // Type for HTTP methods
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-// Generic API Error
+// Generic API Error - uncategorized fallback for unknown API error codes
 export class PlanetScaleApiError extends Schema.TaggedError<PlanetScaleApiError>()(
   "PlanetScaleApiError",
   {
     body: Schema.Unknown,
   },
-) {}
+).pipe(Category.withServerError) {}
 
 // Schema parse error wrapper
 export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseError>()(
@@ -31,7 +32,7 @@ export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseEr
     body: Schema.Unknown,
     cause: Schema.Unknown,
   },
-) {}
+).pipe(Category.withParseError) {}
 
 // Helper to get the API error code from a TaggedError class
 const getErrorCode = (ErrorClass: { ast: Schema.Schema.Any["ast"] }): string | undefined => {
@@ -41,6 +42,30 @@ const getErrorCode = (ErrorClass: { ast: Schema.Schema.Any["ast"] }): string | u
     return ast.to.annotations[ApiErrorCode] as string | undefined;
   }
   return ast.annotations[ApiErrorCode] as string | undefined;
+};
+
+// Map API error codes to categories
+const API_ERROR_CODE_TO_CATEGORY: Record<string, Category.Category> = {
+  unauthorized: Category.AuthError,
+  forbidden: Category.AuthError,
+  not_found: Category.NotFoundError,
+  conflict: Category.ConflictError,
+  unprocessable_entity: Category.BadRequestError,
+  bad_request: Category.BadRequestError,
+  too_many_requests: Category.ThrottlingError,
+  internal_server_error: Category.ServerError,
+  service_unavailable: Category.ServerError,
+};
+
+// Apply category to an error class based on its ApiErrorCode annotation
+const applyCategoryFromErrorCode = <E extends AnnotatedErrorClass>(ErrorClass: E): void => {
+  const code = getErrorCode(ErrorClass);
+  if (code) {
+    const category = API_ERROR_CODE_TO_CATEGORY[code];
+    if (category) {
+      Category.withCategory(category)(ErrorClass);
+    }
+  }
 };
 
 // Type for an annotated error class - must have an ast property and be constructable
@@ -106,6 +131,11 @@ export const API = {
       | HttpClientError.HttpClientError
       | HttpBody.HttpBodyError;
     type Context = PlanetScaleCredentials | HttpClient.HttpClient;
+
+    // Apply categories to error classes based on their ApiErrorCode annotations
+    for (const ErrorClass of config.errors) {
+      applyCategoryFromErrorCode(ErrorClass);
+    }
 
     // Read method and path from input schema annotations
     const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
