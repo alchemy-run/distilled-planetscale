@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getBranch,
   GetBranchNotfound,
   GetBranchInput,
   GetBranchOutput,
 } from "../src/operations/getBranch";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getBranch", () => {
+withMainLayer("getBranch", (it) => {
   it("should have the correct input schema", () => {
     expect(GetBranchInput.fields.organization).toBeDefined();
     expect(GetBranchInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("getBranch", () => {
         expect(result._tag).toBe("GetBranchNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetBranchNotfound for non-existent database", () =>
@@ -73,7 +69,7 @@ describe("getBranch", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetBranchNotfound for non-existent branch", () =>
@@ -97,6 +93,6 @@ describe("getBranch", () => {
         expect(result.database).toBe("test");
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

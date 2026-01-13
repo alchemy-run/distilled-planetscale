@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   deleteWebhook,
   DeleteWebhookNotfound,
@@ -10,11 +8,9 @@ import {
   DeleteWebhookOutput,
 } from "../src/operations/deleteWebhook";
 import { createWebhook } from "../src/operations/createWebhook";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("deleteWebhook", () => {
+withMainLayer("deleteWebhook", (it) => {
   it("should have the correct input schema", () => {
     expect(DeleteWebhookInput.fields.organization).toBeDefined();
     expect(DeleteWebhookInput.fields.database).toBeDefined();
@@ -44,7 +40,7 @@ describe("deleteWebhook", () => {
         expect(result._tag).toBe("DeleteWebhookNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteWebhookNotfound for non-existent database", () =>
@@ -67,7 +63,7 @@ describe("deleteWebhook", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteWebhookNotfound for non-existent webhook id", () =>
@@ -91,7 +87,7 @@ describe("deleteWebhook", () => {
         expect(result.database).toBe("test");
         expect(result.id).toBe("non-existent-webhook-id-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates a webhook and then deletes it.
@@ -137,6 +133,6 @@ describe("deleteWebhook", () => {
       );
 
       expect(secondDelete).toBeInstanceOf(DeleteWebhookNotfound);
-    }).pipe(Effect.provide(MainLayer));
+    });
   });
 });

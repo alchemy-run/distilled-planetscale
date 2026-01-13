@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createRole,
   CreateRoleNotfound,
@@ -10,11 +8,9 @@ import {
   CreateRoleOutput,
 } from "../src/operations/createRole";
 import { deleteRole } from "../src/operations/deleteRole";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createRole", () => {
+withMainLayer("createRole", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateRoleInput.fields.organization).toBeDefined();
     expect(CreateRoleInput.fields.database).toBeDefined();
@@ -60,7 +56,7 @@ describe("createRole", () => {
         expect(result._tag).toBe("CreateRoleNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateRoleNotfound for non-existent database", () =>
@@ -83,7 +79,7 @@ describe("createRole", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateRoleNotfound for non-existent branch", () =>
@@ -106,7 +102,7 @@ describe("createRole", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because creating roles requires an existing database/branch
@@ -141,6 +137,6 @@ describe("createRole", () => {
         branch,
         id: result.id,
       });
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

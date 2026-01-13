@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createOauthToken,
   CreateOauthTokenNotfound,
   CreateOauthTokenInput,
   CreateOauthTokenOutput,
 } from "../src/operations/createOauthToken";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createOauthToken", () => {
+withMainLayer("createOauthToken", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateOauthTokenInput.fields.organization).toBeDefined();
     expect(CreateOauthTokenInput.fields.id).toBeDefined();
@@ -59,7 +55,7 @@ describe("createOauthToken", () => {
         expect(result._tag).toBe("CreateOauthTokenNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateOauthTokenNotfound for non-existent OAuth application", () =>
@@ -87,6 +83,6 @@ describe("createOauthToken", () => {
         expect(result.organization).toBe(organization);
         expect(result.id).toBe("this-oauth-app-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

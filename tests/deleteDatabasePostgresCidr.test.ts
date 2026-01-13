@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   deleteDatabasePostgresCidr,
   DeleteDatabasePostgresCidrNotfound,
@@ -10,11 +8,9 @@ import {
   DeleteDatabasePostgresCidrOutput,
 } from "../src/operations/deleteDatabasePostgresCidr";
 import { createDatabasePostgresCidr } from "../src/operations/createDatabasePostgresCidr";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("deleteDatabasePostgresCidr", () => {
+withMainLayer("deleteDatabasePostgresCidr", (it) => {
   it("should have the correct input schema", () => {
     expect(DeleteDatabasePostgresCidrInput.fields.organization).toBeDefined();
     expect(DeleteDatabasePostgresCidrInput.fields.database).toBeDefined();
@@ -44,7 +40,7 @@ describe("deleteDatabasePostgresCidr", () => {
         expect(result._tag).toBe("DeleteDatabasePostgresCidrNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteDatabasePostgresCidrNotfound for non-existent database", () =>
@@ -67,7 +63,7 @@ describe("deleteDatabasePostgresCidr", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteDatabasePostgresCidrNotfound for non-existent CIDR id", () =>
@@ -90,7 +86,7 @@ describe("deleteDatabasePostgresCidr", () => {
         expect(result.organization).toBe(organization);
         expect(result.id).toBe("this-cidr-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because it requires a PostgreSQL-enabled database.
@@ -118,6 +114,6 @@ describe("deleteDatabasePostgresCidr", () => {
 
       // deleteDatabasePostgresCidr returns void on success
       expect(result).toBeUndefined();
-    }).pipe(Effect.provide(MainLayer));
+    });
   });
 });

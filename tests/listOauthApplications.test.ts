@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listOauthApplications,
   ListOauthApplicationsInput,
   ListOauthApplicationsNotfound,
   ListOauthApplicationsOutput,
 } from "../src/operations/listOauthApplications";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listOauthApplications", () => {
+withMainLayer("listOauthApplications", (it) => {
   // Schema validation
   it("should have the correct input schema", () => {
     expect(ListOauthApplicationsInput.fields.organization).toBeDefined();
@@ -56,7 +52,7 @@ describe("listOauthApplications", () => {
       expect(result).toHaveProperty("next_page");
       expect(result).toHaveProperty("prev_page");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListOauthApplicationsNotfound for non-existent organization", () =>
@@ -75,6 +71,6 @@ describe("listOauthApplications", () => {
         expect(result._tag).toBe("ListOauthApplicationsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

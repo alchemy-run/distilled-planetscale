@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listParameters,
   ListParametersInput,
   ListParametersNotfound,
   ListParametersOutput,
 } from "../src/operations/listParameters";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listParameters", () => {
+withMainLayer("listParameters", (it) => {
   // Schema validation
   it("should have the correct input schema", () => {
     expect(ListParametersInput.fields.organization).toBeDefined();
@@ -56,7 +52,7 @@ describe("listParameters", () => {
         expect(param).toHaveProperty("default_value");
         expect(param).toHaveProperty("value");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListParametersNotfound for non-existent organization", () =>
@@ -77,7 +73,7 @@ describe("listParameters", () => {
         expect(result._tag).toBe("ListParametersNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListParametersNotfound for non-existent database", () =>
@@ -100,7 +96,7 @@ describe("listParameters", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListParametersNotfound for non-existent branch", () =>
@@ -125,6 +121,6 @@ describe("listParameters", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listGeneratedQueryPatternsReports,
   ListGeneratedQueryPatternsReportsInput,
   ListGeneratedQueryPatternsReportsNotfound,
   ListGeneratedQueryPatternsReportsOutput,
 } from "../src/operations/listGeneratedQueryPatternsReports";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listGeneratedQueryPatternsReports", () => {
+withMainLayer("listGeneratedQueryPatternsReports", (it) => {
   // Schema validation
   it("should have the correct input schema", () => {
     expect(ListGeneratedQueryPatternsReportsInput.fields.organization).toBeDefined();
@@ -58,7 +54,7 @@ describe("listGeneratedQueryPatternsReports", () => {
       expect(result).toHaveProperty("cursor_start");
       expect(result).toHaveProperty("cursor_end");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListGeneratedQueryPatternsReportsNotfound for non-existent organization", () =>
@@ -79,7 +75,7 @@ describe("listGeneratedQueryPatternsReports", () => {
         expect(result._tag).toBe("ListGeneratedQueryPatternsReportsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListGeneratedQueryPatternsReportsNotfound for non-existent database", () =>
@@ -102,7 +98,7 @@ describe("listGeneratedQueryPatternsReports", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListGeneratedQueryPatternsReportsNotfound for non-existent branch", () =>
@@ -125,6 +121,6 @@ describe("listGeneratedQueryPatternsReports", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

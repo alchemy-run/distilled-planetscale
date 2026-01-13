@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateBackup,
   UpdateBackupNotfound,
@@ -11,11 +9,9 @@ import {
 } from "../src/operations/updateBackup";
 import { createBackup } from "../src/operations/createBackup";
 import { deleteBackup } from "../src/operations/deleteBackup";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateBackup", () => {
+withMainLayer("updateBackup", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateBackupInput.fields.id).toBeDefined();
     expect(UpdateBackupInput.fields.organization).toBeDefined();
@@ -61,7 +57,7 @@ describe("updateBackup", () => {
         expect(result._tag).toBe("UpdateBackupNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBackupNotfound for non-existent database", () =>
@@ -86,7 +82,7 @@ describe("updateBackup", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBackupNotfound for non-existent branch", () =>
@@ -114,7 +110,7 @@ describe("updateBackup", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBackupNotfound for non-existent backup id", () =>
@@ -144,7 +140,7 @@ describe("updateBackup", () => {
         expect(result.branch).toBe(branch);
         expect(result.id).toBe("this-backup-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates an actual backup, updates it, and cleans it up.

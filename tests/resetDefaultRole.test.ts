@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   resetDefaultRole,
   ResetDefaultRoleNotfound,
   ResetDefaultRoleInput,
   ResetDefaultRoleOutput,
 } from "../src/operations/resetDefaultRole";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("resetDefaultRole", () => {
+withMainLayer("resetDefaultRole", (it) => {
   it("should have the correct input schema", () => {
     expect(ResetDefaultRoleInput.fields.organization).toBeDefined();
     expect(ResetDefaultRoleInput.fields.database).toBeDefined();
@@ -55,7 +51,7 @@ describe("resetDefaultRole", () => {
         expect(result._tag).toBe("ResetDefaultRoleNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ResetDefaultRoleNotfound for non-existent database", () =>
@@ -78,7 +74,7 @@ describe("resetDefaultRole", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ResetDefaultRoleNotfound for non-existent branch", () =>
@@ -103,6 +99,6 @@ describe("resetDefaultRole", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

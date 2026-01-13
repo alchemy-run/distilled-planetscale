@@ -36,7 +36,7 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │       ├── getOrganization.ts  # getOrganization operation
 │       └── listDatabases.ts    # listDatabases effect
 ├── tests/
-│   ├── setup.ts            # Loads .env for tests
+│   ├── setup.ts            # Loads .env, exports withMainLayer for tests
 │   ├── getOrganization.test.ts
 │   └── listDatabases.test.ts
 ├── specs/
@@ -175,23 +175,21 @@ Each operation test file should include:
 
 ### Test File Template
 
+Tests use the `withMainLayer` helper from `./setup` which automatically provides `PlanetScaleCredentials` and `FetchHttpClient` to all `it.effect` tests:
+
 ```typescript
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   operationName,
   OperationNameNotfound,
   OperationNameInput,
   OperationNameOutput,
 } from "../src/operations/operationName";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
-
-describe("operationName", () => {
+withMainLayer("operationName", (it) => {
   // Schema validation
   it("should have the correct input schema", () => {
     expect(OperationNameInput.fields.organization).toBeDefined();
@@ -214,7 +212,7 @@ describe("operationName", () => {
         ),
       );
       expect(result).toHaveProperty("expectedField");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Error handling tests
@@ -236,7 +234,7 @@ describe("operationName", () => {
         expect(result._tag).toBe("OperationNameNotfound");
         expect(result.organization).toBe(organization);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });
 ```
@@ -268,7 +266,6 @@ it.effect("should create resource successfully", () =>
         }).pipe(Effect.ignore);
       }),
     ),
-    Effect.provide(MainLayer),
   ),
 );
 ```
@@ -281,6 +278,7 @@ it.effect("should create resource successfully", () =>
 - **Test both non-existent resources AND non-existent organizations** for not_found errors
 - **Verify error properties** like `_tag`, `organization`, `database`, etc.
 - **Import `./setup`** to load environment variables from `.env`
+- **Use `withMainLayer`** wrapper to automatically provide layer to all tests
 
 ## Schema Patching
 

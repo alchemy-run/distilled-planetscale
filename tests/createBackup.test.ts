@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createBackup,
   CreateBackupNotfound,
@@ -10,11 +8,9 @@ import {
   CreateBackupOutput,
 } from "../src/operations/createBackup";
 import { deleteBackup } from "../src/operations/deleteBackup";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createBackup", () => {
+withMainLayer("createBackup", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateBackupInput.fields.organization).toBeDefined();
     expect(CreateBackupInput.fields.database).toBeDefined();
@@ -55,7 +51,7 @@ describe("createBackup", () => {
         expect(result._tag).toBe("CreateBackupNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateBackupNotfound for non-existent database", () =>
@@ -78,7 +74,7 @@ describe("createBackup", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateBackupNotfound for non-existent branch", () =>
@@ -104,7 +100,7 @@ describe("createBackup", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates an actual backup and cleans it up.

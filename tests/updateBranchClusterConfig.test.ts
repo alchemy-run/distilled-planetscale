@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateBranchClusterConfig,
   UpdateBranchClusterConfigNotfound,
   UpdateBranchClusterConfigInput,
   UpdateBranchClusterConfigOutput,
 } from "../src/operations/updateBranchClusterConfig";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateBranchClusterConfig", () => {
+withMainLayer("updateBranchClusterConfig", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateBranchClusterConfigInput.fields.organization).toBeDefined();
     expect(UpdateBranchClusterConfigInput.fields.database).toBeDefined();
@@ -45,7 +41,7 @@ describe("updateBranchClusterConfig", () => {
         expect(result._tag).toBe("UpdateBranchClusterConfigNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBranchClusterConfigNotfound for non-existent database", () =>
@@ -69,7 +65,7 @@ describe("updateBranchClusterConfig", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBranchClusterConfigNotfound for non-existent branch", () =>
@@ -94,6 +90,6 @@ describe("updateBranchClusterConfig", () => {
         expect(result.database).toBe("test");
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

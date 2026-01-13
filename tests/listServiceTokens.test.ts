@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listServiceTokens,
   ListServiceTokensForbidden,
@@ -10,11 +8,9 @@ import {
   ListServiceTokensInput,
   ListServiceTokensOutput,
 } from "../src/operations/listServiceTokens";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listServiceTokens", () => {
+withMainLayer("listServiceTokens", (it) => {
   it("should have the correct input schema", () => {
     expect(ListServiceTokensInput.fields.organization).toBeDefined();
     expect(ListServiceTokensInput.fields.page).toBeDefined();
@@ -49,7 +45,7 @@ describe("listServiceTokens", () => {
         expect(result.error).toBeInstanceOf(ListServiceTokensForbidden);
         expect(result.error._tag).toBe("ListServiceTokensForbidden");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListServiceTokensNotfound for non-existent organization", () =>
@@ -68,6 +64,6 @@ describe("listServiceTokens", () => {
         expect(result._tag).toBe("ListServiceTokensNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

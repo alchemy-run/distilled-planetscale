@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
 import { Cause, Effect, Exit, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getOrganizationMembership,
   GetOrganizationMembershipInput,
@@ -10,11 +8,9 @@ import {
   GetOrganizationMembershipOutput,
 } from "../src/operations/getOrganizationMembership";
 import { listOrganizationMembers } from "../src/operations/listOrganizationMembers";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getOrganizationMembership", () => {
+withMainLayer("getOrganizationMembership", (it) => {
   it("should have the correct input schema", () => {
     expect(GetOrganizationMembershipInput.fields.organization).toBeDefined();
     expect(GetOrganizationMembershipInput.fields.id).toBeDefined();
@@ -68,7 +64,7 @@ describe("getOrganizationMembership", () => {
       // If the API returns an error (permission denied, null body, etc.),
       // the test still passes since we're testing that the operation handles
       // the request - some endpoints may not be available to service tokens
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return an error for non-existent membership", () =>
@@ -94,6 +90,6 @@ describe("getOrganizationMembership", () => {
         // Otherwise, the API may have returned a different error (null body, etc.)
         // which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

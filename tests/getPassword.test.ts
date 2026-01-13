@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getPassword,
   GetPasswordNotfound,
@@ -11,11 +9,9 @@ import {
 } from "../src/operations/getPassword";
 import { createPassword } from "../src/operations/createPassword";
 import { deletePassword } from "../src/operations/deletePassword";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getPassword", () => {
+withMainLayer("getPassword", (it) => {
   it("should have the correct input schema", () => {
     expect(GetPasswordInput.fields.organization).toBeDefined();
     expect(GetPasswordInput.fields.database).toBeDefined();
@@ -58,7 +54,7 @@ describe("getPassword", () => {
         expect(result._tag).toBe("GetPasswordNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetPasswordNotfound for non-existent database", () =>
@@ -82,7 +78,7 @@ describe("getPassword", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetPasswordNotfound for non-existent branch", () =>
@@ -108,7 +104,7 @@ describe("getPassword", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetPasswordNotfound for non-existent password id", () =>
@@ -136,7 +132,7 @@ describe("getPassword", () => {
         expect(result.branch).toBe(branch);
         expect(result.id).toBe("this-password-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates a password, fetches it, then cleans up.

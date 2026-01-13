@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
 import { Cause, Effect, Exit, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listOrganizationTeams,
   ListOrganizationTeamsInput,
   ListOrganizationTeamsNotfound,
   ListOrganizationTeamsOutput,
 } from "../src/operations/listOrganizationTeams";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listOrganizationTeams", () => {
+withMainLayer("listOrganizationTeams", (it) => {
   it("should have the correct input schema", () => {
     expect(ListOrganizationTeamsInput.fields.organization).toBeDefined();
     expect(ListOrganizationTeamsInput.fields.q).toBeDefined();
@@ -71,7 +67,7 @@ describe("listOrganizationTeams", () => {
         // Verify databases is an array
         expect(Array.isArray(team.databases)).toBe(true);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support search query parameter", () =>
@@ -86,7 +82,7 @@ describe("listOrganizationTeams", () => {
       expect(result).toHaveProperty("current_page");
       expect(result).toHaveProperty("data");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return an error for non-existent organization", () =>
@@ -108,6 +104,6 @@ describe("listOrganizationTeams", () => {
         // Otherwise, the API may have returned a different error format
         // which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

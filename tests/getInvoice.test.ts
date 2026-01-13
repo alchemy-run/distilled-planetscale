@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getInvoice,
   GetInvoiceInput,
   GetInvoiceNotfound,
   GetInvoiceOutput,
 } from "../src/operations/getInvoice";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getInvoice", () => {
+withMainLayer("getInvoice", (it) => {
   it("should have the correct input schema", () => {
     expect(GetInvoiceInput.fields.organization).toBeDefined();
     expect(GetInvoiceInput.fields.id).toBeDefined();
@@ -46,7 +42,7 @@ describe("getInvoice", () => {
         expect(result.organization).toBe(organization);
         expect(result.id).toBe("this-invoice-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetInvoiceNotfound for non-existent organization", () =>
@@ -66,6 +62,6 @@ describe("getInvoice", () => {
         expect(result._tag).toBe("GetInvoiceNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

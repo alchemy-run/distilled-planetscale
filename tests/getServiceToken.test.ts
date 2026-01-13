@@ -1,7 +1,5 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
+import { Effect } from "effect";
+import { expect } from "vitest";
 import { PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   getServiceToken,
@@ -9,11 +7,9 @@ import {
   GetServiceTokenInput,
   GetServiceTokenOutput,
 } from "../src/operations/getServiceToken";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getServiceToken", () => {
+withMainLayer("getServiceToken", (it) => {
   it("should have the correct input schema", () => {
     expect(GetServiceTokenInput.fields.organization).toBeDefined();
     expect(GetServiceTokenInput.fields.id).toBeDefined();
@@ -55,6 +51,6 @@ describe("getServiceToken", () => {
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
         expect(result.id).toBe("non-existent-token-id");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

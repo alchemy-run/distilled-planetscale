@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listAuditLogs,
   ListAuditLogsInput,
   ListAuditLogsNotfound,
   ListAuditLogsOutput,
 } from "../src/operations/listAuditLogs";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listAuditLogs", () => {
+withMainLayer("listAuditLogs", (it) => {
   // Schema validation
   it("should have the correct input schema", () => {
     expect(ListAuditLogsInput.fields.organization).toBeDefined();
@@ -39,7 +35,7 @@ describe("listAuditLogs", () => {
       expect(result).toHaveProperty("cursor_start");
       expect(result).toHaveProperty("cursor_end");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListAuditLogsNotfound for non-existent organization", () =>
@@ -58,6 +54,6 @@ describe("listAuditLogs", () => {
         expect(result._tag).toBe("ListAuditLogsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

@@ -1,18 +1,14 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
+import { Effect } from "effect";
+import { expect } from "vitest";
 import { PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   listOrganizations,
   ListOrganizationsInput,
   ListOrganizationsOutput,
 } from "../src/operations/listOrganizations";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listOrganizations", () => {
+withMainLayer("listOrganizations", (it) => {
   it("should have the correct input schema", () => {
     expect(ListOrganizationsInput.fields.page).toBeDefined();
     expect(ListOrganizationsInput.fields.per_page).toBeDefined();
@@ -51,7 +47,7 @@ describe("listOrganizations", () => {
         expect(org).toHaveProperty("plan");
         expect(org).toHaveProperty("database_count");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support pagination parameters", () =>
@@ -64,6 +60,6 @@ describe("listOrganizations", () => {
       expect(result).toHaveProperty("current_page");
       expect(result).toHaveProperty("data");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

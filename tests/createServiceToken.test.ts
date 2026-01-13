@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createServiceToken,
   CreateServiceTokenNotfound,
@@ -10,11 +8,9 @@ import {
   CreateServiceTokenOutput,
 } from "../src/operations/createServiceToken";
 import { deleteServiceToken } from "../src/operations/deleteServiceToken";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createServiceToken", () => {
+withMainLayer("createServiceToken", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateServiceTokenInput.fields.organization).toBeDefined();
     expect(CreateServiceTokenInput.fields.name).toBeDefined();
@@ -54,7 +50,7 @@ describe("createServiceToken", () => {
         expect(result._tag).toBe("CreateServiceTokenNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because creating service tokens requires admin permissions

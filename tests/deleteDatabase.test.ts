@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import { createDatabase } from "../src/operations/createDatabase";
 import {
   deleteDatabase,
@@ -10,11 +8,9 @@ import {
   DeleteDatabaseInput,
   DeleteDatabaseOutput,
 } from "../src/operations/deleteDatabase";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("deleteDatabase", () => {
+withMainLayer("deleteDatabase", (it) => {
   it("should have the correct input schema", () => {
     // Verify the schema structure
     expect(DeleteDatabaseInput.fields.organization).toBeDefined();
@@ -46,7 +42,7 @@ describe("deleteDatabase", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteDatabaseNotfound for non-existent organization", () =>
@@ -66,7 +62,7 @@ describe("deleteDatabase", () => {
         expect(result._tag).toBe("DeleteDatabaseNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because the current client.ts doesn't send request bodies for POST.

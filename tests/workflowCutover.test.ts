@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   workflowCutover,
   WorkflowCutoverNotfound,
   WorkflowCutoverInput,
   WorkflowCutoverOutput,
 } from "../src/operations/workflowCutover";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("workflowCutover", () => {
+withMainLayer("workflowCutover", (it) => {
   it("should have the correct input schema", () => {
     expect(WorkflowCutoverInput.fields.organization).toBeDefined();
     expect(WorkflowCutoverInput.fields.database).toBeDefined();
@@ -59,7 +55,7 @@ describe("workflowCutover", () => {
         expect(result._tag).toBe("WorkflowCutoverNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return WorkflowCutoverNotfound for non-existent database", () =>
@@ -82,6 +78,6 @@ describe("workflowCutover", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

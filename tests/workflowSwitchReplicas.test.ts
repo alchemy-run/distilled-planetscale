@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   workflowSwitchReplicas,
   WorkflowSwitchReplicasNotfound,
   WorkflowSwitchReplicasInput,
   WorkflowSwitchReplicasOutput,
 } from "../src/operations/workflowSwitchReplicas";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("workflowSwitchReplicas", () => {
+withMainLayer("workflowSwitchReplicas", (it) => {
   it("should have the correct input schema", () => {
     expect(WorkflowSwitchReplicasInput.fields.organization).toBeDefined();
     expect(WorkflowSwitchReplicasInput.fields.database).toBeDefined();
@@ -59,7 +55,7 @@ describe("workflowSwitchReplicas", () => {
         expect(result._tag).toBe("WorkflowSwitchReplicasNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return WorkflowSwitchReplicasNotfound for non-existent database", () =>
@@ -82,6 +78,6 @@ describe("workflowSwitchReplicas", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

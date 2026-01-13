@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
 import { Cause, Effect, Exit, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import { listOrganizationMembers } from "../src/operations/listOrganizationMembers";
 import {
   updateOrganizationMembership,
@@ -11,11 +9,9 @@ import {
   UpdateOrganizationMembershipNotfound,
   UpdateOrganizationMembershipOutput,
 } from "../src/operations/updateOrganizationMembership";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateOrganizationMembership", () => {
+withMainLayer("updateOrganizationMembership", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateOrganizationMembershipInput.fields.organization).toBeDefined();
     expect(UpdateOrganizationMembershipInput.fields.id).toBeDefined();
@@ -85,7 +81,7 @@ describe("updateOrganizationMembership", () => {
           // handles the request - some endpoints may not be available to service tokens
         }
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateOrganizationMembershipNotfound for non-existent membership", () =>
@@ -112,7 +108,7 @@ describe("updateOrganizationMembership", () => {
         // Otherwise, the API may have returned a different error (null body, etc.)
         // which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return an error for non-existent organization", () =>
@@ -136,6 +132,6 @@ describe("updateOrganizationMembership", () => {
         // Otherwise, the API may have returned a different error format
         // (e.g., missing code field) which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

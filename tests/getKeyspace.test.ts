@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getKeyspace,
   GetKeyspaceNotfound,
   GetKeyspaceInput,
   GetKeyspaceOutput,
 } from "../src/operations/getKeyspace";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getKeyspace", () => {
+withMainLayer("getKeyspace", (it) => {
   it("should have the correct input schema", () => {
     expect(GetKeyspaceInput.fields.organization).toBeDefined();
     expect(GetKeyspaceInput.fields.database).toBeDefined();
@@ -62,7 +58,7 @@ describe("getKeyspace", () => {
         expect(result._tag).toBe("GetKeyspaceNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetKeyspaceNotfound for non-existent database", () =>
@@ -86,7 +82,7 @@ describe("getKeyspace", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetKeyspaceNotfound for non-existent branch", () =>
@@ -110,7 +106,7 @@ describe("getKeyspace", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetKeyspaceNotfound for non-existent keyspace", () =>
@@ -134,6 +130,6 @@ describe("getKeyspace", () => {
         expect(result.organization).toBe(organization);
         expect(result.keyspace).toBe("this-keyspace-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateBouncerResizeRequest,
   UpdateBouncerResizeRequestNotfound,
   UpdateBouncerResizeRequestInput,
   UpdateBouncerResizeRequestOutput,
 } from "../src/operations/updateBouncerResizeRequest";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateBouncerResizeRequest", () => {
+withMainLayer("updateBouncerResizeRequest", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateBouncerResizeRequestInput.fields.organization).toBeDefined();
     expect(UpdateBouncerResizeRequestInput.fields.database).toBeDefined();
@@ -60,7 +56,7 @@ describe("updateBouncerResizeRequest", () => {
         expect(result._tag).toBe("UpdateBouncerResizeRequestNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBouncerResizeRequestNotfound for non-existent database", () =>
@@ -84,7 +80,7 @@ describe("updateBouncerResizeRequest", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBouncerResizeRequestNotfound for non-existent branch", () =>
@@ -110,7 +106,7 @@ describe("updateBouncerResizeRequest", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateBouncerResizeRequestNotfound for non-existent bouncer", () =>
@@ -138,6 +134,6 @@ describe("updateBouncerResizeRequest", () => {
         expect(result.branch).toBe(branch);
         expect(result.bouncer).toBe("this-bouncer-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

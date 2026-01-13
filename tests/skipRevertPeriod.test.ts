@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   skipRevertPeriod,
   SkipRevertPeriodNotfound,
   SkipRevertPeriodInput,
   SkipRevertPeriodOutput,
 } from "../src/operations/skipRevertPeriod";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("skipRevertPeriod", () => {
+withMainLayer("skipRevertPeriod", (it) => {
   it("should have the correct input schema", () => {
     expect(SkipRevertPeriodInput.fields.organization).toBeDefined();
     expect(SkipRevertPeriodInput.fields.database).toBeDefined();
@@ -47,7 +43,7 @@ describe("skipRevertPeriod", () => {
         expect(result._tag).toBe("SkipRevertPeriodNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return SkipRevertPeriodNotfound for non-existent database", () =>
@@ -70,7 +66,7 @@ describe("skipRevertPeriod", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return SkipRevertPeriodNotfound for non-existent deploy request number", () =>
@@ -95,6 +91,6 @@ describe("skipRevertPeriod", () => {
         expect(result.database).toBe(database);
         expect(result.number).toBe(999999999);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

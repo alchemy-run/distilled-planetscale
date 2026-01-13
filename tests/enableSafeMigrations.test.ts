@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   enableSafeMigrations,
   EnableSafeMigrationsNotfound,
   EnableSafeMigrationsInput,
   EnableSafeMigrationsOutput,
 } from "../src/operations/enableSafeMigrations";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("enableSafeMigrations", () => {
+withMainLayer("enableSafeMigrations", (it) => {
   it("should have the correct input schema", () => {
     expect(EnableSafeMigrationsInput.fields.organization).toBeDefined();
     expect(EnableSafeMigrationsInput.fields.database).toBeDefined();
@@ -51,7 +47,7 @@ describe("enableSafeMigrations", () => {
         expect(result._tag).toBe("EnableSafeMigrationsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return EnableSafeMigrationsNotfound for non-existent database", () =>
@@ -74,7 +70,7 @@ describe("enableSafeMigrations", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return EnableSafeMigrationsNotfound for non-existent branch", () =>
@@ -97,7 +93,7 @@ describe("enableSafeMigrations", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because enabling safe migrations is a
@@ -121,6 +117,6 @@ describe("enableSafeMigrations", () => {
       expect(result).toHaveProperty("name", branchName);
       expect(result).toHaveProperty("safe_migrations", true);
       expect(result).toHaveProperty("state");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

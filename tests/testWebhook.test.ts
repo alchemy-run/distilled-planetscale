@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   testWebhook,
   TestWebhookNotfound,
@@ -11,11 +9,9 @@ import {
 } from "../src/operations/testWebhook";
 import { createWebhook } from "../src/operations/createWebhook";
 import { deleteWebhook } from "../src/operations/deleteWebhook";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("testWebhook", () => {
+withMainLayer("testWebhook", (it) => {
   it("should have the correct input schema", () => {
     expect(TestWebhookInput.fields.organization).toBeDefined();
     expect(TestWebhookInput.fields.database).toBeDefined();
@@ -45,7 +41,7 @@ describe("testWebhook", () => {
         expect(result._tag).toBe("TestWebhookNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return TestWebhookNotfound for non-existent database", () =>
@@ -68,7 +64,7 @@ describe("testWebhook", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return TestWebhookNotfound for non-existent webhook id", () =>
@@ -92,7 +88,7 @@ describe("testWebhook", () => {
         expect(result.database).toBe("test");
         expect(result.id).toBe("non-existent-webhook-id-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates a webhook, tests it, and cleans up.

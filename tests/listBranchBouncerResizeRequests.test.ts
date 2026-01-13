@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listBranchBouncerResizeRequests,
   ListBranchBouncerResizeRequestsNotfound,
   ListBranchBouncerResizeRequestsInput,
   ListBranchBouncerResizeRequestsOutput,
 } from "../src/operations/listBranchBouncerResizeRequests";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listBranchBouncerResizeRequests", () => {
+withMainLayer("listBranchBouncerResizeRequests", (it) => {
   it("should have the correct input schema", () => {
     expect(ListBranchBouncerResizeRequestsInput.fields.organization).toBeDefined();
     expect(ListBranchBouncerResizeRequestsInput.fields.database).toBeDefined();
@@ -49,7 +45,7 @@ describe("listBranchBouncerResizeRequests", () => {
         expect(result._tag).toBe("ListBranchBouncerResizeRequestsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListBranchBouncerResizeRequestsNotfound for non-existent database", () =>
@@ -72,7 +68,7 @@ describe("listBranchBouncerResizeRequests", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListBranchBouncerResizeRequestsNotfound for non-existent branch", () =>
@@ -97,6 +93,6 @@ describe("listBranchBouncerResizeRequests", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

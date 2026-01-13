@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   disableSafeMigrations,
   DisableSafeMigrationsNotfound,
   DisableSafeMigrationsInput,
   DisableSafeMigrationsOutput,
 } from "../src/operations/disableSafeMigrations";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("disableSafeMigrations", () => {
+withMainLayer("disableSafeMigrations", (it) => {
   it("should have the correct input schema", () => {
     expect(DisableSafeMigrationsInput.fields.organization).toBeDefined();
     expect(DisableSafeMigrationsInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("disableSafeMigrations", () => {
         expect(result._tag).toBe("DisableSafeMigrationsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DisableSafeMigrationsNotfound for non-existent database", () =>
@@ -73,7 +69,7 @@ describe("disableSafeMigrations", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DisableSafeMigrationsNotfound for non-existent branch", () =>
@@ -97,6 +93,6 @@ describe("disableSafeMigrations", () => {
         expect(result.database).toBe("test");
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

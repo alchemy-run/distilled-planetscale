@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listDeployRequests,
   ListDeployRequestsNotfound,
   ListDeployRequestsInput,
   ListDeployRequestsOutput,
 } from "../src/operations/listDeployRequests";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listDeployRequests", () => {
+withMainLayer("listDeployRequests", (it) => {
   it("should have the correct input schema", () => {
     expect(ListDeployRequestsInput.fields.organization).toBeDefined();
     expect(ListDeployRequestsInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("listDeployRequests", () => {
       expect(result).toHaveProperty("data");
       expect(result).toHaveProperty("current_page");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support pagination parameters", () =>
@@ -70,7 +66,7 @@ describe("listDeployRequests", () => {
 
       expect(result).toHaveProperty("data");
       expect(result).toHaveProperty("current_page");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListDeployRequestsNotfound for non-existent organization", () =>
@@ -90,7 +86,7 @@ describe("listDeployRequests", () => {
         expect(result._tag).toBe("ListDeployRequestsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListDeployRequestsNotfound for non-existent database", () =>
@@ -112,6 +108,6 @@ describe("listDeployRequests", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

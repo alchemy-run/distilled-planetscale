@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listExtensions,
   ListExtensionsInput,
   ListExtensionsNotfound,
   ListExtensionsOutput,
 } from "../src/operations/listExtensions";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listExtensions", () => {
+withMainLayer("listExtensions", (it) => {
   // Schema validation
   it("should have the correct input schema", () => {
     expect(ListExtensionsInput.fields.organization).toBeDefined();
@@ -44,7 +40,7 @@ describe("listExtensions", () => {
       );
 
       expect(Array.isArray(result)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListExtensionsNotfound for non-existent organization", () =>
@@ -65,7 +61,7 @@ describe("listExtensions", () => {
         expect(result._tag).toBe("ListExtensionsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListExtensionsNotfound for non-existent database", () =>
@@ -88,7 +84,7 @@ describe("listExtensions", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListExtensionsNotfound for non-existent branch", () =>
@@ -113,6 +109,6 @@ describe("listExtensions", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

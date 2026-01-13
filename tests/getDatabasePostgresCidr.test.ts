@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getDatabasePostgresCidr,
   GetDatabasePostgresCidrNotfound,
@@ -11,11 +9,9 @@ import {
 } from "../src/operations/getDatabasePostgresCidr";
 import { createDatabasePostgresCidr } from "../src/operations/createDatabasePostgresCidr";
 import { deleteDatabasePostgresCidr } from "../src/operations/deleteDatabasePostgresCidr";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getDatabasePostgresCidr", () => {
+withMainLayer("getDatabasePostgresCidr", (it) => {
   it("should have the correct input schema", () => {
     expect(GetDatabasePostgresCidrInput.fields.organization).toBeDefined();
     expect(GetDatabasePostgresCidrInput.fields.database).toBeDefined();
@@ -51,7 +47,7 @@ describe("getDatabasePostgresCidr", () => {
         expect(result._tag).toBe("GetDatabasePostgresCidrNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDatabasePostgresCidrNotfound for non-existent database", () =>
@@ -74,7 +70,7 @@ describe("getDatabasePostgresCidr", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDatabasePostgresCidrNotfound for non-existent CIDR id", () =>
@@ -97,7 +93,7 @@ describe("getDatabasePostgresCidr", () => {
         expect(result.organization).toBe(organization);
         expect(result.id).toBe("this-cidr-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because it requires a PostgreSQL-enabled database.

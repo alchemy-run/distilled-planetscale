@@ -1,18 +1,14 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
 import { Cause, Effect, Exit, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   removeOrganizationMember,
   RemoveOrganizationMemberInput,
   RemoveOrganizationMemberNotfound,
 } from "../src/operations/removeOrganizationMember";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("removeOrganizationMember", () => {
+withMainLayer("removeOrganizationMember", (it) => {
   it("should have the correct input schema", () => {
     expect(RemoveOrganizationMemberInput.fields.organization).toBeDefined();
     expect(RemoveOrganizationMemberInput.fields.id).toBeDefined();
@@ -43,7 +39,7 @@ describe("removeOrganizationMember", () => {
         // Otherwise, the API may have returned a different error (forbidden, etc.)
         // which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return an error for non-existent organization", () =>
@@ -66,6 +62,6 @@ describe("removeOrganizationMember", () => {
         // Otherwise, the API may have returned a different error format
         // which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

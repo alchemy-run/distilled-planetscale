@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createDeployRequest,
   CreateDeployRequestNotfound,
   CreateDeployRequestInput,
   CreateDeployRequestOutput,
 } from "../src/operations/createDeployRequest";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createDeployRequest", () => {
+withMainLayer("createDeployRequest", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateDeployRequestInput.fields.organization).toBeDefined();
     expect(CreateDeployRequestInput.fields.database).toBeDefined();
@@ -56,7 +52,7 @@ describe("createDeployRequest", () => {
         expect(result._tag).toBe("CreateDeployRequestNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateDeployRequestNotfound for non-existent database", () =>
@@ -80,7 +76,7 @@ describe("createDeployRequest", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateDeployRequestNotfound for non-existent branch", () =>
@@ -105,7 +101,7 @@ describe("createDeployRequest", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe(database);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because creating deploy requests requires creating branches
@@ -131,6 +127,6 @@ describe("createDeployRequest", () => {
       expect(result.into_branch).toBe("main");
       expect(result.state).toBe("open");
       expect(result.notes).toBe("Test deploy request");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

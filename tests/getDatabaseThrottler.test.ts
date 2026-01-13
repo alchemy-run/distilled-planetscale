@@ -1,17 +1,13 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getDatabaseThrottler,
   GetDatabaseThrottlerNotfound,
 } from "../src/operations/getDatabaseThrottler";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getDatabaseThrottler", () => {
+withMainLayer("getDatabaseThrottler", (it) => {
   it.effect("should fetch database throttler successfully", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
@@ -38,7 +34,7 @@ describe("getDatabaseThrottler", () => {
       expect(result).toHaveProperty("keyspaces");
       expect(result).toHaveProperty("configurable");
       expect(result).toHaveProperty("configurations");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDatabaseThrottlerNotfound for non-existent database", () =>
@@ -61,6 +57,6 @@ describe("getDatabaseThrottler", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

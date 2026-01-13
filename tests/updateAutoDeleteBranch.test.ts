@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateAutoDeleteBranch,
   UpdateAutoDeleteBranchNotfound,
   UpdateAutoDeleteBranchInput,
   UpdateAutoDeleteBranchOutput,
 } from "../src/operations/updateAutoDeleteBranch";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateAutoDeleteBranch", () => {
+withMainLayer("updateAutoDeleteBranch", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateAutoDeleteBranchInput.fields.organization).toBeDefined();
     expect(UpdateAutoDeleteBranchInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("updateAutoDeleteBranch", () => {
         expect(result._tag).toBe("UpdateAutoDeleteBranchNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateAutoDeleteBranchNotfound for non-existent database", () =>
@@ -74,7 +70,7 @@ describe("updateAutoDeleteBranch", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateAutoDeleteBranchNotfound for non-existent deploy request number", () =>
@@ -100,6 +96,6 @@ describe("updateAutoDeleteBranch", () => {
         expect(result.database).toBe(database);
         expect(result.number).toBe(999999999);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

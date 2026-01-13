@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   deleteBouncer,
   DeleteBouncerNotfound,
@@ -10,11 +8,9 @@ import {
   DeleteBouncerOutput,
 } from "../src/operations/deleteBouncer";
 import { createBouncer } from "../src/operations/createBouncer";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("deleteBouncer", () => {
+withMainLayer("deleteBouncer", (it) => {
   it("should have the correct input schema", () => {
     expect(DeleteBouncerInput.fields.organization).toBeDefined();
     expect(DeleteBouncerInput.fields.database).toBeDefined();
@@ -46,7 +42,7 @@ describe("deleteBouncer", () => {
         expect(result._tag).toBe("DeleteBouncerNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteBouncerNotfound for non-existent database", () =>
@@ -70,7 +66,7 @@ describe("deleteBouncer", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteBouncerNotfound for non-existent branch", () =>
@@ -97,7 +93,7 @@ describe("deleteBouncer", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteBouncerNotfound for non-existent bouncer", () =>
@@ -126,7 +122,7 @@ describe("deleteBouncer", () => {
         expect(result.branch).toBe(branch);
         expect(result.bouncer).toBe("this-bouncer-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates an actual bouncer and then deletes it.

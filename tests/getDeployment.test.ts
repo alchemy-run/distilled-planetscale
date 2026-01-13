@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getDeployment,
   GetDeploymentNotfound,
   GetDeploymentInput,
   GetDeploymentOutput,
 } from "../src/operations/getDeployment";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getDeployment", () => {
+withMainLayer("getDeployment", (it) => {
   it("should have the correct input schema", () => {
     expect(GetDeploymentInput.fields.organization).toBeDefined();
     expect(GetDeploymentInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("getDeployment", () => {
         expect(result._tag).toBe("GetDeploymentNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDeploymentNotfound for non-existent database", () =>
@@ -73,7 +69,7 @@ describe("getDeployment", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDeploymentNotfound for non-existent deploy request number", () =>
@@ -98,6 +94,6 @@ describe("getDeployment", () => {
         expect(result.database).toBe(database);
         expect(result.number).toBe(999999999);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

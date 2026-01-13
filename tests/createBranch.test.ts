@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createBranch,
   CreateBranchNotfound,
@@ -10,11 +8,9 @@ import {
   CreateBranchOutput,
 } from "../src/operations/createBranch";
 import { deleteBranch } from "../src/operations/deleteBranch";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createBranch", () => {
+withMainLayer("createBranch", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateBranchInput.fields.organization).toBeDefined();
     expect(CreateBranchInput.fields.database).toBeDefined();
@@ -59,7 +55,7 @@ describe("createBranch", () => {
         expect(result._tag).toBe("CreateBranchNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateBranchNotfound for non-existent database", () =>
@@ -83,7 +79,7 @@ describe("createBranch", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because creating branches requires an existing database

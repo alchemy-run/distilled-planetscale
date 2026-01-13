@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getQueryPatternsReport,
   GetQueryPatternsReportNotfound,
   GetQueryPatternsReportInput,
   GetQueryPatternsReportOutput,
 } from "../src/operations/getQueryPatternsReport";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getQueryPatternsReport", () => {
+withMainLayer("getQueryPatternsReport", (it) => {
   it("should have the correct input schema", () => {
     expect(GetQueryPatternsReportInput.fields.organization).toBeDefined();
     expect(GetQueryPatternsReportInput.fields.database).toBeDefined();
@@ -45,7 +41,7 @@ describe("getQueryPatternsReport", () => {
         expect(result._tag).toBe("GetQueryPatternsReportNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetQueryPatternsReportNotfound for non-existent database", () =>
@@ -69,7 +65,7 @@ describe("getQueryPatternsReport", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetQueryPatternsReportNotfound for non-existent branch", () =>
@@ -93,7 +89,7 @@ describe("getQueryPatternsReport", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetQueryPatternsReportNotfound for non-existent report id", () =>
@@ -117,6 +113,6 @@ describe("getQueryPatternsReport", () => {
         expect(result.organization).toBe(organization);
         expect(result.id).toBe("this-report-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

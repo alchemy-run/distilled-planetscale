@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listRoles,
   ListRolesNotfound,
   ListRolesInput,
   ListRolesOutput,
 } from "../src/operations/listRoles";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listRoles", () => {
+withMainLayer("listRoles", (it) => {
   it("should have the correct input schema", () => {
     expect(ListRolesInput.fields.organization).toBeDefined();
     expect(ListRolesInput.fields.database).toBeDefined();
@@ -49,7 +45,7 @@ describe("listRoles", () => {
         expect(result._tag).toBe("ListRolesNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListRolesNotfound for non-existent database", () =>
@@ -72,7 +68,7 @@ describe("listRoles", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListRolesNotfound for non-existent branch", () =>
@@ -95,7 +91,7 @@ describe("listRoles", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should list roles successfully", () =>
@@ -126,6 +122,6 @@ describe("listRoles", () => {
       expect(result).toHaveProperty("prev_page_url");
       expect(result).toHaveProperty("data");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

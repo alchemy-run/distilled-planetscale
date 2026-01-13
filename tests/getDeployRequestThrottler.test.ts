@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getDeployRequestThrottler,
   GetDeployRequestThrottlerNotfound,
   GetDeployRequestThrottlerInput,
   GetDeployRequestThrottlerOutput,
 } from "../src/operations/getDeployRequestThrottler";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getDeployRequestThrottler", () => {
+withMainLayer("getDeployRequestThrottler", (it) => {
   it("should have the correct input schema", () => {
     expect(GetDeployRequestThrottlerInput.fields.organization).toBeDefined();
     expect(GetDeployRequestThrottlerInput.fields.database).toBeDefined();
@@ -44,7 +40,7 @@ describe("getDeployRequestThrottler", () => {
         expect(result._tag).toBe("GetDeployRequestThrottlerNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDeployRequestThrottlerNotfound for non-existent database", () =>
@@ -67,7 +63,7 @@ describe("getDeployRequestThrottler", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetDeployRequestThrottlerNotfound for non-existent deploy request number", () =>
@@ -92,6 +88,6 @@ describe("getDeployRequestThrottler", () => {
         expect(result.database).toBe(database);
         expect(result.number).toBe(999999999);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

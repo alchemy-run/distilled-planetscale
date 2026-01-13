@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateDatabasePostgresCidr,
   UpdateDatabasePostgresCidrNotfound,
@@ -11,11 +9,9 @@ import {
 } from "../src/operations/updateDatabasePostgresCidr";
 import { createDatabasePostgresCidr } from "../src/operations/createDatabasePostgresCidr";
 import { deleteDatabasePostgresCidr } from "../src/operations/deleteDatabasePostgresCidr";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateDatabasePostgresCidr", () => {
+withMainLayer("updateDatabasePostgresCidr", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateDatabasePostgresCidrInput.fields.organization).toBeDefined();
     expect(UpdateDatabasePostgresCidrInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("updateDatabasePostgresCidr", () => {
 
       // The operation should not succeed
       expect(exit._tag).toBe("Failure");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should fail for non-existent database", () =>
@@ -65,7 +61,7 @@ describe("updateDatabasePostgresCidr", () => {
 
       // The operation should not succeed
       expect(exit._tag).toBe("Failure");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should fail for non-existent cidr id", () =>
@@ -80,7 +76,7 @@ describe("updateDatabasePostgresCidr", () => {
 
       // The operation should not succeed
       expect(exit._tag).toBe("Failure");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because it requires a PostgreSQL-enabled database.

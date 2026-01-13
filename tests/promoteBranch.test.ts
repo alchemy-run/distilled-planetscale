@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   promoteBranch,
   PromoteBranchNotfound,
   PromoteBranchInput,
   PromoteBranchOutput,
 } from "../src/operations/promoteBranch";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("promoteBranch", () => {
+withMainLayer("promoteBranch", (it) => {
   it("should have the correct input schema", () => {
     expect(PromoteBranchInput.fields.organization).toBeDefined();
     expect(PromoteBranchInput.fields.database).toBeDefined();
@@ -50,7 +46,7 @@ describe("promoteBranch", () => {
         expect(result._tag).toBe("PromoteBranchNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return PromoteBranchNotfound for non-existent database", () =>
@@ -73,7 +69,7 @@ describe("promoteBranch", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return PromoteBranchNotfound for non-existent branch", () =>
@@ -96,7 +92,7 @@ describe("promoteBranch", () => {
         expect(result.organization).toBe(organization);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because promoting a branch to production is a
@@ -120,6 +116,6 @@ describe("promoteBranch", () => {
       expect(result).toHaveProperty("name", branchName);
       expect(result).toHaveProperty("production", true);
       expect(result).toHaveProperty("state");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

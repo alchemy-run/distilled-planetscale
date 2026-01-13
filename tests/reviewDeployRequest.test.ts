@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   reviewDeployRequest,
   ReviewDeployRequestNotfound,
   ReviewDeployRequestInput,
   ReviewDeployRequestOutput,
 } from "../src/operations/reviewDeployRequest";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("reviewDeployRequest", () => {
+withMainLayer("reviewDeployRequest", (it) => {
   it("should have the correct input schema", () => {
     expect(ReviewDeployRequestInput.fields.organization).toBeDefined();
     expect(ReviewDeployRequestInput.fields.database).toBeDefined();
@@ -52,7 +48,7 @@ describe("reviewDeployRequest", () => {
         expect(result._tag).toBe("ReviewDeployRequestNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ReviewDeployRequestNotfound for non-existent database", () =>
@@ -77,7 +73,7 @@ describe("reviewDeployRequest", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ReviewDeployRequestNotfound for non-existent deploy request number", () =>
@@ -104,7 +100,7 @@ describe("reviewDeployRequest", () => {
         expect(result.database).toBe(database);
         expect(result.number).toBe(999999999);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because creating reviews requires an existing deploy request
@@ -129,6 +125,6 @@ describe("reviewDeployRequest", () => {
       expect(result).toHaveProperty("actor");
       expect(result.actor).toHaveProperty("id");
       expect(result.actor).toHaveProperty("display_name");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getBranchChangeRequest,
   GetBranchChangeRequestNotfound,
   GetBranchChangeRequestInput,
   GetBranchChangeRequestOutput,
 } from "../src/operations/getBranchChangeRequest";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getBranchChangeRequest", () => {
+withMainLayer("getBranchChangeRequest", (it) => {
   it("should have the correct input schema", () => {
     expect(GetBranchChangeRequestInput.fields.organization).toBeDefined();
     expect(GetBranchChangeRequestInput.fields.database).toBeDefined();
@@ -52,7 +48,7 @@ describe("getBranchChangeRequest", () => {
         expect(result._tag).toBe("GetBranchChangeRequestNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetBranchChangeRequestNotfound for non-existent database", () =>
@@ -76,7 +72,7 @@ describe("getBranchChangeRequest", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetBranchChangeRequestNotfound for non-existent branch", () =>
@@ -102,7 +98,7 @@ describe("getBranchChangeRequest", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetBranchChangeRequestNotfound for non-existent change request id", () =>
@@ -130,6 +126,6 @@ describe("getBranchChangeRequest", () => {
         expect(result.branch).toBe(branch);
         expect(result.id).toBe("this-change-request-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

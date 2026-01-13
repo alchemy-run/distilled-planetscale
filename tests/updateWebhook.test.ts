@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateWebhook,
   UpdateWebhookNotfound,
@@ -11,11 +9,9 @@ import {
 } from "../src/operations/updateWebhook";
 import { createWebhook } from "../src/operations/createWebhook";
 import { deleteWebhook } from "../src/operations/deleteWebhook";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateWebhook", () => {
+withMainLayer("updateWebhook", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateWebhookInput.fields.organization).toBeDefined();
     expect(UpdateWebhookInput.fields.database).toBeDefined();
@@ -57,7 +53,7 @@ describe("updateWebhook", () => {
         expect(result._tag).toBe("UpdateWebhookNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateWebhookNotfound for non-existent database", () =>
@@ -81,7 +77,7 @@ describe("updateWebhook", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateWebhookNotfound for non-existent webhook id", () =>
@@ -106,7 +102,7 @@ describe("updateWebhook", () => {
         expect(result.database).toBe("test");
         expect(result.id).toBe("non-existent-webhook-id-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates a webhook, updates it, and cleans up.

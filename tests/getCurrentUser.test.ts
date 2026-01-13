@@ -1,7 +1,5 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
+import { Effect } from "effect";
+import { expect } from "vitest";
 import { PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   getCurrentUser,
@@ -9,11 +7,9 @@ import {
   GetCurrentUserOutput,
   GetCurrentUserUnauthorized,
 } from "../src/operations/getCurrentUser";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getCurrentUser", () => {
+withMainLayer("getCurrentUser", (it) => {
   it("should have the correct input schema", () => {
     // getCurrentUser has no input parameters
     expect(GetCurrentUserInput.fields).toBeDefined();
@@ -57,6 +53,6 @@ describe("getCurrentUser", () => {
         expect(result).toHaveProperty("display_name");
         expect(result).toHaveProperty("default_organization");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

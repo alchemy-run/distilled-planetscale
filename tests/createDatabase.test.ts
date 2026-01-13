@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createDatabase,
   CreateDatabaseNotfound,
@@ -10,11 +8,9 @@ import {
   CreateDatabaseOutput,
 } from "../src/operations/createDatabase";
 import { deleteDatabase } from "../src/operations/deleteDatabase";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createDatabase", () => {
+withMainLayer("createDatabase", (it) => {
   it("should have the correct input schema", () => {
     // Verify the schema structure
     expect(CreateDatabaseInput.fields.organization).toBeDefined();
@@ -48,7 +44,7 @@ describe("createDatabase", () => {
         expect(result._tag).toBe("CreateDatabaseNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because the current client.ts doesn't send request bodies for POST.

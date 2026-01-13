@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   deleteQueryPatternsReport,
   DeleteQueryPatternsReportNotfound,
   DeleteQueryPatternsReportInput,
   DeleteQueryPatternsReportOutput,
 } from "../src/operations/deleteQueryPatternsReport";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("deleteQueryPatternsReport", () => {
+withMainLayer("deleteQueryPatternsReport", (it) => {
   it("should have the correct input schema", () => {
     expect(DeleteQueryPatternsReportInput.fields.organization).toBeDefined();
     expect(DeleteQueryPatternsReportInput.fields.database).toBeDefined();
@@ -45,7 +41,7 @@ describe("deleteQueryPatternsReport", () => {
         expect(result._tag).toBe("DeleteQueryPatternsReportNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteQueryPatternsReportNotfound for non-existent database", () =>
@@ -69,7 +65,7 @@ describe("deleteQueryPatternsReport", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteQueryPatternsReportNotfound for non-existent branch", () =>
@@ -95,7 +91,7 @@ describe("deleteQueryPatternsReport", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteQueryPatternsReportNotfound for non-existent report id", () =>
@@ -123,6 +119,6 @@ describe("deleteQueryPatternsReport", () => {
         expect(result.branch).toBe(branch);
         expect(result.id).toBe("this-report-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

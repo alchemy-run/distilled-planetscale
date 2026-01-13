@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   verifyWorkflow,
   VerifyWorkflowNotfound,
   VerifyWorkflowInput,
   VerifyWorkflowOutput,
 } from "../src/operations/verifyWorkflow";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("verifyWorkflow", () => {
+withMainLayer("verifyWorkflow", (it) => {
   it("should have the correct input schema", () => {
     expect(VerifyWorkflowInput.fields.organization).toBeDefined();
     expect(VerifyWorkflowInput.fields.database).toBeDefined();
@@ -59,7 +55,7 @@ describe("verifyWorkflow", () => {
         expect(result._tag).toBe("VerifyWorkflowNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return VerifyWorkflowNotfound for non-existent database", () =>
@@ -82,6 +78,6 @@ describe("verifyWorkflow", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

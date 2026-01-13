@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateOrganization,
   UpdateOrganizationForbidden,
@@ -10,11 +8,9 @@ import {
   UpdateOrganizationNotfound,
   UpdateOrganizationOutput,
 } from "../src/operations/updateOrganization";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateOrganization", () => {
+withMainLayer("updateOrganization", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateOrganizationInput.fields.organization).toBeDefined();
     expect(UpdateOrganizationInput.fields.billing_email).toBeDefined();
@@ -60,7 +56,7 @@ describe("updateOrganization", () => {
         expect(result).toHaveProperty("plan");
         expect(result).toHaveProperty("idp_managed_roles");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateOrganizationNotfound for non-existent organization", () =>
@@ -80,6 +76,6 @@ describe("updateOrganization", () => {
         expect(result._tag).toBe("UpdateOrganizationNotfound");
         expect(result.organization).toBe("this-organization-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

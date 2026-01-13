@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   getOauthToken,
   GetOauthTokenForbidden,
@@ -10,11 +8,9 @@ import {
   GetOauthTokenNotfound,
   GetOauthTokenOutput,
 } from "../src/operations/getOauthToken";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("getOauthToken", () => {
+withMainLayer("getOauthToken", (it) => {
   it("should have the correct input schema", () => {
     expect(GetOauthTokenInput.fields.organization).toBeDefined();
     expect(GetOauthTokenInput.fields.application_id).toBeDefined();
@@ -62,7 +58,7 @@ describe("getOauthToken", () => {
         expect(result.application_id).toBe("this-application-definitely-does-not-exist-12345");
         expect(result.token_id).toBe("this-token-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return GetOauthTokenNotfound for non-existent organization", () =>
@@ -85,6 +81,6 @@ describe("getOauthToken", () => {
         expect(result.application_id).toBe("some-application-id");
         expect(result.token_id).toBe("some-token-id");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

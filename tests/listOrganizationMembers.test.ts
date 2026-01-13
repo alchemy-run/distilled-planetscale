@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
 import { Cause, Effect, Exit, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listOrganizationMembers,
   ListOrganizationMembersInput,
   ListOrganizationMembersNotfound,
   ListOrganizationMembersOutput,
 } from "../src/operations/listOrganizationMembers";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listOrganizationMembers", () => {
+withMainLayer("listOrganizationMembers", (it) => {
   it("should have the correct input schema", () => {
     expect(ListOrganizationMembersInput.fields.organization).toBeDefined();
     expect(ListOrganizationMembersInput.fields.q).toBeDefined();
@@ -65,7 +61,7 @@ describe("listOrganizationMembers", () => {
         // Verify role is one of the expected values
         expect(["member", "admin"]).toContain(member.role);
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support pagination parameters", () =>
@@ -81,7 +77,7 @@ describe("listOrganizationMembers", () => {
       expect(result).toHaveProperty("current_page");
       expect(result).toHaveProperty("data");
       expect(Array.isArray(result.data)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return an error for non-existent organization", () =>
@@ -103,6 +99,6 @@ describe("listOrganizationMembers", () => {
         // Otherwise, the API may have returned a different error format
         // which is acceptable for this test
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

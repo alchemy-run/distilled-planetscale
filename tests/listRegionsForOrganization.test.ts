@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listRegionsForOrganization,
   ListRegionsForOrganizationNotfound,
   ListRegionsForOrganizationInput,
   ListRegionsForOrganizationOutput,
 } from "../src/operations/listRegionsForOrganization";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listRegionsForOrganization", () => {
+withMainLayer("listRegionsForOrganization", (it) => {
   it("should have the correct input schema", () => {
     expect(ListRegionsForOrganizationInput.fields.organization).toBeDefined();
     expect(ListRegionsForOrganizationInput.fields.page).toBeDefined();
@@ -53,7 +49,7 @@ describe("listRegionsForOrganization", () => {
         expect(region).toHaveProperty("slug");
         expect(region).toHaveProperty("current_default");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support pagination parameters", () =>
@@ -68,7 +64,7 @@ describe("listRegionsForOrganization", () => {
 
       expect(result).toHaveProperty("data");
       expect(result).toHaveProperty("current_page");
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListRegionsForOrganizationNotfound for non-existent organization", () =>
@@ -87,6 +83,6 @@ describe("listRegionsForOrganization", () => {
         expect(result._tag).toBe("ListRegionsForOrganizationNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

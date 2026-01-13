@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   createWebhook,
   CreateWebhookNotfound,
@@ -10,11 +8,9 @@ import {
   CreateWebhookOutput,
 } from "../src/operations/createWebhook";
 import { deleteWebhook } from "../src/operations/deleteWebhook";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("createWebhook", () => {
+withMainLayer("createWebhook", (it) => {
   it("should have the correct input schema", () => {
     expect(CreateWebhookInput.fields.organization).toBeDefined();
     expect(CreateWebhookInput.fields.database).toBeDefined();
@@ -54,7 +50,7 @@ describe("createWebhook", () => {
         expect(result._tag).toBe("CreateWebhookNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return CreateWebhookNotfound for non-existent database", () =>
@@ -77,7 +73,7 @@ describe("createWebhook", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test creates an actual webhook and cleans it up.

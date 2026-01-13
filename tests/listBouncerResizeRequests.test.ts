@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listBouncerResizeRequests,
   ListBouncerResizeRequestsNotfound,
   ListBouncerResizeRequestsInput,
   ListBouncerResizeRequestsOutput,
 } from "../src/operations/listBouncerResizeRequests";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listBouncerResizeRequests", () => {
+withMainLayer("listBouncerResizeRequests", (it) => {
   it("should have the correct input schema", () => {
     expect(ListBouncerResizeRequestsInput.fields.organization).toBeDefined();
     expect(ListBouncerResizeRequestsInput.fields.database).toBeDefined();
@@ -51,7 +47,7 @@ describe("listBouncerResizeRequests", () => {
         expect(result._tag).toBe("ListBouncerResizeRequestsNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListBouncerResizeRequestsNotfound for non-existent database", () =>
@@ -75,7 +71,7 @@ describe("listBouncerResizeRequests", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListBouncerResizeRequestsNotfound for non-existent branch", () =>
@@ -101,7 +97,7 @@ describe("listBouncerResizeRequests", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListBouncerResizeRequestsNotfound for non-existent bouncer", () =>
@@ -129,6 +125,6 @@ describe("listBouncerResizeRequests", () => {
         expect(result.branch).toBe(branch);
         expect(result.bouncer).toBe("this-bouncer-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

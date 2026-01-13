@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   updateOrganizationTeam,
   UpdateOrganizationTeamNotfound,
@@ -12,11 +10,9 @@ import {
 } from "../src/operations/updateOrganizationTeam";
 import { createOrganizationTeam } from "../src/operations/createOrganizationTeam";
 import { deleteOrganizationTeam } from "../src/operations/deleteOrganizationTeam";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("updateOrganizationTeam", () => {
+withMainLayer("updateOrganizationTeam", (it) => {
   it("should have the correct input schema", () => {
     expect(UpdateOrganizationTeamInput.fields.organization).toBeDefined();
     expect(UpdateOrganizationTeamInput.fields.team).toBeDefined();
@@ -60,7 +56,7 @@ describe("updateOrganizationTeam", () => {
         expect(result.organization).toBe(organization);
         expect(result.team).toBe("this-team-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return UpdateOrganizationTeamNotfound for non-existent organization", () =>
@@ -81,7 +77,7 @@ describe("updateOrganizationTeam", () => {
         expect(result._tag).toBe("UpdateOrganizationTeamNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   // Note: This test is skipped because service tokens typically don't have permission

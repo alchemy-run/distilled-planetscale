@@ -1,8 +1,6 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   deleteOauthToken,
   DeleteOauthTokenNotfound,
@@ -10,11 +8,9 @@ import {
   DeleteOauthTokenInput,
   DeleteOauthTokenOutput,
 } from "../src/operations/deleteOauthToken";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("deleteOauthToken", () => {
+withMainLayer("deleteOauthToken", (it) => {
   it("should have the correct input schema", () => {
     expect(DeleteOauthTokenInput.fields.organization).toBeDefined();
     expect(DeleteOauthTokenInput.fields.application_id).toBeDefined();
@@ -44,7 +40,7 @@ describe("deleteOauthToken", () => {
         expect(result._tag).toBe("DeleteOauthTokenNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteOauthTokenForbidden for non-existent OAuth application", () =>
@@ -68,7 +64,7 @@ describe("deleteOauthToken", () => {
         expect(result.organization).toBe(organization);
         expect(result.application_id).toBe("this-oauth-app-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return DeleteOauthTokenForbidden for non-existent token", () =>
@@ -92,6 +88,6 @@ describe("deleteOauthToken", () => {
         expect(result.organization).toBe(organization);
         expect(result.token_id).toBe("this-token-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   resetRole,
   ResetRoleNotfound,
   ResetRoleInput,
   ResetRoleOutput,
 } from "../src/operations/resetRole";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("resetRole", () => {
+withMainLayer("resetRole", (it) => {
   it("should have the correct input schema", () => {
     expect(ResetRoleInput.fields.organization).toBeDefined();
     expect(ResetRoleInput.fields.database).toBeDefined();
@@ -64,7 +60,7 @@ describe("resetRole", () => {
         expect(result._tag).toBe("ResetRoleNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ResetRoleNotfound for non-existent database", () =>
@@ -88,7 +84,7 @@ describe("resetRole", () => {
         expect(result.organization).toBe(organization);
         expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ResetRoleNotfound for non-existent branch", () =>
@@ -114,7 +110,7 @@ describe("resetRole", () => {
         expect(result.database).toBe(database);
         expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ResetRoleNotfound for non-existent role id", () =>
@@ -142,6 +138,6 @@ describe("resetRole", () => {
         expect(result.branch).toBe(branch);
         expect(result.id).toBe("this-role-id-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });

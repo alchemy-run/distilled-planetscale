@@ -1,19 +1,15 @@
-import { FetchHttpClient } from "@effect/platform";
-import { it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { PlanetScaleCredentials } from "../src/credentials";
 import {
   listClusterSizeSkus,
   ListClusterSizeSkusInput,
   ListClusterSizeSkusNotfound,
   ListClusterSizeSkusOutput,
 } from "../src/operations/listClusterSizeSkus";
-import "./setup";
+import { withMainLayer } from "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
-
-describe("listClusterSizeSkus", () => {
+withMainLayer("listClusterSizeSkus", (it) => {
   it("should have the correct input schema", () => {
     expect(ListClusterSizeSkusInput.fields.organization).toBeDefined();
     expect(ListClusterSizeSkusInput.fields.engine).toBeDefined();
@@ -44,7 +40,7 @@ describe("listClusterSizeSkus", () => {
         expect(sku).toHaveProperty("development");
         expect(sku).toHaveProperty("production");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support engine filter parameter", () =>
@@ -57,7 +53,7 @@ describe("listClusterSizeSkus", () => {
       });
 
       expect(Array.isArray(result)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should support rates parameter", () =>
@@ -70,7 +66,7 @@ describe("listClusterSizeSkus", () => {
       });
 
       expect(Array.isArray(result)).toBe(true);
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 
   it.effect("should return ListClusterSizeSkusNotfound for non-existent organization", () =>
@@ -89,6 +85,6 @@ describe("listClusterSizeSkus", () => {
         expect(result._tag).toBe("ListClusterSizeSkusNotfound");
         expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
       }
-    }).pipe(Effect.provide(MainLayer)),
+    }),
   );
 });
