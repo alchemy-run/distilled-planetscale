@@ -2,7 +2,7 @@ import { FetchHttpClient } from "@effect/platform";
 import { it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   updateOrganizationTeam,
   UpdateOrganizationTeamNotfound,
@@ -14,7 +14,7 @@ import { createOrganizationTeam } from "../src/operations/createOrganizationTeam
 import { deleteOrganizationTeam } from "../src/operations/deleteOrganizationTeam";
 import "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
 
 describe("updateOrganizationTeam", () => {
   it("should have the correct input schema", () => {

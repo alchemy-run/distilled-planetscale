@@ -2,7 +2,7 @@ import { FetchHttpClient } from "@effect/platform";
 import { it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   workflowComplete,
   WorkflowCompleteNotfound,
@@ -11,7 +11,7 @@ import {
 } from "../src/operations/workflowComplete";
 import "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
 
 describe("workflowComplete", () => {
   it("should have the correct input schema", () => {

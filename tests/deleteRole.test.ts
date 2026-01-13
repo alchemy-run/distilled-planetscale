@@ -2,7 +2,7 @@ import { FetchHttpClient } from "@effect/platform";
 import { it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   deleteRole,
   DeleteRoleNotfound,
@@ -12,7 +12,7 @@ import {
 import { createRole } from "../src/operations/createRole";
 import "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
 
 describe("deleteRole", () => {
   it("should have the correct input schema", () => {

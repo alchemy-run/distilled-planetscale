@@ -2,7 +2,7 @@ import { FetchHttpClient } from "@effect/platform";
 import { it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   updateDatabasePostgresCidr,
   UpdateDatabasePostgresCidrNotfound,
@@ -13,7 +13,7 @@ import { createDatabasePostgresCidr } from "../src/operations/createDatabasePost
 import { deleteDatabasePostgresCidr } from "../src/operations/deleteDatabasePostgresCidr";
 import "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
 
 describe("updateDatabasePostgresCidr", () => {
   it("should have the correct input schema", () => {

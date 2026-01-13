@@ -2,7 +2,7 @@ import { FetchHttpClient } from "@effect/platform";
 import { it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { describe, expect } from "vitest";
-import { PlanetScaleCredentials, PlanetScaleCredentialsLive } from "../src/credentials";
+import { PlanetScaleCredentials, PlanetScaleCredentialsFromEnv } from "../src/credentials";
 import {
   listOauthTokens,
   ListOauthTokensForbidden,
@@ -12,7 +12,7 @@ import {
 } from "../src/operations/listOauthTokens";
 import "./setup";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+const MainLayer = Layer.merge(PlanetScaleCredentialsFromEnv, FetchHttpClient.layer);
 
 describe("listOauthTokens", () => {
   // Schema validation

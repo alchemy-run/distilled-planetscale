@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
 import { Effect, Schema } from "effect";
-import { API_BASE_URL, PlanetScaleCredentials } from "./credentials";
+import { PlanetScaleCredentials } from "./credentials";
 
 // API Error Response Schema - parse just the code, keep the rest as unknown
 const ApiErrorResponse = Schema.Struct({
@@ -123,10 +123,10 @@ export const API = {
 
     return (input: Input): Effect.Effect<Output, Errors, Context> =>
       Effect.gen(function* () {
-        const { token } = yield* PlanetScaleCredentials;
+        const { token, apiBaseUrl } = yield* PlanetScaleCredentials;
         const client = yield* HttpClient.HttpClient;
 
-        const response = yield* HttpClientRequest.make(method)(API_BASE_URL + path(input)).pipe(
+        const response = yield* HttpClientRequest.make(method)(apiBaseUrl + path(input)).pipe(
           HttpClientRequest.setHeader("Authorization", token),
           HttpClientRequest.setHeader("Content-Type", "application/json"),
           client.execute,
