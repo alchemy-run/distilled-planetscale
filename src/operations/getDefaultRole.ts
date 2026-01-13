@@ -83,6 +83,13 @@ export class GetDefaultRoleNotfound extends Schema.TaggedError<GetDefaultRoleNot
 ) {}
 
 // The operation
+/**
+ * Get the default postgres role
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ */
 export const getDefaultRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDefaultRoleInput,
   outputSchema: GetDefaultRoleOutput,

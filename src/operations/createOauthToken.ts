@@ -130,6 +130,20 @@ export class CreateOauthTokenUnprocessableentity extends Schema.TaggedError<Crea
 ) {}
 
 // The operation
+/**
+ * Create or renew an OAuth token
+ *
+ * Create an OAuth token from an authorization grant code, or refresh an OAuth token from a refresh token
+ *
+ * @param organization - The name of the organization the OAuth application belongs to
+ * @param id - The ID of the OAuth application
+ * @param client_id - The OAuth application's client ID
+ * @param client_secret - The OAuth application's client secret
+ * @param grant_type - Whether an OAuth grant code or a refresh token is being exchanged for an OAuth token
+ * @param code - The OAuth grant code provided to your OAuth application's redirect URI. Required when grant_type is authorization_code
+ * @param redirect_uri - The OAuth application's redirect URI. Required when grant_type is authorization_code
+ * @param refresh_token - The refresh token from the original OAuth token grant. Required when grant_type is refresh_token
+ */
 export const createOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateOauthTokenInput,
   outputSchema: CreateOauthTokenOutput,

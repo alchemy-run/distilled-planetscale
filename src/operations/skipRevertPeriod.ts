@@ -181,6 +181,15 @@ export class SkipRevertPeriodNotfound extends Schema.TaggedError<SkipRevertPerio
 ) {}
 
 // The operation
+/**
+ * Skip revert period
+ *
+ * Skips the revert period for a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ */
 export const skipRevertPeriod = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: SkipRevertPeriodInput,
   outputSchema: SkipRevertPeriodOutput,

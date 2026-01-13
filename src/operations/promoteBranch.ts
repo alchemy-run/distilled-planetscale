@@ -104,6 +104,15 @@ export class PromoteBranchNotfound extends Schema.TaggedError<PromoteBranchNotfo
 ) {}
 
 // The operation
+/**
+ * Promote a branch
+ *
+ * Promotes a branch from development to production
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const promoteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: PromoteBranchInput,
   outputSchema: PromoteBranchOutput,

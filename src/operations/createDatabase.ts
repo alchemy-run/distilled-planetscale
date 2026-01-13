@@ -108,6 +108,17 @@ export class CreateDatabaseNotfound extends Schema.TaggedError<CreateDatabaseNot
 ) {}
 
 // The operation
+/**
+ * Create a database
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param name - Name of the database
+ * @param region - The region the database will be deployed in. If left blank, defaults to the organization's default region.
+ * @param cluster_size - The database cluster size name (e.g., 'PS_10', 'PS_80'). Use the 'List available cluster sizes' endpoint to get available options for your organization. /v1/organizations/:organization/cluster-size-skus
+ * @param replicas - The number of replicas for the database. 0 for non-HA, 2+ for HA.
+ * @param kind - The kind of database to create.
+ * @param major_version - For PostgreSQL databases, the PostgreSQL major version to use for the database. Defaults to the latest available major version.
+ */
 export const createDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDatabaseInput,
   outputSchema: CreateDatabaseOutput,

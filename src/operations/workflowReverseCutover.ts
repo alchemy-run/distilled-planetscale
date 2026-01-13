@@ -157,6 +157,13 @@ export class WorkflowReverseCutoverNotfound extends Schema.TaggedError<WorkflowR
 ) {}
 
 // The operation
+/**
+ * Reverse traffic cutover
+ *
+ * @param organization - The name of the organization the workflow belongs to
+ * @param database - The name of the database the workflow belongs to
+ * @param number - The sequence number of the workflow
+ */
 export const workflowReverseCutover = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowReverseCutoverInput,
   outputSchema: WorkflowReverseCutoverOutput,

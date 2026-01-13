@@ -63,6 +63,13 @@ export class CreateQueryPatternsReportNotfound extends Schema.TaggedError<Create
 ) {}
 
 // The operation
+/**
+ * Create a new query patterns report
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const createQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateQueryPatternsReportInput,
   outputSchema: CreateQueryPatternsReportOutput,

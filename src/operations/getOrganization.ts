@@ -64,6 +64,11 @@ export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationN
 ) {}
 
 // The operation
+/**
+ * Get an organization
+ *
+ * @param organization - The name of the organization
+ */
 export const getOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationInput,
   outputSchema: GetOrganizationOutput,

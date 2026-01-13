@@ -114,6 +114,14 @@ export class GetBackupNotfound extends Schema.TaggedError<GetBackupNotfound>()(
 ) {}
 
 // The operation
+/**
+ * Get a backup
+ *
+ * @param id - The ID for the backup
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const getBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBackupInput,
   outputSchema: GetBackupOutput,

@@ -99,6 +99,16 @@ export class UpdatePasswordNotfound extends Schema.TaggedError<UpdatePasswordNot
 ) {}
 
 // The operation
+/**
+ * Update a password
+ *
+ * @param organization - The name of the organization the password belongs to
+ * @param database - The name of the database the password belongs to
+ * @param branch - The name of the branch the password belongs to
+ * @param id - The ID of the password
+ * @param name - The name for the password
+ * @param cidrs - List of IP addresses or CIDR ranges that can use this password
+ */
 export const updatePassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdatePasswordInput,
   outputSchema: UpdatePasswordOutput,

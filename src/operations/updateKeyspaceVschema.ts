@@ -70,6 +70,15 @@ export class UpdateKeyspaceVschemaUnprocessableentity extends Schema.TaggedError
 ) {}
 
 // The operation
+/**
+ * Update the VSchema for the keyspace
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param keyspace - The name of the keyspace
+ * @param vschema - The new VSchema for the keyspace
+ */
 export const updateKeyspaceVschema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateKeyspaceVschemaInput,
   outputSchema: UpdateKeyspaceVschemaOutput,

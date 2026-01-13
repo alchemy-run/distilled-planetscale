@@ -95,6 +95,17 @@ export class UpdateBouncerResizeRequestNotfound extends Schema.TaggedError<Updat
 ) {}
 
 // The operation
+/**
+ * Upsert a bouncer resize request
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param bouncer - The name of the bouncer
+ * @param bouncer_size - The bouncer size SKU name (e.g., 'PGB_5', 'PGB_10', 'PGB_20', 'PGB_40', 'PGB_80', 'PGB_160'). Defaults to 'PGB_5'.
+ * @param replicas_per_cell - The number of PgBouncers per availability zone. Defaults to 1.
+ * @param parameters - Bouncer configuration parameters nested by namespace (e.g., {"pgbouncer": {"default_pool_size": "100"}}). Use the 'List cluster parameters' endpoint to retrieve available parameters. Only parameters with namespace 'pgbouncer' can be updated.
+ */
 export const updateBouncerResizeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBouncerResizeRequestInput,
   outputSchema: UpdateBouncerResizeRequestOutput,

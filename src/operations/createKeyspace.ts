@@ -81,6 +81,17 @@ export class CreateKeyspaceNotfound extends Schema.TaggedError<CreateKeyspaceNot
 ) {}
 
 // The operation
+/**
+ * Create a keyspace
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param name - The name of the keyspace
+ * @param cluster_size - The database cluster size name (e.g., 'PS_10', 'PS_80'). Use the 'List available cluster sizes' endpoint to get available options for your organization. /v1/organizations/:organization/cluster-size-skus
+ * @param extra_replicas - The number of additional replicas beyond the included default
+ * @param shards - The number of shards. Default: 1
+ */
 export const createKeyspace = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateKeyspaceInput,
   outputSchema: CreateKeyspaceOutput,

@@ -51,6 +51,13 @@ export class DeleteBranchNotfound extends Schema.TaggedError<DeleteBranchNotfoun
 ) {}
 
 // The operation
+/**
+ * Delete a branch
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const deleteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteBranchInput,
   outputSchema: DeleteBranchOutput,

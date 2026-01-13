@@ -65,6 +65,16 @@ export class UpdateWebhookNotfound extends Schema.TaggedError<UpdateWebhookNotfo
 ) {}
 
 // The operation
+/**
+ * Update a webhook
+ *
+ * @param organization - The name of the organization
+ * @param database - The name of the database
+ * @param id - The ID of the webhook
+ * @param url - The URL the webhook will send events to
+ * @param enabled - Whether the webhook should be enabled
+ * @param events - The events this webhook should subscribe to
+ */
 export const updateWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateWebhookInput,
   outputSchema: UpdateWebhookOutput,

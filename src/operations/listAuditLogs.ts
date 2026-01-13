@@ -67,6 +67,11 @@ export class ListAuditLogsNotfound extends Schema.TaggedError<ListAuditLogsNotfo
 ) {}
 
 // The operation
+/**
+ * List audit logs
+ *
+ * @param organization - The name of the organization
+ */
 export const listAuditLogs = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListAuditLogsInput,
   outputSchema: ListAuditLogsOutput,

@@ -69,6 +69,13 @@ export class ListGeneratedQueryPatternsReportsNotfound extends Schema.TaggedErro
 ) {}
 
 // The operation
+/**
+ * List generated query patterns reports
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const listGeneratedQueryPatternsReports = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListGeneratedQueryPatternsReportsInput,
   outputSchema: ListGeneratedQueryPatternsReportsOutput,

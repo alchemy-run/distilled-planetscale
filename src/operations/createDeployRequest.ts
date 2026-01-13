@@ -182,6 +182,17 @@ export class CreateDeployRequestNotfound extends Schema.TaggedError<CreateDeploy
 ) {}
 
 // The operation
+/**
+ * Create a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param branch - The name of the branch the deploy request is created from
+ * @param into_branch - The name of the branch the deploy request will be merged into
+ * @param notes - Notes about the deploy request
+ * @param auto_cutover - Whether or not to enable auto_cutover for the deploy request. When enabled, will auto cutover to the new schema as soon as it is ready.
+ * @param auto_delete_branch - Whether or not to enable auto_delete_branch for the deploy request. When enabled, will delete the branch once the DR successfully completes.
+ */
 export const createDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDeployRequestInput,
   outputSchema: CreateDeployRequestOutput,

@@ -67,6 +67,14 @@ export class GetQueryPatternsReportStatusNotfound extends Schema.TaggedError<Get
 ) {}
 
 // The operation
+/**
+ * Show the status of a query patterns report
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param id - The ID of the query patterns report
+ */
 export const getQueryPatternsReportStatus = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetQueryPatternsReportStatusInput,
   outputSchema: GetQueryPatternsReportStatusOutput,

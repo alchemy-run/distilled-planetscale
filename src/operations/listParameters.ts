@@ -77,6 +77,15 @@ export class ListParametersNotfound extends Schema.TaggedError<ListParametersNot
 ) {}
 
 // The operation
+/**
+ * List cluster parameters
+ *
+ * Returns the parameters for a branch. To update the parameters, use the "Upsert a change request" endpoint.
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ */
 export const listParameters = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListParametersInput,
   outputSchema: ListParametersOutput,

@@ -157,6 +157,13 @@ export class WorkflowReverseTrafficNotfound extends Schema.TaggedError<WorkflowR
 ) {}
 
 // The operation
+/**
+ * Reverse traffic
+ *
+ * @param organization - The name of the organization the workflow belongs to
+ * @param database - The name of the database the workflow belongs to
+ * @param number - The sequence number of the workflow
+ */
 export const workflowReverseTraffic = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowReverseTrafficInput,
   outputSchema: WorkflowReverseTrafficOutput,

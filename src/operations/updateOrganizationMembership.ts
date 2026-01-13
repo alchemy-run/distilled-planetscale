@@ -74,6 +74,13 @@ export class UpdateOrganizationMembershipNotfound extends Schema.TaggedError<Upd
 ) {}
 
 // The operation
+/**
+ * Update organization member role
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the user
+ * @param role - The role to assign to the member (e.g., 'admin', 'member'). Note: Cannot update your own role. Roles managed by IdP cannot be updated via API.
+ */
 export const updateOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationMembershipInput,
   outputSchema: UpdateOrganizationMembershipOutput,

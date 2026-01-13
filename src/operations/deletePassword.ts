@@ -55,6 +55,14 @@ export class DeletePasswordNotfound extends Schema.TaggedError<DeletePasswordNot
 ) {}
 
 // The operation
+/**
+ * Delete a password
+ *
+ * @param organization - The name of the organization the password belongs to
+ * @param database - The name of the database the password belongs to
+ * @param branch - The name of the branch the password belongs to
+ * @param id - The ID of the password
+ */
 export const deletePassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeletePasswordInput,
   outputSchema: DeletePasswordOutput,

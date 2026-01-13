@@ -104,6 +104,13 @@ export class DisableSafeMigrationsNotfound extends Schema.TaggedError<DisableSaf
 ) {}
 
 // The operation
+/**
+ * Disable safe migrations for a branch
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const disableSafeMigrations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DisableSafeMigrationsInput,
   outputSchema: DisableSafeMigrationsOutput,

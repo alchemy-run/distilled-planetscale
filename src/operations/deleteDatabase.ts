@@ -47,6 +47,12 @@ export class DeleteDatabaseNotfound extends Schema.TaggedError<DeleteDatabaseNot
 ) {}
 
 // The operation
+/**
+ * Delete a database
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ */
 export const deleteDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteDatabaseInput,
   outputSchema: DeleteDatabaseOutput,

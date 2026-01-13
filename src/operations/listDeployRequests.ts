@@ -191,6 +191,21 @@ export class ListDeployRequestsNotfound extends Schema.TaggedError<ListDeployReq
 ) {}
 
 // The operation
+/**
+ * List deploy requests
+ *
+ * List deploy requests for a database
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param state - Filter by state of the deploy request (open, closed, deployed)
+ * @param branch - Filter by the name of the branch the deploy request is created from
+ * @param into_branch - Filter by the name of the branch the deploy request will be merged into
+ * @param deployed_at - Filter deploy requests by the date they were deployed. (e.g. 2023-01-01T00:00:00Z..2023-01-31T23:59:59Z)
+ * @param running_at - Filter deploy requests by the date they were running. (e.g. 2023-01-01T00:00:00Z..2023-01-31T23:59:59Z)
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listDeployRequests = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployRequestsInput,
   outputSchema: ListDeployRequestsOutput,

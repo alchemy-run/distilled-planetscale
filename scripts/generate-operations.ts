@@ -210,6 +210,105 @@ interface GeneratedOperation {
   exports: string[];
 }
 
+// ============================================================================
+// JSDoc Generation
+// ============================================================================
+
+function escapeJsDoc(text: string): string {
+  // Escape characters that could break JSDoc comments
+  return text.replace(/\*\//g, "*\\/").replace(/\\/g, "\\\\");
+}
+
+function formatDescription(description: string | undefined): string[] {
+  if (!description) return [];
+  
+  // Clean up the description - remove markdown tables and authorization sections
+  // for cleaner JSDoc output
+  const lines = description.split("\n");
+  const result: string[] = [];
+  let inTable = false;
+  
+  for (const line of lines) {
+    const trimmed = line.trim();
+    
+    // Skip authorization sections (markdown headers starting with ###)
+    if (trimmed.startsWith("### Authorization")) {
+      break; // Stop processing after Authorization header
+    }
+    
+    // Skip markdown table markers
+    if (trimmed.startsWith("|") || trimmed.startsWith("| :")) {
+      inTable = true;
+      continue;
+    }
+    
+    if (inTable && !trimmed.startsWith("|")) {
+      inTable = false;
+    }
+    
+    if (!inTable && trimmed) {
+      result.push(escapeJsDoc(trimmed));
+    }
+  }
+  
+  return result;
+}
+
+function generateJsDoc(
+  summary: string | undefined,
+  description: string | undefined,
+  parameters: Parameter[],
+): string {
+  const lines: string[] = ["/**"];
+  
+  // Add summary as the first line
+  if (summary) {
+    lines.push(` * ${escapeJsDoc(summary)}`);
+  }
+  
+  // Add description if different from summary
+  const descLines = formatDescription(description);
+  if (descLines.length > 0) {
+    // Only add description if it's different from summary
+    const descText = descLines.join(" ");
+    if (descText !== summary) {
+      if (summary) lines.push(" *");
+      for (const line of descLines) {
+        lines.push(` * ${line}`);
+      }
+    }
+  }
+  
+  // Add @param tags for parameters with descriptions
+  const documentedParams = parameters.filter((p) => p.description && p.in !== "body");
+  if (documentedParams.length > 0) {
+    lines.push(" *");
+    for (const param of documentedParams) {
+      const desc = escapeJsDoc(param.description || "");
+      lines.push(` * @param ${param.name} - ${desc}`);
+    }
+  }
+  
+  // Add body parameter properties if present
+  const bodyParam = parameters.find((p) => p.in === "body");
+  if (bodyParam?.schema?.properties) {
+    for (const [key, value] of Object.entries(bodyParam.schema.properties)) {
+      if (value.description) {
+        lines.push(` * @param ${key} - ${escapeJsDoc(value.description)}`);
+      }
+    }
+  }
+  
+  lines.push(" */");
+  
+  // Don't generate empty JSDoc
+  if (lines.length === 2) {
+    return "";
+  }
+  
+  return lines.join("\n");
+}
+
 function generateInputSchema(
   operationId: string,
   method: string,
@@ -390,6 +489,9 @@ function generateOperation(
   const functionName = operationIdToFunctionName(operationId);
   const parameters = operation.parameters || [];
 
+  // Generate JSDoc from OpenAPI documentation
+  const jsDoc = generateJsDoc(operation.summary, operation.description, parameters);
+
   // Generate input schema
   const { inputSchemaCode, inputSchemaName, pathParamInfos } = generateInputSchema(
     operationId,
@@ -418,7 +520,14 @@ function generateOperation(
   const errorsArray =
     errorNames.length > 0 ? `[${errorNames.join(", ")}]` : "[]";
 
-  const operationCode = `export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  const operationCodeWithJsDoc = jsDoc
+    ? `${jsDoc}
+export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: ${inputSchemaName},
+  outputSchema: ${outputSchemaName},
+  errors: ${errorsArray},
+}));`
+    : `export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ${inputSchemaName},
   outputSchema: ${outputSchemaName},
   errors: ${errorsArray},
@@ -441,7 +550,7 @@ import { API, ApiErrorCode, ApiMethod, ApiPath } from "../client";`;
     errorCode,
     "",
     "// The operation",
-    operationCode,
+    operationCodeWithJsDoc,
     "",
   ]
     .filter((line) => line !== undefined)

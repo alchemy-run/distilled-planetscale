@@ -104,6 +104,13 @@ export class GetBranchNotfound extends Schema.TaggedError<GetBranchNotfound>()(
 ) {}
 
 // The operation
+/**
+ * Get a branch
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const getBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBranchInput,
   outputSchema: GetBranchOutput,

@@ -124,6 +124,14 @@ export class GetServiceTokenNotfound extends Schema.TaggedError<GetServiceTokenN
 ) {}
 
 // The operation
+/**
+ * Get a service token
+ *
+ * Get information about a service token.
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the service token
+ */
 export const getServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetServiceTokenInput,
   outputSchema: GetServiceTokenOutput,

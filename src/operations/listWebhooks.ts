@@ -67,6 +67,16 @@ export class ListWebhooksNotfound extends Schema.TaggedError<ListWebhooksNotfoun
 ) {}
 
 // The operation
+/**
+ * List webhooks
+ *
+ * List webhooks for a database
+ *
+ * @param organization - The name of the organization
+ * @param database - The name of the database
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listWebhooks = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListWebhooksInput,
   outputSchema: ListWebhooksOutput,

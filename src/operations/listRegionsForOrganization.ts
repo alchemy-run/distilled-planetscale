@@ -61,6 +61,13 @@ export class ListRegionsForOrganizationNotfound extends Schema.TaggedError<ListR
 ) {}
 
 // The operation
+/**
+ * List regions for an organization
+ *
+ * @param organization - The name of the organization
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listRegionsForOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListRegionsForOrganizationInput,
   outputSchema: ListRegionsForOrganizationOutput,

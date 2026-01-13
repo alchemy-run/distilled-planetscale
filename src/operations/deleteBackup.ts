@@ -55,6 +55,14 @@ export class DeleteBackupNotfound extends Schema.TaggedError<DeleteBackupNotfoun
 ) {}
 
 // The operation
+/**
+ * Delete a backup
+ *
+ * @param id - The ID of the backup
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const deleteBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteBackupInput,
   outputSchema: DeleteBackupOutput,

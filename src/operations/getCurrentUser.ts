@@ -63,6 +63,11 @@ export class GetCurrentUserNotfound extends Schema.TaggedError<GetCurrentUserNot
 ) {}
 
 // The operation
+/**
+ * Get current user
+ *
+ * Get the user associated with this service token
+ */
 export const getCurrentUser = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetCurrentUserInput,
   outputSchema: GetCurrentUserOutput,

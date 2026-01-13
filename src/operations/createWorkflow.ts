@@ -160,6 +160,19 @@ export class CreateWorkflowNotfound extends Schema.TaggedError<CreateWorkflowNot
 ) {}
 
 // The operation
+/**
+ * Create a workflow
+ *
+ * @param organization - The name of the organization the workflow belongs to
+ * @param database - The name of the database the workflow belongs to
+ * @param name - Name the workflow
+ * @param source_keyspace - Name of the source keyspace
+ * @param target_keyspace - Name of the target keyspace
+ * @param global_keyspace - Name of the global sequence keyspace
+ * @param defer_secondary_keys - Defer secondary keys
+ * @param on_ddl - The behavior when DDL changes during the workflow
+ * @param tables - List of tables to move
+ */
 export const createWorkflow = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateWorkflowInput,
   outputSchema: CreateWorkflowOutput,

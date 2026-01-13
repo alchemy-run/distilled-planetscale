@@ -181,6 +181,13 @@ export class CompleteErroredDeployNotfound extends Schema.TaggedError<CompleteEr
 ) {}
 
 // The operation
+/**
+ * Complete an errored deploy
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ */
 export const completeErroredDeploy = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CompleteErroredDeployInput,
   outputSchema: CompleteErroredDeployOutput,

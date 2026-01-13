@@ -100,6 +100,14 @@ export class UpdateOrganizationTeamUnprocessableentity extends Schema.TaggedErro
 ) {}
 
 // The operation
+/**
+ * Update an organization team
+ *
+ * @param organization - The name of the organization
+ * @param team - The slug of the team
+ * @param name - The new name for the team
+ * @param description - The new description for the team
+ */
 export const updateOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationTeamInput,
   outputSchema: UpdateOrganizationTeamOutput,

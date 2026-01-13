@@ -97,6 +97,15 @@ export class ListBranchChangeRequestsNotfound extends Schema.TaggedError<ListBra
 ) {}
 
 // The operation
+/**
+ * Get branch change requests
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listBranchChangeRequests = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBranchChangeRequestsInput,
   outputSchema: ListBranchChangeRequestsOutput,

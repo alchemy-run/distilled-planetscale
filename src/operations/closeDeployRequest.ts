@@ -182,6 +182,14 @@ export class CloseDeployRequestNotfound extends Schema.TaggedError<CloseDeployRe
 ) {}
 
 // The operation
+/**
+ * Close a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ * @param state - The deploy request will be updated to this state
+ */
 export const closeDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CloseDeployRequestInput,
   outputSchema: CloseDeployRequestOutput,

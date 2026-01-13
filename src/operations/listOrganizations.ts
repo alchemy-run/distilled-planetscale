@@ -72,6 +72,14 @@ export class ListOrganizationsNotfound extends Schema.TaggedError<ListOrganizati
 ) {}
 
 // The operation
+/**
+ * List organizations
+ *
+ * When using a service token, returns the list of organizations the service token has access to. When using an OAuth token, returns the list of organizations the user has access to.
+ *
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listOrganizations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationsInput,
   outputSchema: ListOrganizationsOutput,

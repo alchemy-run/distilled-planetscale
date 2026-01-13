@@ -78,6 +78,16 @@ export class ListReadOnlyRegionsNotfound extends Schema.TaggedError<ListReadOnly
 ) {}
 
 // The operation
+/**
+ * List read-only regions
+ *
+ * List read-only regions for the database's default branch
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listReadOnlyRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListReadOnlyRegionsInput,
   outputSchema: ListReadOnlyRegionsOutput,

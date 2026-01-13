@@ -51,6 +51,13 @@ export class DeleteOauthTokenNotfound extends Schema.TaggedError<DeleteOauthToke
 ) {}
 
 // The operation
+/**
+ * Delete an OAuth token
+ *
+ * @param organization - The name of the organization the OAuth application belongs to
+ * @param application_id - The ID of the OAuth application
+ * @param token_id - The ID of the OAuth application token
+ */
 export const deleteOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteOauthTokenInput,
   outputSchema: DeleteOauthTokenOutput,

@@ -57,6 +57,12 @@ export class DeleteOrganizationTeamUnprocessableentity extends Schema.TaggedErro
 ) {}
 
 // The operation
+/**
+ * Delete an organization team
+ *
+ * @param organization - The name of the organization
+ * @param team - The slug of the team
+ */
 export const deleteOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteOrganizationTeamInput,
   outputSchema: DeleteOrganizationTeamOutput,

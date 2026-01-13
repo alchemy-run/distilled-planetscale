@@ -128,6 +128,13 @@ export class GetOauthTokenNotfound extends Schema.TaggedError<GetOauthTokenNotfo
 ) {}
 
 // The operation
+/**
+ * Get an OAuth token
+ *
+ * @param organization - The name of the organization the OAuth application belongs to
+ * @param application_id - The ID of the OAuth application
+ * @param token_id - The ID of the OAuth application token
+ */
 export const getOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOauthTokenInput,
   outputSchema: GetOauthTokenOutput,

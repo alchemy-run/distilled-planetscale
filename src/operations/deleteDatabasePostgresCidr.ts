@@ -62,6 +62,13 @@ export class DeleteDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 ) {}
 
 // The operation
+/**
+ * Delete an IP restriction entry
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ * @param id - The ID of the IP restriction entry
+ */
 export const deleteDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteDatabasePostgresCidrInput,
   outputSchema: DeleteDatabasePostgresCidrOutput,

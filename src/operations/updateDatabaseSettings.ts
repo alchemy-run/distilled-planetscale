@@ -117,6 +117,23 @@ export class UpdateDatabaseSettingsNotfound extends Schema.TaggedError<UpdateDat
 ) {}
 
 // The operation
+/**
+ * Update database settings
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ * @param new_name - The name to update the database to
+ * @param automatic_migrations - Whether or not to copy migration data to new branches and in deploy requests. (Vitess only)
+ * @param migration_framework - A migration framework to use on the database. (Vitess only)
+ * @param migration_table_name - Name of table to use as migration table for the database. (Vitess only)
+ * @param require_approval_for_deploy - Whether or not deploy requests must be approved by a database administrator other than the request creator
+ * @param restrict_branch_region - Whether or not to limit branch creation to the same region as the one selected during database creation.
+ * @param allow_data_branching - Whether or not data branching is allowed on the database. (Vitess only)
+ * @param allow_foreign_key_constraints - Whether or not foreign key constraints are allowed on the database. (Vitess only)
+ * @param insights_raw_queries - Whether or not full queries should be collected from the database
+ * @param production_branch_web_console - Whether or not the web console can be used on the production branch of the database
+ * @param default_branch - The default branch of the database
+ */
 export const updateDatabaseSettings = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabaseSettingsInput,
   outputSchema: UpdateDatabaseSettingsOutput,

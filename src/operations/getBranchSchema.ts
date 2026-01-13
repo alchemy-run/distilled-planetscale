@@ -59,6 +59,15 @@ export class GetBranchSchemaNotfound extends Schema.TaggedError<GetBranchSchemaN
 ) {}
 
 // The operation
+/**
+ * Get a branch schema
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param keyspace - Return the schema for a single Vitess keyspace
+ * @param namespace - Return the schema for a PostgreSQL catalog namespace in `<database>.<schema>` format (e.g. public.schema1)
+ */
 export const getBranchSchema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBranchSchemaInput,
   outputSchema: GetBranchSchemaOutput,

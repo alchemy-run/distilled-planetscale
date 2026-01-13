@@ -49,6 +49,14 @@ export class RemoveOrganizationMemberNotfound extends Schema.TaggedError<RemoveO
 ) {}
 
 // The operation
+/**
+ * Remove a member from an organization
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the user
+ * @param delete_passwords - Whether to delete all passwords associated with the member. Only available when removing other members (not yourself).
+ * @param delete_service_tokens - Whether to delete all service tokens associated with the member. Only available when removing other members (not yourself).
+ */
 export const removeOrganizationMember = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: RemoveOrganizationMemberInput,
   outputSchema: RemoveOrganizationMemberOutput,

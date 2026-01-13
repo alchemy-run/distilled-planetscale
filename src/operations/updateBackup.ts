@@ -115,6 +115,15 @@ export class UpdateBackupNotfound extends Schema.TaggedError<UpdateBackupNotfoun
 ) {}
 
 // The operation
+/**
+ * Update a backup
+ *
+ * @param id - The ID of the backup
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param protected - Whether the backup is protected from deletion or not
+ */
 export const updateBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBackupInput,
   outputSchema: UpdateBackupOutput,

@@ -107,6 +107,14 @@ export class GetBouncerNotfound extends Schema.TaggedError<GetBouncerNotfound>()
 ) {}
 
 // The operation
+/**
+ * Get a bouncer
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param bouncer - The name of the bouncer
+ */
 export const getBouncer = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBouncerInput,
   outputSchema: GetBouncerOutput,

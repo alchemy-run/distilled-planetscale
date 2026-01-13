@@ -91,6 +91,16 @@ export class UpdateBranchChangeRequestNotfound extends Schema.TaggedError<Update
 ) {}
 
 // The operation
+/**
+ * Upsert a change request
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param cluster_size - The size of the cluster. Available sizes can be found using the 'List cluster sizes' endpoint.
+ * @param replicas - The total number of replicas
+ * @param parameters - Cluster configuration parameters nested by namespace (e.g., {"pgconf": {"max_connections": "200"}}). Use the 'List cluster parameters' endpoint to retrieve available parameters. Supported namespaces include 'patroni', 'pgconf', and 'pgbouncer'.
+ */
 export const updateBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBranchChangeRequestInput,
   outputSchema: UpdateBranchChangeRequestOutput,

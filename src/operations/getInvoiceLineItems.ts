@@ -70,6 +70,16 @@ export class GetInvoiceLineItemsNotfound extends Schema.TaggedError<GetInvoiceLi
 ) {}
 
 // The operation
+/**
+ * Get invoice line items
+ *
+ * Get the line items for an invoice
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the invoice
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const getInvoiceLineItems = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetInvoiceLineItemsInput,
   outputSchema: GetInvoiceLineItemsOutput,

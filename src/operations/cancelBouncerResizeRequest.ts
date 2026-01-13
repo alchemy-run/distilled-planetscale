@@ -55,6 +55,14 @@ export class CancelBouncerResizeRequestNotfound extends Schema.TaggedError<Cance
 ) {}
 
 // The operation
+/**
+ * Cancel a resize request
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param bouncer - The name of the bouncer
+ */
 export const cancelBouncerResizeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CancelBouncerResizeRequestInput,
   outputSchema: CancelBouncerResizeRequestOutput,

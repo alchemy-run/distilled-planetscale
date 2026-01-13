@@ -95,6 +95,13 @@ export class CreateOrganizationTeamUnprocessableentity extends Schema.TaggedErro
 ) {}
 
 // The operation
+/**
+ * Create an organization team
+ *
+ * @param organization - The name of the organization
+ * @param name - The name of the team
+ * @param description - A description of the team's purpose
+ */
 export const createOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateOrganizationTeamInput,
   outputSchema: CreateOrganizationTeamOutput,

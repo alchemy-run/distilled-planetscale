@@ -52,6 +52,12 @@ export class GetInvoiceNotfound extends Schema.TaggedError<GetInvoiceNotfound>()
 ) {}
 
 // The operation
+/**
+ * Get an invoice
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the invoice
+ */
 export const getInvoice = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetInvoiceInput,
   outputSchema: GetInvoiceOutput,

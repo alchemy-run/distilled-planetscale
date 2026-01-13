@@ -56,6 +56,15 @@ export class ReassignRoleObjectsNotfound extends Schema.TaggedError<ReassignRole
 ) {}
 
 // The operation
+/**
+ * Reassign objects owned by one role to another role
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param id - The ID of the role
+ * @param successor - The role to reassign ownership to
+ */
 export const reassignRoleObjects = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ReassignRoleObjectsInput,
   outputSchema: ReassignRoleObjectsOutput,

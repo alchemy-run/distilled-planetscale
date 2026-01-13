@@ -80,6 +80,17 @@ export class ListDeployOperationsNotfound extends Schema.TaggedError<ListDeployO
 ) {}
 
 // The operation
+/**
+ * List deploy operations
+ *
+ * List deploy operations for a deploy request
+ *
+ * @param number - The number of the deploy request
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listDeployOperations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployOperationsInput,
   outputSchema: ListDeployOperationsOutput,

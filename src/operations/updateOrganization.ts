@@ -67,6 +67,14 @@ export class UpdateOrganizationNotfound extends Schema.TaggedError<UpdateOrganiz
 ) {}
 
 // The operation
+/**
+ * Update an organization
+ *
+ * @param organization - The name of the organization
+ * @param billing_email - The billing email for the organization
+ * @param idp_managed_roles - Whether or not the IdP provider is be responsible for managing roles in PlanetScale
+ * @param invoice_budget_amount - The expected monthly budget for the organization
+ */
 export const updateOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationInput,
   outputSchema: UpdateOrganizationOutput,

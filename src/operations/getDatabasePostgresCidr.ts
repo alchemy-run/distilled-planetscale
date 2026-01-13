@@ -75,6 +75,13 @@ export class GetDatabasePostgresCidrUnprocessableentity extends Schema.TaggedErr
 ) {}
 
 // The operation
+/**
+ * Get an IP restriction entry
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ * @param id - The ID of the IP restriction entry
+ */
 export const getDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDatabasePostgresCidrInput,
   outputSchema: GetDatabasePostgresCidrOutput,

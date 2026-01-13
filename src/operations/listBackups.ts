@@ -126,6 +126,22 @@ export class ListBackupsNotfound extends Schema.TaggedError<ListBackupsNotfound>
 ) {}
 
 // The operation
+/**
+ * List backups
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param all - Whether to include all backups, including deleted ones
+ * @param state - Filter backups by state
+ * @param policy - Filter backups by backup policy ID
+ * @param from - Filter backups started after this date (e.g. 2023-01-01T00:00:00Z)
+ * @param to - Filter backups started before this date (e.g. 2023-01-31T23:59:59Z)
+ * @param running_at - Filter backups that are running during a specific time (e.g. 2023-01-01T00:00:00Z..2023-01-01T23:59:59Z)
+ * @param production - Filter backups by production branch
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listBackups = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBackupsInput,
   outputSchema: ListBackupsOutput,

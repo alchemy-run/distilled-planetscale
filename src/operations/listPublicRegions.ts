@@ -59,6 +59,14 @@ export class ListPublicRegionsNotfound extends Schema.TaggedError<ListPublicRegi
 ) {}
 
 // The operation
+/**
+ * List public regions
+ *
+ * Endpoint is available without authentication.
+ *
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listPublicRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListPublicRegionsInput,
   outputSchema: ListPublicRegionsOutput,

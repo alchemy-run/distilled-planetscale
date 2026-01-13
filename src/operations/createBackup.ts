@@ -114,6 +114,17 @@ export class CreateBackupNotfound extends Schema.TaggedError<CreateBackupNotfoun
 ) {}
 
 // The operation
+/**
+ * Create a backup
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param name - Name for the backup
+ * @param retention_unit - Unit for the retention period of the backup
+ * @param retention_value - Value between `1` and `1000` for the retention period of the backup (i.e retention_value `6` and retention_unit `hour` means 6 hours)
+ * @param emergency - Whether the backup is an immediate backup that may affect database performance. Emergency backups are only supported for PostgreSQL databases.
+ */
 export const createBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateBackupInput,
   outputSchema: CreateBackupOutput,

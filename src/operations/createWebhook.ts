@@ -61,6 +61,15 @@ export class CreateWebhookNotfound extends Schema.TaggedError<CreateWebhookNotfo
 ) {}
 
 // The operation
+/**
+ * Create a webhook
+ *
+ * @param organization - The name of the organization
+ * @param database - The name of the database
+ * @param url - The URL the webhook will send events to
+ * @param enabled - Whether the webhook should be enabled
+ * @param events - The events this webhook should subscribe to
+ */
 export const createWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateWebhookInput,
   outputSchema: CreateWebhookOutput,

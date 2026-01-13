@@ -182,6 +182,16 @@ export class UpdateAutoDeleteBranchNotfound extends Schema.TaggedError<UpdateAut
 ) {}
 
 // The operation
+/**
+ * Update auto-delete branch for deploy request
+ *
+ * Enables or disabled the auto-delete branch setting for a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ * @param enable - Whether or not to enable auto-delete branch for the deploy request
+ */
 export const updateAutoDeleteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateAutoDeleteBranchInput,
   outputSchema: UpdateAutoDeleteBranchOutput,

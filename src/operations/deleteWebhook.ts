@@ -51,6 +51,13 @@ export class DeleteWebhookNotfound extends Schema.TaggedError<DeleteWebhookNotfo
 ) {}
 
 // The operation
+/**
+ * Delete a webhook
+ *
+ * @param organization - The name of the organization
+ * @param database - The name of the database
+ * @param id - The ID of the webhook
+ */
 export const deleteWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteWebhookInput,
   outputSchema: DeleteWebhookOutput,

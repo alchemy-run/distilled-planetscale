@@ -181,6 +181,13 @@ export class CompleteRevertNotfound extends Schema.TaggedError<CompleteRevertNot
 ) {}
 
 // The operation
+/**
+ * Complete a revert
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ */
 export const completeRevert = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CompleteRevertInput,
   outputSchema: CompleteRevertOutput,

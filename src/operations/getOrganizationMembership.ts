@@ -73,6 +73,12 @@ export class GetOrganizationMembershipNotfound extends Schema.TaggedError<GetOrg
 ) {}
 
 // The operation
+/**
+ * Get an organization member
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the user
+ */
 export const getOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationMembershipInput,
   outputSchema: GetOrganizationMembershipOutput,

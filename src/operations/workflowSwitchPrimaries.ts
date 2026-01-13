@@ -157,6 +157,13 @@ export class WorkflowSwitchPrimariesNotfound extends Schema.TaggedError<Workflow
 ) {}
 
 // The operation
+/**
+ * Switch primary traffic
+ *
+ * @param organization - The name of the organization the workflow belongs to
+ * @param database - The name of the database the workflow belongs to
+ * @param number - The sequence number of the workflow
+ */
 export const workflowSwitchPrimaries = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowSwitchPrimariesInput,
   outputSchema: WorkflowSwitchPrimariesOutput,

@@ -182,6 +182,16 @@ export class UpdateAutoApplyNotfound extends Schema.TaggedError<UpdateAutoApplyN
 ) {}
 
 // The operation
+/**
+ * Update auto-apply for deploy request
+ *
+ * Enables or disabled the auto-apply setting for a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ * @param enable - Whether or not to enable auto-apply for the deploy request
+ */
 export const updateAutoApply = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateAutoApplyInput,
   outputSchema: UpdateAutoApplyOutput,

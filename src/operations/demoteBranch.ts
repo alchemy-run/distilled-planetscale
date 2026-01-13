@@ -104,6 +104,15 @@ export class DemoteBranchNotfound extends Schema.TaggedError<DemoteBranchNotfoun
 ) {}
 
 // The operation
+/**
+ * Demote a branch
+ *
+ * Demotes a branch from production to development
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ */
 export const demoteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DemoteBranchInput,
   outputSchema: DemoteBranchOutput,

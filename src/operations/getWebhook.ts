@@ -62,6 +62,13 @@ export class GetWebhookNotfound extends Schema.TaggedError<GetWebhookNotfound>()
 ) {}
 
 // The operation
+/**
+ * Get a webhook
+ *
+ * @param organization - The name of the organization
+ * @param database - The name of the database
+ * @param id - The ID of the webhook
+ */
 export const getWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetWebhookInput,
   outputSchema: GetWebhookOutput,

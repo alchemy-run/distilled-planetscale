@@ -163,6 +163,15 @@ export class ListWorkflowsNotfound extends Schema.TaggedError<ListWorkflowsNotfo
 ) {}
 
 // The operation
+/**
+ * List workflows
+ *
+ * @param organization - The name of the organization the workflow belongs to
+ * @param database - The name of the database the workflow belongs to
+ * @param between - Filter workflows to those active during a time range (e.g. 2025-01-01T00:00:00Z..2025-01-01T23:59:59)
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listWorkflows = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListWorkflowsInput,
   outputSchema: ListWorkflowsOutput,

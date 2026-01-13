@@ -51,6 +51,15 @@ export class TestWebhookNotfound extends Schema.TaggedError<TestWebhookNotfound>
 ) {}
 
 // The operation
+/**
+ * Test a webhook
+ *
+ * Sends a test event to the webhook
+ *
+ * @param organization - The name of the organization
+ * @param database - The name of the database
+ * @param id - The ID of the webhook
+ */
 export const testWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: TestWebhookInput,
   outputSchema: TestWebhookOutput,

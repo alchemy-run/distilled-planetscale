@@ -63,6 +63,16 @@ export class ListClusterSizeSkusNotfound extends Schema.TaggedError<ListClusterS
 ) {}
 
 // The operation
+/**
+ * List available cluster sizes
+ *
+ * List available cluster sizes for an organization
+ *
+ * @param organization - The name of the organization
+ * @param engine - The database engine to filter by. Defaults to 'mysql'.
+ * @param rates - Whether to include pricing rates in the response. Defaults to false.
+ * @param region - The region slug to get rates for. If not specified, uses the organization's default region.
+ */
 export const listClusterSizeSkus = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListClusterSizeSkusInput,
   outputSchema: ListClusterSizeSkusOutput,

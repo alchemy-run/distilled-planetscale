@@ -182,6 +182,14 @@ export class QueueDeployRequestNotfound extends Schema.TaggedError<QueueDeployRe
 ) {}
 
 // The operation
+/**
+ * Queue a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ * @param instant_ddl - Whether or not to deploy the request with instant DDL. Defaults to false.
+ */
 export const queueDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: QueueDeployRequestInput,
   outputSchema: QueueDeployRequestOutput,

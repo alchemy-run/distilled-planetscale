@@ -147,6 +147,14 @@ export class GetDeployQueueNotfound extends Schema.TaggedError<GetDeployQueueNot
 ) {}
 
 // The operation
+/**
+ * Get the deploy queue
+ *
+ * The deploy queue returns the current list of deploy requests in the order they will be deployed.
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ */
 export const getDeployQueue = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeployQueueInput,
   outputSchema: GetDeployQueueOutput,

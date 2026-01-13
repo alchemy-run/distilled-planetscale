@@ -97,6 +97,15 @@ export class ListBranchBouncerResizeRequestsNotfound extends Schema.TaggedError<
 ) {}
 
 // The operation
+/**
+ * Get bouncer resize requests
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listBranchBouncerResizeRequests = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBranchBouncerResizeRequestsInput,
   outputSchema: ListBranchBouncerResizeRequestsOutput,

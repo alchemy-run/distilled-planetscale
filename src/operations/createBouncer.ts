@@ -107,6 +107,17 @@ export class CreateBouncerNotfound extends Schema.TaggedError<CreateBouncerNotfo
 ) {}
 
 // The operation
+/**
+ * Create a bouncer
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param name - The bouncer name
+ * @param target - The type of server the bouncer targets
+ * @param bouncer_size - The size SKU for the bouncer
+ * @param replicas_per_cell - The number of replica servers per cell
+ */
 export const createBouncer = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateBouncerInput,
   outputSchema: CreateBouncerOutput,

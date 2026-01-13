@@ -121,6 +121,14 @@ export class CreateServiceTokenNotfound extends Schema.TaggedError<CreateService
 ) {}
 
 // The operation
+/**
+ * Create a service token
+ *
+ * Create a new service token for the organization.
+ *
+ * @param organization - The name of the organization
+ * @param name - The name of the service token
+ */
 export const createServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateServiceTokenInput,
   outputSchema: CreateServiceTokenOutput,

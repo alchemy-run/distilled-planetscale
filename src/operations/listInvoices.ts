@@ -57,6 +57,15 @@ export class ListInvoicesNotfound extends Schema.TaggedError<ListInvoicesNotfoun
 ) {}
 
 // The operation
+/**
+ * Get invoices
+ *
+ * Get the invoices for an organization
+ *
+ * @param organization - The name of the organization
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listInvoices = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListInvoicesInput,
   outputSchema: ListInvoicesOutput,

@@ -57,6 +57,14 @@ export class GetKeyspaceVschemaNotfound extends Schema.TaggedError<GetKeyspaceVs
 ) {}
 
 // The operation
+/**
+ * Get the VSchema for the keyspace
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param keyspace - The name of the keyspace
+ */
 export const getKeyspaceVschema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetKeyspaceVschemaInput,
   outputSchema: GetKeyspaceVschemaOutput,

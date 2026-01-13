@@ -84,6 +84,13 @@ export class ListExtensionsNotfound extends Schema.TaggedError<ListExtensionsNot
 ) {}
 
 // The operation
+/**
+ * List cluster extensions
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ */
 export const listExtensions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListExtensionsInput,
   outputSchema: ListExtensionsOutput,

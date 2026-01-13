@@ -64,6 +64,13 @@ export class GetDeployRequestThrottlerNotfound extends Schema.TaggedError<GetDep
 ) {}
 
 // The operation
+/**
+ * Get deploy request throttler configurations
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ */
 export const getDeployRequestThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeployRequestThrottlerInput,
   outputSchema: GetDeployRequestThrottlerOutput,

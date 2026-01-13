@@ -144,6 +144,15 @@ export class GetDeploymentNotfound extends Schema.TaggedError<GetDeploymentNotfo
 ) {}
 
 // The operation
+/**
+ * Get a deployment
+ *
+ * Get the deployment for a deploy request
+ *
+ * @param organization - The name of the deploy request's organization
+ * @param database - The name of the deploy request's database
+ * @param number - The number of the deploy request
+ */
 export const getDeployment = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeploymentInput,
   outputSchema: GetDeploymentOutput,

@@ -70,6 +70,13 @@ export class ListDeployRequestReviewsNotfound extends Schema.TaggedError<ListDep
 ) {}
 
 // The operation
+/**
+ * List deploy request reviews
+ *
+ * @param organization - The name of the organization the deploy request belongs to
+ * @param database - The name of the database the deploy request belongs to
+ * @param number - The number of the deploy request
+ */
 export const listDeployRequestReviews = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployRequestReviewsInput,
   outputSchema: ListDeployRequestReviewsOutput,

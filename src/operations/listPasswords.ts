@@ -103,6 +103,16 @@ export class ListPasswordsNotfound extends Schema.TaggedError<ListPasswordsNotfo
 ) {}
 
 // The operation
+/**
+ * List passwords
+ *
+ * @param organization - The name of the organization the password belongs to
+ * @param database - The name of the database the password belongs to
+ * @param branch - The name of the branch the password belongs to
+ * @param read_only_region_id - A read-only region of the database branch. If present, the password results will be filtered to only those in the region
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listPasswords = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListPasswordsInput,
   outputSchema: ListPasswordsOutput,

@@ -51,6 +51,13 @@ export class CancelBranchChangeRequestNotfound extends Schema.TaggedError<Cancel
 ) {}
 
 // The operation
+/**
+ * Cancel a change request
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ */
 export const cancelBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CancelBranchChangeRequestInput,
   outputSchema: CancelBranchChangeRequestOutput,

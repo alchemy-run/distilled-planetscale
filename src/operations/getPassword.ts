@@ -97,6 +97,14 @@ export class GetPasswordNotfound extends Schema.TaggedError<GetPasswordNotfound>
 ) {}
 
 // The operation
+/**
+ * Get a password
+ *
+ * @param organization - The name of the organization the password belongs to
+ * @param database - The name of the database the password belongs to
+ * @param branch - The name of the branch the password belongs to
+ * @param id - The ID of the password
+ */
 export const getPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetPasswordInput,
   outputSchema: GetPasswordOutput,

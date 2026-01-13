@@ -55,6 +55,14 @@ export class GetQueryPatternsReportNotfound extends Schema.TaggedError<GetQueryP
 ) {}
 
 // The operation
+/**
+ * Download a finished query patterns report
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param id - The ID of the query patterns report
+ */
 export const getQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetQueryPatternsReportInput,
   outputSchema: GetQueryPatternsReportOutput,

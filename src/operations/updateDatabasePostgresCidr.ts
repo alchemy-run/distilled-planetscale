@@ -78,6 +78,16 @@ export class UpdateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 ) {}
 
 // The operation
+/**
+ * Update an IP restriction entry
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ * @param id - The ID of the IP restriction entry
+ * @param schema - The PostgreSQL schema to restrict access to. Leave empty to allow access to all schemas.
+ * @param role - The PostgreSQL role to restrict access to. Leave empty to allow access for all roles.
+ * @param cidrs - List of IPv4 CIDR ranges (e.g., ['192.168.1.0/24', '192.168.1.1/32']). Only provided fields will be updated.
+ */
 export const updateDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabasePostgresCidrInput,
   outputSchema: UpdateDatabasePostgresCidrOutput,

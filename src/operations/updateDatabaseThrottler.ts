@@ -62,6 +62,14 @@ export class UpdateDatabaseThrottlerNotfound extends Schema.TaggedError<UpdateDa
 ) {}
 
 // The operation
+/**
+ * Update database throttler configurations
+ *
+ * @param organization - The name of the organization that the throttled deploy requests belong to
+ * @param database - The name of the database that the throttled deploy requests belong to
+ * @param ratio - A throttler ratio between 0 and 95 that will apply to all keyspaces in the database. 0 effectively disables throttler, while 95 drastically slows down deploy request migrations
+ * @param configurations - If specifying throttler ratios per keyspace, an array of { "keyspace_name": "mykeyspace", "ratio": 10 }, one for each eligible keyspace
+ */
 export const updateDatabaseThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabaseThrottlerInput,
   outputSchema: UpdateDatabaseThrottlerOutput,

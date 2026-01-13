@@ -65,6 +65,17 @@ export class ReviewDeployRequestNotfound extends Schema.TaggedError<ReviewDeploy
 ) {}
 
 // The operation
+/**
+ * Review a deploy request
+ *
+ * Review a deploy request by either approving or commenting on the deploy request
+ *
+ * @param organization - The name of the organization the deploy request belongs to
+ * @param database - The name of the database the deploy request belongs to
+ * @param number - The number of the deploy request
+ * @param state - Whether the review is a comment or approval. Service tokens must have corresponding access (either `approve_deploy_request` or `review_deploy_request`)
+ * @param body - Deploy request review comments
+ */
 export const reviewDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ReviewDeployRequestInput,
   outputSchema: ReviewDeployRequestOutput,

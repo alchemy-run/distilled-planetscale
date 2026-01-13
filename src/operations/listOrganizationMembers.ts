@@ -79,6 +79,14 @@ export class ListOrganizationMembersNotfound extends Schema.TaggedError<ListOrga
 ) {}
 
 // The operation
+/**
+ * List organization members
+ *
+ * @param organization - The name of the organization
+ * @param q - Search term to filter members by name or email
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listOrganizationMembers = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationMembersInput,
   outputSchema: ListOrganizationMembersOutput,

@@ -98,6 +98,12 @@ export class GetOrganizationTeamUnprocessableentity extends Schema.TaggedError<G
 ) {}
 
 // The operation
+/**
+ * Get an organization team
+ *
+ * @param organization - The name of the organization
+ * @param team - The slug of the team
+ */
 export const getOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationTeamInput,
   outputSchema: GetOrganizationTeamOutput,

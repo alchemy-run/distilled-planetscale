@@ -81,6 +81,14 @@ export class GetKeyspaceNotfound extends Schema.TaggedError<GetKeyspaceNotfound>
 ) {}
 
 // The operation
+/**
+ * Get a keyspace
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param keyspace - The name of the keyspace
+ */
 export const getKeyspace = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetKeyspaceInput,
   outputSchema: GetKeyspaceOutput,

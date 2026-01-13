@@ -55,6 +55,14 @@ export class DeleteBouncerNotfound extends Schema.TaggedError<DeleteBouncerNotfo
 ) {}
 
 // The operation
+/**
+ * Delete a bouncer
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param bouncer - The name of the bouncer
+ */
 export const deleteBouncer = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteBouncerInput,
   outputSchema: DeleteBouncerOutput,

@@ -157,6 +157,13 @@ export class WorkflowCutoverNotfound extends Schema.TaggedError<WorkflowCutoverN
 ) {}
 
 // The operation
+/**
+ * Cutover traffic
+ *
+ * @param organization - The name of the organization the workflow belongs to
+ * @param database - The name of the database the workflow belongs to
+ * @param number - The sequence number of the workflow
+ */
 export const workflowCutover = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowCutoverInput,
   outputSchema: WorkflowCutoverOutput,

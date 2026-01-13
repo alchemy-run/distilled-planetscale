@@ -60,6 +60,12 @@ export class GetDatabaseThrottlerNotfound extends Schema.TaggedError<GetDatabase
 ) {}
 
 // The operation
+/**
+ * Get database throttler configurations
+ *
+ * @param organization - The name of the organization that the throttled deploy requests belong to
+ * @param database - The name of the database that the throttled deploy requests belong to
+ */
 export const getDatabaseThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDatabaseThrottlerInput,
   outputSchema: GetDatabaseThrottlerOutput,

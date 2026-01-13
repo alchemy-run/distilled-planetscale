@@ -110,6 +110,19 @@ export class CreatePasswordUnprocessableentity extends Schema.TaggedError<Create
 ) {}
 
 // The operation
+/**
+ * Create a password
+ *
+ * @param organization - The name of the organization the password belongs to
+ * @param database - The name of the database the password belongs to
+ * @param branch - The name of the branch the password belongs to
+ * @param name - Optional name of the password
+ * @param role - The database role of the password (i.e. admin)
+ * @param replica - Whether the password is for a read replica
+ * @param ttl - Time to live (in seconds) for the password. The password will be invalid when TTL has passed
+ * @param cidrs - List of IP addresses or CIDR ranges that can use this password
+ * @param direct_vtgate - Whether the password connects directly to a VTGate
+ */
 export const createPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreatePasswordInput,
   outputSchema: CreatePasswordOutput,

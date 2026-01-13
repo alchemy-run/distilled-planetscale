@@ -56,6 +56,15 @@ export class DeleteRoleNotfound extends Schema.TaggedError<DeleteRoleNotfound>()
 ) {}
 
 // The operation
+/**
+ * Delete role credentials
+ *
+ * @param organization - The name of the organization that owns this resource
+ * @param database - The name of the database that owns this resource
+ * @param branch - The name of the branch that owns this resource
+ * @param id - The ID of the role
+ * @param successor - The optional role to reassign ownership to before dropping
+ */
 export const deleteRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteRoleInput,
   outputSchema: DeleteRoleOutput,

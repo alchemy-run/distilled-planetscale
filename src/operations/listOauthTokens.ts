@@ -133,6 +133,16 @@ export class ListOauthTokensNotfound extends Schema.TaggedError<ListOauthTokensN
 ) {}
 
 // The operation
+/**
+ * List OAuth tokens
+ *
+ * List OAuth tokens created by an OAuth application
+ *
+ * @param organization - The name of the organization the OAuth application belongs to
+ * @param application_id - The ID of the OAuth application
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listOauthTokens = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOauthTokensInput,
   outputSchema: ListOauthTokensOutput,

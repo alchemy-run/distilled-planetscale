@@ -106,6 +106,12 @@ export class GetDatabaseNotfound extends Schema.TaggedError<GetDatabaseNotfound>
 ) {}
 
 // The operation
+/**
+ * Get a database
+ *
+ * @param organization - The name of the organization the database belongs to
+ * @param database - The name of the database
+ */
 export const getDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDatabaseInput,
   outputSchema: GetDatabaseOutput,

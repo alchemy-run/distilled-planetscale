@@ -86,6 +86,15 @@ export class ListKeyspacesNotfound extends Schema.TaggedError<ListKeyspacesNotfo
 ) {}
 
 // The operation
+/**
+ * Get keyspaces
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param page - If provided, specifies the page offset of returned results
+ * @param per_page - If provided, specifies the number of returned results
+ */
 export const listKeyspaces = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListKeyspacesInput,
   outputSchema: ListKeyspacesOutput,

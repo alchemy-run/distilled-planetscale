@@ -64,6 +64,14 @@ export class GetKeyspaceRolloutStatusNotfound extends Schema.TaggedError<GetKeys
 ) {}
 
 // The operation
+/**
+ * Get keyspace rollout status
+ *
+ * @param organization - The name of the organization the branch belongs to
+ * @param database - The name of the database the branch belongs to
+ * @param branch - The name of the branch
+ * @param keyspace - The name of the keyspace
+ */
 export const getKeyspaceRolloutStatus = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetKeyspaceRolloutStatusInput,
   outputSchema: GetKeyspaceRolloutStatusOutput,

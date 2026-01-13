@@ -101,6 +101,12 @@ export class ListOrganizationTeamsUnprocessableentity extends Schema.TaggedError
 ) {}
 
 // The operation
+/**
+ * List teams in an organization
+ *
+ * @param organization - The name of the organization
+ * @param q - Search term to filter teams by name
+ */
 export const listOrganizationTeams = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationTeamsInput,
   outputSchema: ListOrganizationTeamsOutput,

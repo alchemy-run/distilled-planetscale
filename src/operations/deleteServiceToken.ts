@@ -47,6 +47,14 @@ export class DeleteServiceTokenNotfound extends Schema.TaggedError<DeleteService
 ) {}
 
 // The operation
+/**
+ * Delete a service token
+ *
+ * Delete a service token from the organization.
+ *
+ * @param organization - The name of the organization
+ * @param id - The ID of the service token
+ */
 export const deleteServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteServiceTokenInput,
   outputSchema: DeleteServiceTokenOutput,
