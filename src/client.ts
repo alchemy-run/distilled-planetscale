@@ -1,7 +1,8 @@
 import { HttpBody, HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
-import { Effect, Schema } from "effect";
+import { Effect, Option, Schema, Stream } from "effect";
 import * as Category from "./category";
 import { PlanetScaleCredentials } from "./credentials";
+import { type PaginatedResponse, type PaginatedTrait, DefaultPaginationTrait, getPath } from "./pagination";
 
 // API Error Response Schema - parse just the code, keep the rest as unknown
 const ApiErrorResponse = Schema.Struct({
@@ -111,6 +112,16 @@ interface OperationConfig<
   errors: readonly E[];
 }
 
+// Paginated operation configuration
+interface PaginatedOperationConfig<
+  I extends Schema.Schema.Any,
+  O extends Schema.Schema.Any,
+  E extends AnnotatedErrorClass,
+> extends OperationConfig<I, O, E> {
+  /** Pagination trait describing the input/output token fields */
+  pagination?: PaginatedTrait;
+}
+
 // Helper to get annotation from schema AST
 const getAnnotation = <T>(schema: Schema.Schema.Any, key: symbol): T | undefined => {
   return schema.ast.annotations[key] as T | undefined;
@@ -154,7 +165,20 @@ export const API = {
       (input) => input as Record<string, unknown>,
     );
 
-    // Helper to extract body params (non-path params) from input
+    // Helper to extract query params (non-path params) for GET requests
+    const getQueryParams = (input: Input): Record<string, string> | undefined => {
+      if (method !== "GET") return undefined;
+      const pathParamSet = new Set(pathParams);
+      const query: Record<string, string> = {};
+      for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+        if (!pathParamSet.has(key) && value !== undefined) {
+          query[key] = String(value);
+        }
+      }
+      return Object.keys(query).length > 0 ? query : undefined;
+    };
+
+    // Helper to extract body params (non-path params) for non-GET requests
     const getBodyParams = (input: Input): Record<string, unknown> | undefined => {
       if (method === "GET") return undefined;
       const pathParamSet = new Set(pathParams);
@@ -172,11 +196,15 @@ export const API = {
         const { token, apiBaseUrl } = yield* PlanetScaleCredentials;
         const client = yield* HttpClient.HttpClient;
 
+        const queryParams = getQueryParams(input);
         const requestBody = getBodyParams(input);
         let request = HttpClientRequest.make(method)(apiBaseUrl + path(input)).pipe(
           HttpClientRequest.setHeader("Authorization", token),
           HttpClientRequest.setHeader("Content-Type", "application/json"),
         );
+        if (queryParams) {
+          request = HttpClientRequest.setUrlParams(request, queryParams);
+        }
         if (requestBody) {
           request = yield* HttpClientRequest.bodyJson(requestBody)(request);
         }
@@ -195,5 +223,118 @@ export const API = {
           ),
         ) as Effect.Effect<Output, Errors>;
       });
+  },
+
+  /**
+   * Creates a paginated operation that returns an Effect for a single page,
+   * plus `.pages()` and `.items()` methods for streaming all pages/items.
+   *
+   * @example
+   * ```ts
+   * const listDatabases = API.makePaginated(() => ({
+   *   inputSchema: ListDatabasesInput,
+   *   outputSchema: ListDatabasesOutput,
+   *   errors: [ListDatabasesNotfound],
+   * }));
+   *
+   * // Single page
+   * const page1 = listDatabases({ organization: "my-org" });
+   *
+   * // Stream all pages
+   * const allPages = listDatabases.pages({ organization: "my-org" });
+   *
+   * // Stream all items
+   * const allDatabases = listDatabases.items({ organization: "my-org" });
+   * ```
+   */
+  makePaginated: <
+    I extends Schema.Schema.Any,
+    O extends Schema.Schema.Any,
+    E extends AnnotatedErrorClass,
+  >(
+    configFn: () => PaginatedOperationConfig<I, O, E>,
+  ) => {
+    const config = configFn();
+    const pagination = config.pagination ?? DefaultPaginationTrait;
+
+    // Create the base operation using API.make
+    const baseFn = API.make(() => ({
+      inputSchema: config.inputSchema,
+      outputSchema: config.outputSchema,
+      errors: config.errors,
+    }));
+
+    type Input = Schema.Schema.Type<I>;
+    type Output = Schema.Schema.Type<O>;
+    type Errors =
+      | InstanceType<E>
+      | PlanetScaleApiError
+      | PlanetScaleParseError
+      | HttpClientError.HttpClientError
+      | HttpBody.HttpBodyError;
+    type Context = PlanetScaleCredentials | HttpClient.HttpClient;
+
+    // Stream all pages (full response objects)
+    const pagesFn = (input: Omit<Input, "page">): Stream.Stream<Output, Errors, Context> => {
+      type State = { page: number; done: boolean };
+
+      const unfoldFn = (state: State) =>
+        Effect.gen(function* () {
+          if (state.done) {
+            return Option.none();
+          }
+
+          // Build the request with the page number
+          const requestPayload = {
+            ...input,
+            [pagination.inputToken]: state.page,
+          } as Input;
+
+          // Make the API call
+          const response = yield* baseFn(requestPayload);
+
+          // Extract the next page number
+          const nextPage = getPath(response, pagination.outputToken) as number | null | undefined;
+
+          // Return the full page and next state
+          const nextState: State = {
+            page: nextPage ?? state.page + 1,
+            done: nextPage === null || nextPage === undefined,
+          };
+
+          return Option.some([response, nextState] as const);
+        });
+
+      return Stream.unfoldEffect({ page: 1, done: false } as State, unfoldFn);
+    };
+
+    // Stream individual items from the paginated field
+    const itemsFn = (input: Omit<Input, "page">): Stream.Stream<
+      Output extends PaginatedResponse<infer Item> ? Item : unknown,
+      Errors,
+      Context
+    > => {
+      return pagesFn(input).pipe(
+        Stream.flatMap((page) => {
+          const items = getPath(page, pagination.items) as readonly unknown[] | undefined;
+          return Stream.fromIterable(items ?? []);
+        }),
+      ) as Stream.Stream<
+        Output extends PaginatedResponse<infer Item> ? Item : unknown,
+        Errors,
+        Context
+      >;
+    };
+
+    // Create the result function with pages and items methods attached
+    const result = baseFn as typeof baseFn & {
+      pages: typeof pagesFn;
+      items: typeof itemsFn;
+    };
+
+    result.pages = pagesFn;
+    result.items = itemsFn;
+
+    return result;
   },
 };

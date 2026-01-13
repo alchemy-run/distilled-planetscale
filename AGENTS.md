@@ -29,7 +29,8 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ```
 ├── src/
-│   ├── client.ts           # makeOperation factory + shared error types
+│   ├── client.ts           # API.make/makePaginated factory + shared error types
+│   ├── pagination.ts       # paginatePages/paginateItems stream utilities
 │   ├── errors.ts           # ConfigError (Schema.TaggedError)
 │   ├── credentials.ts      # PlanetScaleCredentials service + layer
 │   └── operations          # All Operations
@@ -211,6 +212,100 @@ const program = Effect.gen(function* () {
 
 Effect.runPromise(program);
 ```
+
+## Pagination
+
+Paginated operations can be consumed as Effect Streams using the `paginatePages` and `paginateItems` utilities, or by using `API.makePaginated` to create operations with built-in `.pages()` and `.items()` methods.
+
+### Using paginatePages / paginateItems
+
+```typescript
+import { Effect, Stream } from "effect";
+import { listDatabases, paginatePages, paginateItems } from "distilled-planetscale";
+
+// Stream all pages (full response objects)
+const allPages = paginatePages(listDatabases, { organization: "my-org" });
+
+// Stream individual items
+const allDatabases = paginateItems(listDatabases, { organization: "my-org" });
+
+// Consume the stream
+const program = allDatabases.pipe(
+  Stream.tap((db) => Effect.log(`Database: ${db.name}`)),
+  Stream.runDrain,
+);
+```
+
+### Using API.makePaginated
+
+Operations created with `API.makePaginated` have `.pages()` and `.items()` methods attached:
+
+```typescript
+import { Schema } from "effect";
+import { API, ApiMethod, ApiPath, ApiPathParams } from "distilled-planetscale";
+
+// Define input/output schemas
+const ListDatabasesInput = Schema.Struct({
+  organization: Schema.String,
+  page: Schema.optional(Schema.Number),
+  per_page: Schema.optional(Schema.Number),
+}).annotations({
+  [ApiMethod]: "GET",
+  [ApiPath]: (input) => `/organizations/${input.organization}/databases`,
+  [ApiPathParams]: ["organization"] as const,
+});
+
+const ListDatabasesOutput = Schema.Struct({
+  current_page: Schema.Number,
+  next_page: Schema.NullOr(Schema.Number),
+  next_page_url: Schema.NullOr(Schema.String),
+  prev_page: Schema.NullOr(Schema.Number),
+  prev_page_url: Schema.NullOr(Schema.String),
+  data: Schema.Array(DatabaseSchema),
+});
+
+// Create paginated operation
+const listDatabases = API.makePaginated(() => ({
+  inputSchema: ListDatabasesInput,
+  outputSchema: ListDatabasesOutput,
+  errors: [ListDatabasesNotfound],
+}));
+
+// Usage:
+// Single page
+const page1 = listDatabases({ organization: "my-org" });
+
+// Stream all pages
+const allPages = listDatabases.pages({ organization: "my-org" });
+
+// Stream all items
+const allDatabases = listDatabases.items({ organization: "my-org" });
+```
+
+### Pagination Trait
+
+PlanetScale uses page-based pagination with the following structure:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `page` (input) | number | 1-indexed page number |
+| `per_page` (input) | number | Number of items per page |
+| `current_page` (output) | number | Current page number |
+| `next_page` (output) | number \| null | Next page number, or null if no more pages |
+| `data` (output) | array | Array of items for the current page |
+
+The default pagination trait is:
+
+```typescript
+const DefaultPaginationTrait = {
+  inputToken: "page",
+  outputToken: "next_page",
+  items: "data",
+  pageSize: "per_page",
+};
+```
+
+Custom pagination traits can be passed to `paginatePages`/`paginateItems` or configured in `API.makePaginated`.
 
 ## Operation Generation
 
