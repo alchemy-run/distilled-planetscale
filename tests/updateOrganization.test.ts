@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateOrganization,
   UpdateOrganizationForbidden,
@@ -32,7 +32,7 @@ withMainLayer("updateOrganization", (it) => {
 
   it.effect("should update an organization successfully or return forbidden", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // Update with idp_managed_roles set to false (a safe operation)
       // Note: Service tokens may not have permission to update organizations

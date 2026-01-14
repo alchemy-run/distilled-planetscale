@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { PlanetScaleParseError } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listBackups,
   ListBackupsForbidden,
@@ -36,7 +36,7 @@ withMainLayer("listBackups", (it) => {
 
   it.effect("should list backups successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -84,7 +84,7 @@ withMainLayer("listBackups", (it) => {
 
   it.effect("should return ListBackupsNotfound or ListBackupsForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listBackups({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -103,7 +103,7 @@ withMainLayer("listBackups", (it) => {
 
   it.effect("should return ListBackupsNotfound or ListBackupsForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* listBackups({

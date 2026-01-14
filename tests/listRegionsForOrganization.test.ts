@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listRegionsForOrganization,
   ListRegionsForOrganizationNotfound,
@@ -27,7 +27,7 @@ withMainLayer("listRegionsForOrganization", (it) => {
 
   it.effect("should list regions for organization successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listRegionsForOrganization({
         organization,
@@ -54,7 +54,7 @@ withMainLayer("listRegionsForOrganization", (it) => {
 
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listRegionsForOrganization({
         organization,

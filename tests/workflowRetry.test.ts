@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   workflowRetry,
   WorkflowRetryNotfound,
@@ -62,7 +62,7 @@ withMainLayer("workflowRetry", (it) => {
 
   it.effect("should return WorkflowRetryNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* workflowRetry({
         organization,
         database: "this-database-definitely-does-not-exist-12345",

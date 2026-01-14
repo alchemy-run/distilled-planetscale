@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateDatabaseSettings,
   UpdateDatabaseSettingsNotfound,
@@ -41,7 +41,7 @@ withMainLayer("updateDatabaseSettings", (it) => {
 
   it.effect("should return UpdateDatabaseSettingsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* updateDatabaseSettings({
         organization,

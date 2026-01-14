@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createRole,
   CreateRoleNotfound,
@@ -60,7 +60,7 @@ withMainLayer("createRole", (it) => {
 
   it.effect("should return CreateRoleNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createRole({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -80,7 +80,7 @@ withMainLayer("createRole", (it) => {
 
   it.effect("should return CreateRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createRole({
         organization,
         database: TEST_DATABASE,
@@ -102,7 +102,7 @@ withMainLayer("createRole", (it) => {
   // and roles may incur costs or have limits. When enabled, it demonstrates proper cleanup.
   it.effect("should create a role successfully and clean up", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
       const testRoleName = `test-role-${Date.now()}`;

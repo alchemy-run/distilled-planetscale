@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createKeyspace,
   CreateKeyspaceNotfound,
@@ -68,7 +68,7 @@ withMainLayer("createKeyspace", (it) => {
 
   it.effect("should return CreateKeyspaceNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createKeyspace({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -93,7 +93,7 @@ withMainLayer("createKeyspace", (it) => {
 
   it.effect("should return CreateKeyspaceNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createKeyspace({
         organization,
         database: TEST_DATABASE,
@@ -120,7 +120,7 @@ withMainLayer("createKeyspace", (it) => {
   // and may incur costs. When enabled, it demonstrates proper cleanup using Effect.ensuring.
   it.effect("should create a keyspace successfully and clean up", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
       const testKeyspaceName = `test-keyspace-${Date.now()}`;
@@ -143,7 +143,7 @@ withMainLayer("createKeyspace", (it) => {
       // Always clean up the keyspace, even if the test fails
       Effect.ensuring(
         Effect.gen(function* () {
-          const { organization } = yield* PlanetScaleCredentials;
+          const { organization } = yield* Credentials;
           const database = TEST_DATABASE;
           const branch = "main";
           const testKeyspaceName = `test-keyspace-${Date.now()}`;

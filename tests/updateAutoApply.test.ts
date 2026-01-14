@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateAutoApply,
   UpdateAutoApplyNotfound,
@@ -50,7 +50,7 @@ withMainLayer("updateAutoApply", (it) => {
 
   it.effect("should return UpdateAutoApplyNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateAutoApply({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -74,7 +74,7 @@ withMainLayer("updateAutoApply", (it) => {
 
   it.effect("should return UpdateAutoApplyNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* updateAutoApply({
         organization,

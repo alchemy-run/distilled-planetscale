@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deleteOrganizationTeam,
   DeleteOrganizationTeamNotfound,
@@ -27,7 +27,7 @@ withMainLayer("deleteOrganizationTeam", (it) => {
 
   it.effect("should return DeleteOrganizationTeamNotfound or DeleteOrganizationTeamForbidden for non-existent team", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* deleteOrganizationTeam({
         organization,
@@ -71,7 +71,7 @@ withMainLayer("deleteOrganizationTeam", (it) => {
   // demonstrates the full create-then-delete workflow.
   it.effect("should delete a team successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testTeamName = `test-team-delete-${Date.now()}`;
 
       // First create a team to delete

@@ -3,6 +3,11 @@
   "private": true,
   "type": "module",
   "module": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./Credentials": "./Credentials.ts",
+    "./Category": "./Category.ts"
+  },
   "scripts": {
     "setup": "bun run scripts/setup.ts",
     "generate": "bun run scripts/generate-operations.ts",

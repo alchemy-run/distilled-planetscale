@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   reviewDeployRequest,
   ReviewDeployRequestForbidden,
@@ -55,7 +55,7 @@ withMainLayer("reviewDeployRequest", (it) => {
 
   it.effect("should return ReviewDeployRequestNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* reviewDeployRequest({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -81,7 +81,7 @@ withMainLayer("reviewDeployRequest", (it) => {
 
   it.effect("should return ReviewDeployRequestNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* reviewDeployRequest({
         organization,
@@ -111,7 +111,7 @@ withMainLayer("reviewDeployRequest", (it) => {
   // and may modify state. When enabled, it demonstrates proper usage of the operation.
   it.effect("should create a review successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const number = 1; // Replace with an existing deploy request number
 

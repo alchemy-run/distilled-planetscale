@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { PlanetScaleApiError } from "../src/client";
 import {
   updateWebhook,
@@ -57,7 +57,7 @@ withMainLayer("updateWebhook", (it) => {
 
   it.effect("should return UpdateWebhookNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateWebhook({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -77,7 +77,7 @@ withMainLayer("updateWebhook", (it) => {
 
   it.effect("should return UpdateWebhookNotfound for non-existent webhook id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateWebhook({
         organization,
         database: TEST_DATABASE,
@@ -102,7 +102,7 @@ withMainLayer("updateWebhook", (it) => {
     const database = TEST_DATABASE;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testWebhookUrl = `https://example.com/webhook-update-test-${Date.now()}`;
 
       // First create a webhook to update
@@ -154,7 +154,7 @@ withMainLayer("updateWebhook", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdWebhookId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteWebhook({
               organization,
               database,

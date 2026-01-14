@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createServiceToken,
   CreateServiceTokenNotfound,
@@ -58,7 +58,7 @@ withMainLayer("createServiceToken", (it) => {
   // demonstrates proper cleanup.
   it.effect("should create a service token successfully and clean up", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testTokenName = `test-token-${Date.now()}`;
 
       const result = yield* createServiceToken({

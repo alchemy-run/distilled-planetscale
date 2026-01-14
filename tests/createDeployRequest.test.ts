@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createDeployRequest,
   CreateDeployRequestForbidden,
@@ -59,7 +59,7 @@ withMainLayer("createDeployRequest", (it) => {
 
   it.effect("should return CreateDeployRequestNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createDeployRequest({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -84,7 +84,7 @@ withMainLayer("createDeployRequest", (it) => {
 
   it.effect("should return CreateDeployRequestNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* createDeployRequest({
         organization,
@@ -113,7 +113,7 @@ withMainLayer("createDeployRequest", (it) => {
   // When enabled, it demonstrates proper cleanup using Effect.ensuring.
   it.effect("should create a deploy request successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "dev"; // Replace with an existing branch
 

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deleteBouncer,
   DeleteBouncerNotfound,
@@ -45,7 +45,7 @@ withMainLayer("deleteBouncer", (it) => {
 
   it.effect("should return DeleteBouncerNotfound or DeleteBouncerForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteBouncer({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -65,7 +65,7 @@ withMainLayer("deleteBouncer", (it) => {
 
   it.effect("should return DeleteBouncerNotfound or DeleteBouncerForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* deleteBouncer({
@@ -87,7 +87,7 @@ withMainLayer("deleteBouncer", (it) => {
 
   it.effect("should return DeleteBouncerNotfound or DeleteBouncerForbidden for non-existent bouncer", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -118,7 +118,7 @@ withMainLayer("deleteBouncer", (it) => {
     let createdBouncerId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a bouncer to delete
       const bouncer = yield* createBouncer({
@@ -151,7 +151,7 @@ withMainLayer("deleteBouncer", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdBouncerId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteBouncer({
               organization,
               database,

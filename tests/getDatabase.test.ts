@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getDatabase,
   GetDatabaseNotfound,
@@ -10,7 +10,7 @@ import { withMainLayer, TEST_DATABASE } from "./setup";
 withMainLayer("getDatabase", (it) => {
   it.effect("should fetch a database successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // Use a test database name - adjust based on your PlanetScale setup
       const result = yield* getDatabase({
@@ -29,7 +29,7 @@ withMainLayer("getDatabase", (it) => {
 
   it.effect("should return GetDatabaseNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getDatabase({
         organization,

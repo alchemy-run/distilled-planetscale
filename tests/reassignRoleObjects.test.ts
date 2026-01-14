@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   reassignRoleObjects,
   ReassignRoleObjectsNotfound,
@@ -48,7 +48,7 @@ withMainLayer("reassignRoleObjects", (it) => {
 
   it.effect("should return ReassignRoleObjectsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* reassignRoleObjects({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -73,7 +73,7 @@ withMainLayer("reassignRoleObjects", (it) => {
 
   it.effect("should return ReassignRoleObjectsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* reassignRoleObjects({
@@ -101,7 +101,7 @@ withMainLayer("reassignRoleObjects", (it) => {
 
   it.effect("should return ReassignRoleObjectsNotfound for non-existent role id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";

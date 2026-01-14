@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { PlanetScaleParseError } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getDatabaseThrottler,
   GetDatabaseThrottlerForbidden,
@@ -12,7 +12,7 @@ import { withMainLayer, TEST_DATABASE } from "./setup";
 withMainLayer("getDatabaseThrottler", (it) => {
   it.effect("should fetch database throttler successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getDatabaseThrottler({
         organization,
@@ -36,7 +36,7 @@ withMainLayer("getDatabaseThrottler", (it) => {
 
   it.effect("should return GetDatabaseThrottlerNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getDatabaseThrottler({
         organization,

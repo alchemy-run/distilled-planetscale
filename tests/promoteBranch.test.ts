@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   promoteBranch,
   PromoteBranchNotfound,
@@ -53,7 +53,7 @@ withMainLayer("promoteBranch", (it) => {
 
   it.effect("should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* promoteBranch({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -77,7 +77,7 @@ withMainLayer("promoteBranch", (it) => {
 
   it.effect("should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* promoteBranch({
         organization,
         database: TEST_DATABASE,
@@ -106,7 +106,7 @@ withMainLayer("promoteBranch", (it) => {
   // 3. Demote it back (or delete it) to clean up
   it.effect("should promote a development branch to production successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branchName = "dev"; // Replace with an actual development branch
 

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listOauthApplications,
   ListOauthApplicationsInput,
@@ -29,7 +29,7 @@ withMainLayer("listOauthApplications", (it) => {
 
   it.effect("should list oauth applications successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listOauthApplications({
         organization,

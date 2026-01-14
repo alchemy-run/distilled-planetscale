@@ -1,6 +1,6 @@
 import { Cause, Effect, Exit, Layer } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listOrganizationTeams,
   ListOrganizationTeamsInput,
@@ -26,7 +26,7 @@ withMainLayer("listOrganizationTeams", (it) => {
 
   it.effect("should list organization teams successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listOrganizationTeams({
         organization,
@@ -72,7 +72,7 @@ withMainLayer("listOrganizationTeams", (it) => {
 
   it.effect("should support search query parameter", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listOrganizationTeams({
         organization,

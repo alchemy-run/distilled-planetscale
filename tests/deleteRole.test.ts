@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deleteRole,
   DeleteRoleNotfound,
@@ -47,7 +47,7 @@ withMainLayer("deleteRole", (it) => {
 
   it.effect("should return DeleteRoleNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteRole({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -68,7 +68,7 @@ withMainLayer("deleteRole", (it) => {
 
   it.effect("should return DeleteRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* deleteRole({
@@ -91,7 +91,7 @@ withMainLayer("deleteRole", (it) => {
 
   it.effect("should return DeleteRoleNotfound for non-existent role id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -122,7 +122,7 @@ withMainLayer("deleteRole", (it) => {
     let createdRoleId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a role to delete
       const role = yield* createRole({
@@ -158,7 +158,7 @@ withMainLayer("deleteRole", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdRoleId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteRole({
               id: createdRoleId,
               organization,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getOauthToken,
   GetOauthTokenForbidden,
@@ -37,7 +37,7 @@ withMainLayer("getOauthToken", (it) => {
 
   it.effect("should return GetOauthTokenForbidden for non-existent token in valid organization", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getOauthToken({
         organization,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createOrganizationTeam,
   CreateOrganizationTeamNotfound,
@@ -58,7 +58,7 @@ withMainLayer("createOrganizationTeam", (it) => {
     const testTeamName = `test-team-${Date.now()}`;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* createOrganizationTeam({
         organization,
@@ -87,7 +87,7 @@ withMainLayer("createOrganizationTeam", (it) => {
       // Always clean up the team, even if the test fails
       Effect.ensuring(
         Effect.gen(function* () {
-          const { organization } = yield* PlanetScaleCredentials;
+          const { organization } = yield* Credentials;
           yield* deleteOrganizationTeam({
             organization,
             team: testTeamName,

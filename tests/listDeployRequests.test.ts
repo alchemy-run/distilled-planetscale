@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listDeployRequests,
   ListDeployRequestsNotfound,
@@ -31,7 +31,7 @@ withMainLayer("listDeployRequests", (it) => {
 
   it.effect("should list deploy requests successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listDeployRequests({
         organization,
@@ -51,7 +51,7 @@ withMainLayer("listDeployRequests", (it) => {
 
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listDeployRequests({
         organization,
@@ -91,7 +91,7 @@ withMainLayer("listDeployRequests", (it) => {
 
   it.effect("should return ListDeployRequestsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listDeployRequests({
         organization,
         database: "this-database-definitely-does-not-exist-12345",

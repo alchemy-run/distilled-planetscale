@@ -1,6 +1,6 @@
 import { Cause, Effect, Exit, Layer } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getOrganizationMembership,
   GetOrganizationMembershipInput,
@@ -26,7 +26,7 @@ withMainLayer("getOrganizationMembership", (it) => {
 
   it.effect("should fetch organization membership successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First, list members to get a valid membership ID
       const members = yield* listOrganizationMembers({ organization });
@@ -69,7 +69,7 @@ withMainLayer("getOrganizationMembership", (it) => {
 
   it.effect("should return an error for non-existent membership", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const exit = yield* getOrganizationMembership({
         organization,

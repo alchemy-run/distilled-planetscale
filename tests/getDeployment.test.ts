@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getDeployment,
   GetDeploymentNotfound,
@@ -51,7 +51,7 @@ withMainLayer("getDeployment", (it) => {
 
   it.effect("should return GetDeploymentNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getDeployment({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -74,7 +74,7 @@ withMainLayer("getDeployment", (it) => {
 
   it.effect("should return GetDeploymentNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* getDeployment({
         organization,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getInvoiceLineItems,
   GetInvoiceLineItemsInput,
@@ -26,7 +26,7 @@ withMainLayer("getInvoiceLineItems", (it) => {
 
   it.effect("should return GetInvoiceLineItemsNotfound for non-existent invoice", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getInvoiceLineItems({
         organization,

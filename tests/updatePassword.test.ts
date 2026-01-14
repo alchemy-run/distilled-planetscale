@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updatePassword,
   UpdatePasswordNotfound,
@@ -61,7 +61,7 @@ withMainLayer("updatePassword", (it) => {
 
   it.effect("should return UpdatePasswordNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updatePassword({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -85,7 +85,7 @@ withMainLayer("updatePassword", (it) => {
 
   it.effect("should return UpdatePasswordNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* updatePassword({
         organization,
@@ -111,7 +111,7 @@ withMainLayer("updatePassword", (it) => {
 
   it.effect("should return UpdatePasswordNotfound for non-existent password id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* updatePassword({
@@ -145,7 +145,7 @@ withMainLayer("updatePassword", (it) => {
     let createdPasswordId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a password to update
       const password = yield* createPassword({
@@ -181,7 +181,7 @@ withMainLayer("updatePassword", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdPasswordId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deletePassword({
               id: createdPasswordId,
               organization,

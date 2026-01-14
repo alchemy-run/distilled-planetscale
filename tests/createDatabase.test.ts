@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createDatabase,
   CreateDatabaseNotfound,
@@ -48,7 +48,7 @@ withMainLayer("createDatabase", (it) => {
   );
   it.effect("should create a database successfully and clean up", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testDbName = `test-db-${Date.now()}`;
 
       const result = yield* createDatabase({
@@ -64,7 +64,7 @@ withMainLayer("createDatabase", (it) => {
       // Always clean up the database, even if the test fails
       Effect.ensuring(
         Effect.gen(function* () {
-          const { organization } = yield* PlanetScaleCredentials;
+          const { organization } = yield* Credentials;
           const testDbName = `test-db-${Date.now()}`;
           yield* deleteDatabase({
             organization,

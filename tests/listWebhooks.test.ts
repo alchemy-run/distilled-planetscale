@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listWebhooks,
   ListWebhooksNotfound,
@@ -29,7 +29,7 @@ withMainLayer("listWebhooks", (it) => {
 
   it.effect("should list webhooks successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listWebhooks({
         organization,
@@ -66,7 +66,7 @@ withMainLayer("listWebhooks", (it) => {
 
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listWebhooks({
         organization,
@@ -121,7 +121,7 @@ withMainLayer("listWebhooks", (it) => {
 
   it.effect("should return ListWebhooksNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listWebhooks({
         organization,
         database: "this-database-definitely-does-not-exist-12345",

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createBackup,
   CreateBackupNotfound,
@@ -55,7 +55,7 @@ withMainLayer("createBackup", (it) => {
 
   it.effect("should return CreateBackupNotfound or CreateBackupForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createBackup({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -75,7 +75,7 @@ withMainLayer("createBackup", (it) => {
 
   it.effect("should return CreateBackupNotfound or CreateBackupForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* createBackup({
@@ -104,7 +104,7 @@ withMainLayer("createBackup", (it) => {
     const branch = "main";
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* createBackup({
         organization,
@@ -128,7 +128,7 @@ withMainLayer("createBackup", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdBackupId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteBackup({
               id: createdBackupId,
               organization,

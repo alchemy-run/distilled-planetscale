@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createBouncer,
   CreateBouncerNotfound,
@@ -56,7 +56,7 @@ withMainLayer("createBouncer", (it) => {
 
   it.effect("should return CreateBouncerNotfound or CreateBouncerForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createBouncer({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -75,7 +75,7 @@ withMainLayer("createBouncer", (it) => {
 
   it.effect("should return CreateBouncerNotfound or CreateBouncerForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* createBouncer({
@@ -105,7 +105,7 @@ withMainLayer("createBouncer", (it) => {
     const branch = "main";
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* createBouncer({
         organization,
@@ -135,7 +135,7 @@ withMainLayer("createBouncer", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdBouncerId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteBouncer({
               organization,
               database,

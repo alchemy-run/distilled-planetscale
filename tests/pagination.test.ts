@@ -1,6 +1,6 @@
 import { Effect, Stream } from "effect";
 import { describe, expect, it } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { listDatabases } from "../src/operations/listDatabases";
 import { paginateItems, paginatePages, getPath, DefaultPaginationTrait } from "../src/pagination";
 import { withMainLayer } from "./setup";
@@ -43,7 +43,7 @@ describe("pagination utilities", () => {
 withMainLayer("paginatePages", (it) => {
   it.effect("should stream pages from listDatabases", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // Collect all pages (with a reasonable limit for testing)
       const pages = yield* paginatePages(listDatabases, { organization }).pipe(
@@ -68,7 +68,7 @@ withMainLayer("paginatePages", (it) => {
 withMainLayer("paginateItems", (it) => {
   it.effect("should stream individual items from listDatabases", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // Collect all items (with a reasonable limit)
       const items = yield* paginateItems(listDatabases, { organization }).pipe(

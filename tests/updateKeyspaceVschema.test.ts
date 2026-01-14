@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateKeyspaceVschema,
   UpdateKeyspaceVschemaNotfound,
@@ -47,7 +47,7 @@ withMainLayer("updateKeyspaceVschema", (it) => {
 
   it.effect("should return UpdateKeyspaceVschemaNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateKeyspaceVschema({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -72,7 +72,7 @@ withMainLayer("updateKeyspaceVschema", (it) => {
 
   it.effect("should return UpdateKeyspaceVschemaNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateKeyspaceVschema({
         organization,
         database: TEST_DATABASE,
@@ -97,7 +97,7 @@ withMainLayer("updateKeyspaceVschema", (it) => {
 
   it.effect("should return UpdateKeyspaceVschemaNotfound for non-existent keyspace", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateKeyspaceVschema({
         organization,
         database: TEST_DATABASE,

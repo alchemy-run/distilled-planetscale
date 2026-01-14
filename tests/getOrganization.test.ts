@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getOrganization,
   GetOrganizationInput,
@@ -27,7 +27,7 @@ withMainLayer("getOrganization", (it) => {
 
   it.effect("should fetch an organization successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getOrganization({
         organization,

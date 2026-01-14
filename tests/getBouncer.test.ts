@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getBouncer,
   GetBouncerNotfound,
@@ -55,7 +55,7 @@ withMainLayer("getBouncer", (it) => {
 
   it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getBouncer({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -75,7 +75,7 @@ withMainLayer("getBouncer", (it) => {
 
   it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* getBouncer({
@@ -97,7 +97,7 @@ withMainLayer("getBouncer", (it) => {
 
   it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent bouncer", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -128,7 +128,7 @@ withMainLayer("getBouncer", (it) => {
     let createdBouncerId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a bouncer to get
       const bouncer = yield* createBouncer({
@@ -168,7 +168,7 @@ withMainLayer("getBouncer", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdBouncerId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteBouncer({
               organization,
               database,

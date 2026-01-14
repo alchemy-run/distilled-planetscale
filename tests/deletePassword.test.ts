@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deletePassword,
   DeletePasswordNotfound,
@@ -49,7 +49,7 @@ withMainLayer("deletePassword", (it) => {
 
   it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deletePassword({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -74,7 +74,7 @@ withMainLayer("deletePassword", (it) => {
 
   it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* deletePassword({
@@ -102,7 +102,7 @@ withMainLayer("deletePassword", (it) => {
 
   it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent password id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -139,7 +139,7 @@ withMainLayer("deletePassword", (it) => {
     let createdPasswordId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a password to delete
       const password = yield* createPassword({
@@ -174,7 +174,7 @@ withMainLayer("deletePassword", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdPasswordId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deletePassword({
               id: createdPasswordId,
               organization,

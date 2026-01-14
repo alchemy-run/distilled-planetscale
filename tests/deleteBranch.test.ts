@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { createBranch, CreateBranchForbidden } from "../src/operations/createBranch";
 import {
   deleteBranch,
@@ -47,7 +47,7 @@ withMainLayer("deleteBranch", (it) => {
 
   it.effect("should return DeleteBranchNotfound or DeleteBranchForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteBranch({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -71,7 +71,7 @@ withMainLayer("deleteBranch", (it) => {
 
   it.effect("should return DeleteBranchNotfound or DeleteBranchForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteBranch({
         organization,
         database: TEST_DATABASE,
@@ -97,7 +97,7 @@ withMainLayer("deleteBranch", (it) => {
   // which may incur costs and require an existing database.
   it.effect("should delete a branch successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const testBranchName = `test-branch-delete-${Date.now()}`;
 

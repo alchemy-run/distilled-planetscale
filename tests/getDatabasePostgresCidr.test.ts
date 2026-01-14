@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getDatabasePostgresCidr,
   GetDatabasePostgresCidrNotfound,
@@ -56,7 +56,7 @@ withMainLayer("getDatabasePostgresCidr", (it) => {
 
   it.effect("should return GetDatabasePostgresCidrNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getDatabasePostgresCidr({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -79,7 +79,7 @@ withMainLayer("getDatabasePostgresCidr", (it) => {
   // on non-PostgreSQL databases. We test that the operation does not succeed using Effect.exit.
   it.effect("should fail for non-existent CIDR id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const exit = yield* getDatabasePostgresCidr({
         organization,
         database: TEST_DATABASE,
@@ -99,7 +99,7 @@ withMainLayer("getDatabasePostgresCidr", (it) => {
     let createdCidrId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a CIDR entry to get
       const created = yield* createDatabasePostgresCidr({
@@ -137,7 +137,7 @@ withMainLayer("getDatabasePostgresCidr", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdCidrId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteDatabasePostgresCidr({
               organization,
               database: testDatabase,

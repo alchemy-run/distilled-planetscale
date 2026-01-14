@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createDatabasePostgresCidr,
   CreateDatabasePostgresCidrNotfound,
@@ -55,7 +55,7 @@ withMainLayer("createDatabasePostgresCidr", (it) => {
 
   it.effect("should return CreateDatabasePostgresCidrNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createDatabasePostgresCidr({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -82,7 +82,7 @@ withMainLayer("createDatabasePostgresCidr", (it) => {
     const testDatabase = "your-postgres-db"; // Replace with actual PostgreSQL database name
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* createDatabasePostgresCidr({
         organization,
@@ -111,7 +111,7 @@ withMainLayer("createDatabasePostgresCidr", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdCidrId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteDatabasePostgresCidr({
               organization,
               database: testDatabase,

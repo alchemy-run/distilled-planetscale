@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { PlanetScaleParseError } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listGeneratedQueryPatternsReports,
   ListGeneratedQueryPatternsReportsForbidden,
@@ -29,7 +29,7 @@ withMainLayer("listGeneratedQueryPatternsReports", (it) => {
 
   it.effect("should list query patterns reports successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
 
@@ -77,7 +77,7 @@ withMainLayer("listGeneratedQueryPatternsReports", (it) => {
 
   it.effect("should return ListGeneratedQueryPatternsReportsNotfound or ListGeneratedQueryPatternsReportsForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listGeneratedQueryPatternsReports({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -96,7 +96,7 @@ withMainLayer("listGeneratedQueryPatternsReports", (it) => {
 
   it.effect("should return ListGeneratedQueryPatternsReportsNotfound or ListGeneratedQueryPatternsReportsForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listGeneratedQueryPatternsReports({
         organization,
         database: TEST_DATABASE,

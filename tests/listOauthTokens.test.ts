@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listOauthTokens,
   ListOauthTokensForbidden,
@@ -31,7 +31,7 @@ withMainLayer("listOauthTokens", (it) => {
 
   it.effect("should return ListOauthTokensForbidden for non-existent application in valid organization", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listOauthTokens({
         organization,

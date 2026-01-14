@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateBranchClusterConfig,
   UpdateBranchClusterConfigNotfound,
@@ -46,7 +46,7 @@ withMainLayer("updateBranchClusterConfig", (it) => {
 
   it.effect("should return UpdateBranchClusterConfigNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateBranchClusterConfig({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -70,7 +70,7 @@ withMainLayer("updateBranchClusterConfig", (it) => {
 
   it.effect("should return UpdateBranchClusterConfigNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateBranchClusterConfig({
         organization,
         database: TEST_DATABASE,

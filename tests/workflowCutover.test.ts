@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   workflowCutover,
   WorkflowCutoverNotfound,
@@ -60,7 +60,7 @@ withMainLayer("workflowCutover", (it) => {
 
   it.effect("should return WorkflowCutoverNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* workflowCutover({
         organization,
         database: "this-database-definitely-does-not-exist-12345",

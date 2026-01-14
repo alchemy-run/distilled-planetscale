@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { PlanetScaleParseError } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listWorkflows,
   ListWorkflowsForbidden,
@@ -33,7 +33,7 @@ withMainLayer("listWorkflows", (it) => {
 
   it.effect("should list workflows successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
 
       const result = yield* listWorkflows({
@@ -77,7 +77,7 @@ withMainLayer("listWorkflows", (it) => {
 
   it.effect("should return ListWorkflowsNotfound or ListWorkflowsForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listWorkflows({
         organization,
         database: "this-database-definitely-does-not-exist-12345",

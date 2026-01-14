@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createPassword,
   CreatePasswordNotfound,
@@ -59,7 +59,7 @@ withMainLayer("createPassword", (it) => {
 
   it.effect("should return CreatePasswordNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createPassword({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -82,7 +82,7 @@ withMainLayer("createPassword", (it) => {
 
   it.effect("should return CreatePasswordNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createPassword({
         organization,
         database: TEST_DATABASE,
@@ -107,7 +107,7 @@ withMainLayer("createPassword", (it) => {
   // and passwords may incur costs or have limits. When enabled, it demonstrates proper cleanup.
   it.effect("should create a password successfully and clean up", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
       const testPasswordName = `test-password-${Date.now()}`;

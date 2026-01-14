@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { PlanetScaleApiError } from "../src/client";
 import {
   createWebhook,
@@ -54,7 +54,7 @@ withMainLayer("createWebhook", (it) => {
 
   it.effect("should return CreateWebhookNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createWebhook({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -79,7 +79,7 @@ withMainLayer("createWebhook", (it) => {
     const database = TEST_DATABASE;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testWebhookUrl = `https://example.com/webhook-${Date.now()}`;
 
       const result = yield* createWebhook({
@@ -111,7 +111,7 @@ withMainLayer("createWebhook", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdWebhookId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteWebhook({
               organization,
               database,

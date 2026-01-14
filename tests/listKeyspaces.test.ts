@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { PlanetScaleParseError } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listKeyspaces,
   ListKeyspacesForbidden,
@@ -33,7 +33,7 @@ withMainLayer("listKeyspaces", (it) => {
 
   it.effect("should list keyspaces successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
 
@@ -80,7 +80,7 @@ withMainLayer("listKeyspaces", (it) => {
 
   it.effect("should return ListKeyspacesNotfound or ListKeyspacesForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listKeyspaces({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -99,7 +99,7 @@ withMainLayer("listKeyspaces", (it) => {
 
   it.effect("should return ListKeyspacesNotfound or ListKeyspacesForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listKeyspaces({
         organization,
         database: TEST_DATABASE,

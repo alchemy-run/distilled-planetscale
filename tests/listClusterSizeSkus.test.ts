@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listClusterSizeSkus,
   ListClusterSizeSkusInput,
@@ -23,7 +23,7 @@ withMainLayer("listClusterSizeSkus", (it) => {
 
   it.effect("should list cluster size SKUs successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listClusterSizeSkus({ organization });
 
@@ -45,7 +45,7 @@ withMainLayer("listClusterSizeSkus", (it) => {
 
   it.effect("should support engine filter parameter", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listClusterSizeSkus({
         organization,
@@ -58,7 +58,7 @@ withMainLayer("listClusterSizeSkus", (it) => {
 
   it.effect("should support rates parameter", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listClusterSizeSkus({
         organization,

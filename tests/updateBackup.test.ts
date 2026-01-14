@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateBackup,
   UpdateBackupNotfound,
@@ -63,7 +63,7 @@ withMainLayer("updateBackup", (it) => {
 
   it.effect("should return UpdateBackupNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* updateBackup({
         id: "some-backup-id",
         organization,
@@ -88,7 +88,7 @@ withMainLayer("updateBackup", (it) => {
 
   it.effect("should return UpdateBackupNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* updateBackup({
@@ -116,7 +116,7 @@ withMainLayer("updateBackup", (it) => {
 
   it.effect("should return UpdateBackupNotfound or UpdateBackupForbidden for non-existent backup id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -159,7 +159,7 @@ withMainLayer("updateBackup", (it) => {
     let createdBackupId: string | undefined;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a backup to update
       const backup = yield* createBackup({
@@ -202,7 +202,7 @@ withMainLayer("updateBackup", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (createdBackupId) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteBackup({
               id: createdBackupId,
               organization,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   completeRevert,
   CompleteRevertNotfound,
@@ -48,7 +48,7 @@ withMainLayer("completeRevert", (it) => {
 
   it.effect("should return CompleteRevertNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* completeRevert({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -71,7 +71,7 @@ withMainLayer("completeRevert", (it) => {
 
   it.effect("should return CompleteRevertNotfound for non-existent deploy request number", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* completeRevert({
         organization,

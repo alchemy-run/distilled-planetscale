@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deleteOauthToken,
   DeleteOauthTokenNotfound,
@@ -45,7 +45,7 @@ withMainLayer("deleteOauthToken", (it) => {
 
   it.effect("should return DeleteOauthTokenForbidden for non-existent OAuth application", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* deleteOauthToken({
         organization,
@@ -69,7 +69,7 @@ withMainLayer("deleteOauthToken", (it) => {
 
   it.effect("should return DeleteOauthTokenForbidden for non-existent token", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* deleteOauthToken({
         organization,

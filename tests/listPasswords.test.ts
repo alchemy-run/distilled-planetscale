@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { PlanetScaleParseError } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listPasswords,
   ListPasswordsForbidden,
@@ -50,7 +50,7 @@ withMainLayer("listPasswords", (it) => {
 
   it.effect("should return ListPasswordsNotfound or ListPasswordsForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listPasswords({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -69,7 +69,7 @@ withMainLayer("listPasswords", (it) => {
 
   it.effect("should return ListPasswordsNotfound or ListPasswordsForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listPasswords({
         organization,
         database: TEST_DATABASE,
@@ -88,7 +88,7 @@ withMainLayer("listPasswords", (it) => {
 
   it.effect("should list passwords successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listPasswords({
         organization,
         database: TEST_DATABASE,

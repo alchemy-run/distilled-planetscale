@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listBouncers,
   ListBouncersInput,
@@ -31,7 +31,7 @@ withMainLayer("listBouncers", (it) => {
 
   it.effect("should list bouncers successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";
@@ -85,7 +85,7 @@ withMainLayer("listBouncers", (it) => {
 
   it.effect("should return ListBouncersNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listBouncers({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -108,7 +108,7 @@ withMainLayer("listBouncers", (it) => {
 
   it.effect("should return ListBouncersNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* listBouncers({

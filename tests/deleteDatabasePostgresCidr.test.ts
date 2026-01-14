@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deleteDatabasePostgresCidr,
   DeleteDatabasePostgresCidrNotfound,
@@ -49,7 +49,7 @@ withMainLayer("deleteDatabasePostgresCidr", (it) => {
 
   it.effect("should return DeleteDatabasePostgresCidrNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteDatabasePostgresCidr({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -72,7 +72,7 @@ withMainLayer("deleteDatabasePostgresCidr", (it) => {
   // on non-PostgreSQL databases. We test that the operation does not succeed using Effect.exit.
   it.effect("should fail for non-existent CIDR id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const exit = yield* deleteDatabasePostgresCidr({
         organization,
         database: TEST_DATABASE,
@@ -91,7 +91,7 @@ withMainLayer("deleteDatabasePostgresCidr", (it) => {
     const testDatabase = "your-postgres-db"; // Replace with actual PostgreSQL database name
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a CIDR entry to delete
       const created = yield* createDatabasePostgresCidr({

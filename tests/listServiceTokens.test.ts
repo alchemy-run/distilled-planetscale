@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listServiceTokens,
   ListServiceTokensForbidden,
@@ -28,7 +28,7 @@ withMainLayer("listServiceTokens", (it) => {
 
   it.effect("should list service tokens or return forbidden", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listServiceTokens({ organization }).pipe(
         Effect.map((data) => ({ success: true as const, data })),
         Effect.catchTag("ListServiceTokensForbidden", (error) =>

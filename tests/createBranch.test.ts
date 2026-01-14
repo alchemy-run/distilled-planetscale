@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createBranch,
   CreateBranchNotfound,
@@ -60,7 +60,7 @@ withMainLayer("createBranch", (it) => {
 
   it.effect("should return CreateBranchNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* createBranch({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -86,7 +86,7 @@ withMainLayer("createBranch", (it) => {
   // and may incur costs. When enabled, it demonstrates proper cleanup using Effect.ensuring.
   it.effect("should create a branch successfully and clean up", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const testBranchName = `test-branch-${Date.now()}`;
 
@@ -105,7 +105,7 @@ withMainLayer("createBranch", (it) => {
       // Always clean up the branch, even if the test fails
       Effect.ensuring(
         Effect.gen(function* () {
-          const { organization } = yield* PlanetScaleCredentials;
+          const { organization } = yield* Credentials;
           const database = TEST_DATABASE;
           const testBranchName = `test-branch-${Date.now()}`;
           yield* deleteBranch({

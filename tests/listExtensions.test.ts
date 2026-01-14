@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listExtensions,
   ListExtensionsInput,
@@ -24,7 +24,7 @@ withMainLayer("listExtensions", (it) => {
 
   it.effect("should list extensions successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
 
@@ -66,7 +66,7 @@ withMainLayer("listExtensions", (it) => {
 
   it.effect("should return ListExtensionsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listExtensions({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -89,7 +89,7 @@ withMainLayer("listExtensions", (it) => {
 
   it.effect("should return ListExtensionsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* listExtensions({
         organization,

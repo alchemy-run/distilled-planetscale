@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   cancelBouncerResizeRequest,
   CancelBouncerResizeRequestNotfound,
@@ -46,7 +46,7 @@ withMainLayer("cancelBouncerResizeRequest", (it) => {
 
   it.effect("should return CancelBouncerResizeRequestNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* cancelBouncerResizeRequest({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -70,7 +70,7 @@ withMainLayer("cancelBouncerResizeRequest", (it) => {
 
   it.effect("should return CancelBouncerResizeRequestNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const result = yield* cancelBouncerResizeRequest({
@@ -97,7 +97,7 @@ withMainLayer("cancelBouncerResizeRequest", (it) => {
 
   it.effect("should return CancelBouncerResizeRequestNotfound for non-existent bouncer", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       // Use a test database name - adjust based on your PlanetScale setup
       const database = TEST_DATABASE;
       const branch = "main";

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   enableSafeMigrations,
   EnableSafeMigrationsNotfound,
@@ -52,7 +52,7 @@ withMainLayer("enableSafeMigrations", (it) => {
 
   it.effect("should return EnableSafeMigrationsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* enableSafeMigrations({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -75,7 +75,7 @@ withMainLayer("enableSafeMigrations", (it) => {
 
   it.effect("should return EnableSafeMigrationsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* enableSafeMigrations({
         organization,
         database: TEST_DATABASE,
@@ -103,7 +103,7 @@ withMainLayer("enableSafeMigrations", (it) => {
   // 3. Disable safe migrations to clean up (using disableSafeMigrations)
   it.effect("should enable safe migrations on a branch successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branchName = "main"; // Replace with an actual production branch
 

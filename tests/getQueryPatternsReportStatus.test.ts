@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getQueryPatternsReportStatus,
   GetQueryPatternsReportStatusNotfound,
@@ -51,7 +51,7 @@ withMainLayer("getQueryPatternsReportStatus", (it) => {
 
   it.effect("should return GetQueryPatternsReportStatusNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getQueryPatternsReportStatus({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -75,7 +75,7 @@ withMainLayer("getQueryPatternsReportStatus", (it) => {
 
   it.effect("should return GetQueryPatternsReportStatusNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getQueryPatternsReportStatus({
         organization,
         database: TEST_DATABASE,
@@ -99,7 +99,7 @@ withMainLayer("getQueryPatternsReportStatus", (it) => {
 
   it.effect("should return GetQueryPatternsReportStatusNotfound for non-existent report id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getQueryPatternsReportStatus({
         organization,
         database: TEST_DATABASE,

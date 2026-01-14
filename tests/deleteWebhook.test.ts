@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { PlanetScaleApiError } from "../src/client";
 import {
   deleteWebhook,
@@ -44,7 +44,7 @@ withMainLayer("deleteWebhook", (it) => {
 
   it.effect("should return DeleteWebhookNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteWebhook({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -63,7 +63,7 @@ withMainLayer("deleteWebhook", (it) => {
 
   it.effect("should return DeleteWebhookNotfound for non-existent webhook id", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteWebhook({
         organization,
         database: TEST_DATABASE,
@@ -86,7 +86,7 @@ withMainLayer("deleteWebhook", (it) => {
     const database = TEST_DATABASE;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testWebhookUrl = `https://example.com/webhook-delete-test-${Date.now()}`;
 
       // First create a webhook to delete

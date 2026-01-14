@@ -1,6 +1,6 @@
 import { Cause, Effect, Exit, Layer } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   removeOrganizationMember,
   RemoveOrganizationMemberInput,
@@ -18,7 +18,7 @@ withMainLayer("removeOrganizationMember", (it) => {
 
   it.effect("should return an error for non-existent member", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const exit = yield* removeOrganizationMember({
         organization,

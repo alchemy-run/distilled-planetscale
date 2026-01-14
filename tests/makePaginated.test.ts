@@ -2,7 +2,7 @@ import { Effect, Stream } from "effect";
 import { describe, expect, it } from "vitest";
 import { Schema } from "effect";
 import { API, ApiMethod, ApiPath, ApiPathParams } from "../src/client";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { withMainLayer } from "./setup";
 
 // Create a test paginated operation using the same pattern as listDatabases
@@ -54,7 +54,7 @@ describe("API.makePaginated", () => {
 withMainLayer("API.makePaginated integration", (it) => {
   it.effect("should fetch a single page using base operation", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* testListDatabases({ organization });
 
       expect(result).toHaveProperty("current_page");
@@ -65,7 +65,7 @@ withMainLayer("API.makePaginated integration", (it) => {
 
   it.effect("should stream pages using .pages() method", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const pages = yield* testListDatabases.pages({ organization }).pipe(
         Stream.take(2),
@@ -83,7 +83,7 @@ withMainLayer("API.makePaginated integration", (it) => {
 
   it.effect("should stream items using .items() method", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const items = yield* testListDatabases.items({ organization }).pipe(
         Stream.take(5),

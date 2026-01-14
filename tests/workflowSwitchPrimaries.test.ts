@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   workflowSwitchPrimaries,
   WorkflowSwitchPrimariesNotfound,
@@ -60,7 +60,7 @@ withMainLayer("workflowSwitchPrimaries", (it) => {
 
   it.effect("should return WorkflowSwitchPrimariesNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* workflowSwitchPrimaries({
         organization,
         database: "this-database-definitely-does-not-exist-12345",

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listBouncerResizeRequests,
   ListBouncerResizeRequestsNotfound,
@@ -52,7 +52,7 @@ withMainLayer("listBouncerResizeRequests", (it) => {
 
   it.effect("should return ListBouncerResizeRequestsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* listBouncerResizeRequests({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -76,7 +76,7 @@ withMainLayer("listBouncerResizeRequests", (it) => {
 
   it.effect("should return ListBouncerResizeRequestsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* listBouncerResizeRequests({
         organization,
@@ -102,7 +102,7 @@ withMainLayer("listBouncerResizeRequests", (it) => {
 
   it.effect("should return ListBouncerResizeRequestsNotfound for non-existent bouncer", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branch = "main";
       const result = yield* listBouncerResizeRequests({

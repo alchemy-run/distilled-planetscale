@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   disableSafeMigrations,
   DisableSafeMigrationsNotfound,
@@ -51,7 +51,7 @@ withMainLayer("disableSafeMigrations", (it) => {
 
   it.effect("should return DisableSafeMigrationsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* disableSafeMigrations({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -74,7 +74,7 @@ withMainLayer("disableSafeMigrations", (it) => {
 
   it.effect("should return DisableSafeMigrationsNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* disableSafeMigrations({
         organization,
         database: TEST_DATABASE,

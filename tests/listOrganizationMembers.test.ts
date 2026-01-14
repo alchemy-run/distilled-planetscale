@@ -1,6 +1,6 @@
 import { Cause, Effect, Exit, Layer } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listOrganizationMembers,
   ListOrganizationMembersInput,
@@ -28,7 +28,7 @@ withMainLayer("listOrganizationMembers", (it) => {
 
   it.effect("should list organization members successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listOrganizationMembers({
         organization,
@@ -66,7 +66,7 @@ withMainLayer("listOrganizationMembers", (it) => {
 
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listOrganizationMembers({
         organization,

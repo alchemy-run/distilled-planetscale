@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getDeployQueue,
   GetDeployQueueInput,
@@ -24,7 +24,7 @@ withMainLayer("getDeployQueue", (it) => {
 
   it.effect("should fetch deploy queue successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getDeployQueue({
         organization,
@@ -50,7 +50,7 @@ withMainLayer("getDeployQueue", (it) => {
 
   it.effect("should return GetDeployQueueNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* getDeployQueue({
         organization,

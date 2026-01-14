@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentialsFromEnv } from "../src/credentials";
+import { CredentialsFromEnv } from "../src/credentials";
 import {
   getServiceToken,
   GetServiceTokenNotfound,

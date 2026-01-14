@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   createOauthToken,
   CreateOauthTokenNotfound,
@@ -60,7 +60,7 @@ withMainLayer("createOauthToken", (it) => {
 
   it.effect("should return CreateOauthTokenNotfound for non-existent OAuth application", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* createOauthToken({
         organization,

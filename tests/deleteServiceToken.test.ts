@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   deleteServiceToken,
   DeleteServiceTokenNotfound,
@@ -29,7 +29,7 @@ withMainLayer("deleteServiceToken", (it) => {
   // This is a common security pattern to avoid information disclosure
   it.effect("should return DeleteServiceTokenForbidden for non-existent token", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* deleteServiceToken({
         organization,
         id: "this-token-id-definitely-does-not-exist-12345",
@@ -72,7 +72,7 @@ withMainLayer("deleteServiceToken", (it) => {
   // demonstrates the full create-then-delete workflow.
   it.effect("should delete a service token successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testTokenName = `test-token-delete-${Date.now()}`;
 
       // First create a token to delete

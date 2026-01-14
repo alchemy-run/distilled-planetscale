@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   getDefaultRole,
   GetDefaultRoleNotfound,
@@ -56,7 +56,7 @@ withMainLayer("getDefaultRole", (it) => {
 
   it.effect("should return GetDefaultRoleNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* getDefaultRole({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -79,7 +79,7 @@ withMainLayer("getDefaultRole", (it) => {
 
   it.effect("should return GetDefaultRoleNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const result = yield* getDefaultRole({
         organization,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   updateOrganizationTeam,
   UpdateOrganizationTeamNotfound,
@@ -39,7 +39,7 @@ withMainLayer("updateOrganizationTeam", (it) => {
 
   it.effect("should return UpdateOrganizationTeamForbidden for non-existent team", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* updateOrganizationTeam({
         organization,
@@ -87,7 +87,7 @@ withMainLayer("updateOrganizationTeam", (it) => {
     const testTeamName = `test-team-${Date.now()}`;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // First create a team to update
       const created = yield* createOrganizationTeam({
@@ -126,7 +126,7 @@ withMainLayer("updateOrganizationTeam", (it) => {
       // Always clean up the team, even if the test fails
       Effect.ensuring(
         Effect.gen(function* () {
-          const { organization } = yield* PlanetScaleCredentials;
+          const { organization } = yield* Credentials;
           // Try to delete with both original and updated names
           yield* deleteOrganizationTeam({
             organization,

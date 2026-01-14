@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listReadOnlyRegions,
   ListReadOnlyRegionsNotfound,
@@ -28,7 +28,7 @@ withMainLayer("listReadOnlyRegions", (it) => {
 
   it.effect("should list read-only regions successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       // Use the "test" database which should exist based on other tests
       const result = yield* listReadOnlyRegions({
@@ -48,7 +48,7 @@ withMainLayer("listReadOnlyRegions", (it) => {
 
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listReadOnlyRegions({
         organization,
@@ -68,7 +68,7 @@ withMainLayer("listReadOnlyRegions", (it) => {
 
   it.effect("should return ListReadOnlyRegionsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listReadOnlyRegions({
         organization,

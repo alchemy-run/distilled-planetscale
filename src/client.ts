@@ -4,7 +4,7 @@ import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as Category from "./category";
-import { PlanetScaleCredentials } from "./credentials";
+import { Credentials } from "./credentials";
 import {
   type PaginatedResponse,
   type PaginatedTrait,
@@ -125,7 +125,7 @@ export const API = {
       | PlanetScaleParseError
       | HttpClientError.HttpClientError
       | HttpBody.HttpBodyError;
-    type Context = PlanetScaleCredentials | HttpClient.HttpClient;
+    type Context = Credentials | HttpClient.HttpClient;
 
     // Read method and path from input schema annotations
     const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
@@ -172,7 +172,7 @@ export const API = {
 
     return (input: Input): Effect.Effect<Output, Errors, Context> =>
       Effect.gen(function* () {
-        const { token, apiBaseUrl } = yield* PlanetScaleCredentials;
+        const { token, apiBaseUrl } = yield* Credentials;
         const client = yield* HttpClient.HttpClient;
 
         const queryParams = getQueryParams(input);
@@ -251,7 +251,7 @@ export const API = {
       | PlanetScaleParseError
       | HttpClientError.HttpClientError
       | HttpBody.HttpBodyError;
-    type Context = PlanetScaleCredentials | HttpClient.HttpClient;
+    type Context = Credentials | HttpClient.HttpClient;
 
     // Stream all pages (full response objects)
     const pagesFn = (input: Omit<Input, "page">): Stream.Stream<Output, Errors, Context> => {

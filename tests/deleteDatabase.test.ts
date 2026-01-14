@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { createDatabase, CreateDatabaseForbidden } from "../src/operations/createDatabase";
 import {
   deleteDatabase,
@@ -25,7 +25,7 @@ withMainLayer("deleteDatabase", (it) => {
 
   it.effect("should return DeleteDatabaseNotfound or DeleteDatabaseForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* deleteDatabase({
         organization,
@@ -71,7 +71,7 @@ withMainLayer("deleteDatabase", (it) => {
     let testDbName: string | null = null;
 
     return Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       testDbName = `test-db-delete-${Date.now()}`;
 
       // First create a database to delete
@@ -102,7 +102,7 @@ withMainLayer("deleteDatabase", (it) => {
       Effect.ensuring(
         Effect.gen(function* () {
           if (testDbName) {
-            const { organization } = yield* PlanetScaleCredentials;
+            const { organization } = yield* Credentials;
             yield* deleteDatabase({
               organization,
               database: testDbName,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listInvoices,
   ListInvoicesInput,
@@ -27,7 +27,7 @@ withMainLayer("listInvoices", (it) => {
 
   it.effect("should list invoices successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listInvoices({ organization });
 

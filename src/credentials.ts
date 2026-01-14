@@ -3,19 +3,16 @@ import { ConfigError } from "./errors";
 
 export const DEFAULT_API_BASE_URL = "https://api.planetscale.com/v1";
 
-export interface PlanetScaleConfig {
+export interface Config {
   readonly token: string;
   readonly organization: string;
   readonly apiBaseUrl: string;
 }
 
-export class PlanetScaleCredentials extends Context.Tag("PlanetScaleCredentials")<
-  PlanetScaleCredentials,
-  PlanetScaleConfig
->() {}
+export class Credentials extends Context.Tag("Credentials")<Credentials, Config>() {}
 
-export const PlanetScaleCredentialsFromEnv = Layer.effect(
-  PlanetScaleCredentials,
+export const CredentialsFromEnv = Layer.effect(
+  Credentials,
   Effect.gen(function* () {
     const token = process.env.PLANETSCALE_API_TOKEN;
     const organization = process.env.PLANETSCALE_ORGANIZATION;
@@ -35,5 +32,3 @@ export const PlanetScaleCredentialsFromEnv = Layer.effect(
     return { token, organization, apiBaseUrl: DEFAULT_API_BASE_URL };
   }),
 );
-
-

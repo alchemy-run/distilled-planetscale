@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listDatabases,
   ListDatabasesNotfound,
@@ -10,7 +10,7 @@ import { withMainLayer } from "./setup";
 withMainLayer("listDatabases", (it) => {
   it.effect("should list databases successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listDatabases({ organization });
 
@@ -22,7 +22,7 @@ withMainLayer("listDatabases", (it) => {
 
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listDatabases({
         organization,

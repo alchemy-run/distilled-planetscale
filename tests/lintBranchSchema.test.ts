@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   lintBranchSchema,
   LintBranchSchemaNotfound,
@@ -29,7 +29,7 @@ withMainLayer("lintBranchSchema", (it) => {
 
   it.effect("should fetch branch schema lint results successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* lintBranchSchema({
         organization,
         database: TEST_DATABASE,
@@ -67,7 +67,7 @@ withMainLayer("lintBranchSchema", (it) => {
 
   it.effect("should return LintBranchSchemaNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* lintBranchSchema({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -90,7 +90,7 @@ withMainLayer("lintBranchSchema", (it) => {
 
   it.effect("should return LintBranchSchemaNotfound for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* lintBranchSchema({
         organization,
         database: TEST_DATABASE,

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import { PlanetScaleApiError } from "../src/client";
 import {
   demoteBranch,
@@ -54,7 +54,7 @@ withMainLayer("demoteBranch", (it) => {
 
   it.effect("should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* demoteBranch({
         organization,
         database: "this-database-definitely-does-not-exist-12345",
@@ -78,7 +78,7 @@ withMainLayer("demoteBranch", (it) => {
 
   it.effect("should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent branch", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* demoteBranch({
         organization,
         database: TEST_DATABASE,
@@ -109,7 +109,7 @@ withMainLayer("demoteBranch", (it) => {
   // 4. Clean up by deleting the branch
   it.effect("should demote a production branch successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const database = TEST_DATABASE;
       const branchName = "main"; // Replace with an actual production branch
 

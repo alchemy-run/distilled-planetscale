@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
 import {
   listDatabasePostgresCidrs,
   ListDatabasePostgresCidrsNotfound,
@@ -48,7 +48,7 @@ withMainLayer("listDatabasePostgresCidrs", (it) => {
 
   it.effect("should return ListDatabasePostgresCidrsNotfound for non-existent database", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
 
       const result = yield* listDatabasePostgresCidrs({
         organization,
@@ -72,7 +72,7 @@ withMainLayer("listDatabasePostgresCidrs", (it) => {
   // When you have a PostgreSQL database available, you can enable this test.
   it.effect("should list PostgreSQL CIDR allowlist entries successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testDatabase = "your-postgres-db"; // Replace with actual PostgreSQL database name
 
       const result = yield* listDatabasePostgresCidrs({
@@ -98,7 +98,7 @@ withMainLayer("listDatabasePostgresCidrs", (it) => {
   // Note: This test is skipped because it requires a PostgreSQL-enabled database.
   it.effect("should support pagination parameters", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const testDatabase = "your-postgres-db"; // Replace with actual PostgreSQL database name
 
       const result = yield* listDatabasePostgresCidrs({
