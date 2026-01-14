@@ -1,8 +1,6 @@
 export * from "./src/errors";
 export * from "./src/credentials";
 export * from "./src/client";
-export * as Category from "./src/category";
-export * from "./src/pagination";
 export * from "./src/operations/listOrganizations";
 export * from "./src/operations/getOrganization";
 export * from "./src/operations/updateOrganization";

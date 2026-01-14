@@ -45,30 +45,6 @@ const getErrorCode = (ErrorClass: { ast: Schema.Schema.Any["ast"] }): string | u
   return ast.annotations[ApiErrorCode] as string | undefined;
 };
 
-// Map API error codes to categories
-const API_ERROR_CODE_TO_CATEGORY: Record<string, Category.Category> = {
-  unauthorized: Category.AuthError,
-  forbidden: Category.AuthError,
-  not_found: Category.NotFoundError,
-  conflict: Category.ConflictError,
-  unprocessable_entity: Category.BadRequestError,
-  bad_request: Category.BadRequestError,
-  too_many_requests: Category.ThrottlingError,
-  internal_server_error: Category.ServerError,
-  service_unavailable: Category.ServerError,
-};
-
-// Apply category to an error class based on its ApiErrorCode annotation
-const applyCategoryFromErrorCode = <E extends AnnotatedErrorClass>(ErrorClass: E): void => {
-  const code = getErrorCode(ErrorClass);
-  if (code) {
-    const category = API_ERROR_CODE_TO_CATEGORY[code];
-    if (category) {
-      Category.withCategory(category)(ErrorClass);
-    }
-  }
-};
-
 // Type for an annotated error class - must have an ast property and be constructable
 interface AnnotatedErrorClass {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,12 +119,7 @@ export const API = {
       | HttpBody.HttpBodyError;
     type Context = PlanetScaleCredentials | HttpClient.HttpClient;
 
-    // Apply categories to error classes based on their ApiErrorCode annotations
-    for (const ErrorClass of config.errors) {
-      applyCategoryFromErrorCode(ErrorClass);
-    }
-
-    // Read method and path from input schema annotations
+// Read method and path from input schema annotations
     const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
     const path = getAnnotation<(input: Input) => string>(config.inputSchema, ApiPath);
     const pathParams = getAnnotation<readonly string[]>(config.inputSchema, ApiPathParams) ?? [];

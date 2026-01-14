@@ -52,40 +52,61 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ## API Operation Pattern
 
-Operations are defined declaratively using `makeOperation`:
+Operations are defined declaratively using `API.make`:
 
 ```typescript
 import { Schema } from "effect";
-import { ApiErrorCode, makeOperation } from "./client";
+import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "./client";
+import * as Category from "./category";
 
 // Input Schema
 export const GetOrganizationInput = Schema.Struct({
-  name: Schema.String,
+  organization: Schema.String,
+}).annotations({
+  [ApiMethod]: "GET",
+  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}`,
+  [ApiPathParams]: ["organization"] as const,
 });
 
 // Output Schema
-export const Organization = Schema.Struct({
+export const GetOrganizationOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   // ... other fields
 });
 
-// Error with ApiErrorCode annotation (maps to API response "code" field)
-export class OrganizationNotFound extends Schema.TaggedError<OrganizationNotFound>()(
-  "OrganizationNotFound",
-  { name: Schema.String, message: Schema.String },
+// Error with ApiErrorCode annotation AND Category decorator
+export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationNotfound>()(
+  "GetOrganizationNotfound",
+  { organization: Schema.String, message: Schema.String },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 // Define the operation
-export const getOrganization = makeOperation({
-  method: "GET",
-  path: (input) => `/organizations/${input.name}`,
+export const getOrganization = API.make(() => ({
   inputSchema: GetOrganizationInput,
-  outputSchema: Organization,
-  errors: [OrganizationNotFound],
-});
+  outputSchema: GetOrganizationOutput,
+  errors: [GetOrganizationNotfound],
+}));
 ```
+
+### Error Code to Category Mapping
+
+When generating operations, use the following mapping from API error codes to categories:
+
+| Error Code | Category | Decorator |
+|------------|----------|-----------|
+| `unauthorized` | `AuthError` | `Category.withAuthError` |
+| `forbidden` | `AuthError` | `Category.withAuthError` |
+| `not_found` | `NotFoundError` | `Category.withNotFoundError` |
+| `conflict` | `ConflictError` | `Category.withConflictError` |
+| `unprocessable_entity` | `BadRequestError` | `Category.withBadRequestError` |
+| `bad_request` | `BadRequestError` | `Category.withBadRequestError` |
+| `too_many_requests` | `ThrottlingError` | `Category.withThrottlingError` |
+| `internal_server_error` | `ServerError` | `Category.withServerError` |
+| `service_unavailable` | `ServerError` | `Category.withServerError` |
+
+This mapping is also documented in `specs/error-categories.patch.json`.
 
 ## Error Handling
 
