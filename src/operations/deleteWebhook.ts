@@ -8,7 +8,8 @@ export const DeleteWebhookInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}`,
   [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type DeleteWebhookInput = typeof DeleteWebhookInput.Type;

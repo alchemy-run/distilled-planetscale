@@ -1,7 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
-import { PlanetScaleApiError } from "../src/client";
 import {
   createWebhook,
   CreateWebhookNotfound,
@@ -47,7 +46,8 @@ withMainLayer("createWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof CreateWebhookNotfound || result instanceof CreateWebhookForbidden;
+      const isExpectedError =
+        result instanceof CreateWebhookNotfound || result instanceof CreateWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -66,7 +66,8 @@ withMainLayer("createWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof CreateWebhookNotfound || result instanceof CreateWebhookForbidden;
+      const isExpectedError =
+        result instanceof CreateWebhookNotfound || result instanceof CreateWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );

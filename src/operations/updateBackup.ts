@@ -10,7 +10,8 @@ export const UpdateBackupInput = Schema.Struct({
   protected: Schema.optional(Schema.Boolean),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { id: string; organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups/${input.id}`,
+  [ApiPath]: (input: { id: string; organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups/${input.id}`,
   [ApiPathParams]: ["id", "organization", "database", "branch"] as const,
 });
 export type UpdateBackupInput = typeof UpdateBackupInput.Type;
@@ -31,13 +32,15 @@ export const UpdateBackupOutput = Schema.Struct({
   pvc_size: Schema.Number,
   protected: Schema.Boolean,
   required: Schema.Boolean,
-  restored_branches: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-  })),
+  restored_branches: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    }),
+  ),
   actor: Schema.Struct({
     id: Schema.String,
     display_name: Schema.String,

@@ -10,7 +10,8 @@ export const CreateDatabasePostgresCidrInput = Schema.Struct({
   cidrs: Schema.Array(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs`,
+  [ApiPath]: (input: { organization: string; database: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/cidrs`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateDatabasePostgresCidrInput = typeof CreateDatabasePostgresCidrInput.Type;
@@ -86,5 +87,10 @@ export class CreateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 export const createDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDatabasePostgresCidrInput,
   outputSchema: CreateDatabasePostgresCidrOutput,
-  errors: [CreateDatabasePostgresCidrUnauthorized, CreateDatabasePostgresCidrForbidden, CreateDatabasePostgresCidrNotfound, CreateDatabasePostgresCidrUnprocessableentity],
+  errors: [
+    CreateDatabasePostgresCidrUnauthorized,
+    CreateDatabasePostgresCidrForbidden,
+    CreateDatabasePostgresCidrNotfound,
+    CreateDatabasePostgresCidrUnprocessableentity,
+  ],
 }));

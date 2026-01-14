@@ -8,7 +8,8 @@ export const WorkflowReverseCutoverInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/reverse-cutover`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/reverse-cutover`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type WorkflowReverseCutoverInput = typeof WorkflowReverseCutoverInput.Type;
@@ -18,7 +19,27 @@ export const WorkflowReverseCutoverOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
+  state: Schema.Literal(
+    "pending",
+    "copying",
+    "running",
+    "stopped",
+    "verifying_data",
+    "verified_data",
+    "switching_replicas",
+    "switched_replicas",
+    "switching_primaries",
+    "switched_primaries",
+    "reversing_traffic",
+    "reversing_traffic_for_cancel",
+    "cutting_over",
+    "cutover",
+    "reversed_cutover",
+    "completed",
+    "cancelling",
+    "cancelled",
+    "error",
+  ),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,
@@ -168,5 +189,9 @@ export class WorkflowReverseCutoverNotfound extends Schema.TaggedError<WorkflowR
 export const workflowReverseCutover = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowReverseCutoverInput,
   outputSchema: WorkflowReverseCutoverOutput,
-  errors: [WorkflowReverseCutoverUnauthorized, WorkflowReverseCutoverForbidden, WorkflowReverseCutoverNotfound],
+  errors: [
+    WorkflowReverseCutoverUnauthorized,
+    WorkflowReverseCutoverForbidden,
+    WorkflowReverseCutoverNotfound,
+  ],
 }));

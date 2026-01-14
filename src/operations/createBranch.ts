@@ -15,7 +15,8 @@ export const CreateBranchInput = Schema.Struct({
   major_version: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/branches`,
+  [ApiPath]: (input: { organization: string; database: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateBranchInput = typeof CreateBranchInput.Type;
@@ -51,13 +52,15 @@ export const CreateBranchOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  restored_from_branch: Schema.NullOr(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-  })),
+  restored_from_branch: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    }),
+  ),
   private_edge_connectivity: Schema.Boolean,
   has_replicas: Schema.Boolean,
   has_read_only_replicas: Schema.Boolean,

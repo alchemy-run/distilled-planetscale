@@ -11,7 +11,8 @@ export const UpdateDatabasePostgresCidrInput = Schema.Struct({
   cidrs: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PUT",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
   [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type UpdateDatabasePostgresCidrInput = typeof UpdateDatabasePostgresCidrInput.Type;
@@ -92,5 +93,10 @@ export class UpdateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 export const updateDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabasePostgresCidrInput,
   outputSchema: UpdateDatabasePostgresCidrOutput,
-  errors: [UpdateDatabasePostgresCidrUnauthorized, UpdateDatabasePostgresCidrForbidden, UpdateDatabasePostgresCidrNotfound, UpdateDatabasePostgresCidrUnprocessableentity],
+  errors: [
+    UpdateDatabasePostgresCidrUnauthorized,
+    UpdateDatabasePostgresCidrForbidden,
+    UpdateDatabasePostgresCidrNotfound,
+    UpdateDatabasePostgresCidrUnprocessableentity,
+  ],
 }));

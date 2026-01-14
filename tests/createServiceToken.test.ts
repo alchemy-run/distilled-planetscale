@@ -64,9 +64,7 @@ withMainLayer("createServiceToken", (it) => {
       const result = yield* createServiceToken({
         organization,
         name: testTokenName,
-      }).pipe(
-        Effect.catchTag("CreateServiceTokenForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreateServiceTokenForbidden", () => Effect.succeed(null)));
 
       // Skip test gracefully if creation is forbidden
       if (result === null) {

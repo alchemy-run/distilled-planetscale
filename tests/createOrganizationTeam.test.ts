@@ -64,9 +64,7 @@ withMainLayer("createOrganizationTeam", (it) => {
         organization,
         name: testTeamName,
         description: "Test team created by automated tests",
-      }).pipe(
-        Effect.catchTag("CreateOrganizationTeamForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreateOrganizationTeamForbidden", () => Effect.succeed(null)));
 
       // Skip test gracefully if creation is forbidden
       if (result === null) {

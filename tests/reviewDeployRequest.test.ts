@@ -44,7 +44,9 @@ withMainLayer("reviewDeployRequest", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ReviewDeployRequestNotfound || result instanceof ReviewDeployRequestForbidden;
+      const isExpectedError =
+        result instanceof ReviewDeployRequestNotfound ||
+        result instanceof ReviewDeployRequestForbidden;
       expect(isExpectedError).toBe(true);
       if (result instanceof ReviewDeployRequestNotfound) {
         expect(result._tag).toBe("ReviewDeployRequestNotfound");
@@ -69,7 +71,9 @@ withMainLayer("reviewDeployRequest", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ReviewDeployRequestNotfound || result instanceof ReviewDeployRequestForbidden;
+      const isExpectedError =
+        result instanceof ReviewDeployRequestNotfound ||
+        result instanceof ReviewDeployRequestForbidden;
       expect(isExpectedError).toBe(true);
       if (result instanceof ReviewDeployRequestNotfound) {
         expect(result._tag).toBe("ReviewDeployRequestNotfound");
@@ -79,32 +83,36 @@ withMainLayer("reviewDeployRequest", (it) => {
     }),
   );
 
-  it.effect("should return ReviewDeployRequestNotfound for non-existent deploy request number", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const database = TEST_DATABASE;
-      const result = yield* reviewDeployRequest({
-        organization,
-        database,
-        number: 999999999,
-        state: "commented",
-        body: "Test comment",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ReviewDeployRequestNotfound for non-existent deploy request number",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const database = TEST_DATABASE;
+        const result = yield* reviewDeployRequest({
+          organization,
+          database,
+          number: 999999999,
+          state: "commented",
+          body: "Test comment",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ReviewDeployRequestNotfound || result instanceof ReviewDeployRequestForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof ReviewDeployRequestNotfound) {
-        expect(result._tag).toBe("ReviewDeployRequestNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe(database);
-        expect(result.number).toBe(999999999);
-      }
-    }),
+        const isExpectedError =
+          result instanceof ReviewDeployRequestNotfound ||
+          result instanceof ReviewDeployRequestForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof ReviewDeployRequestNotfound) {
+          expect(result._tag).toBe("ReviewDeployRequestNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe(database);
+          expect(result.number).toBe(999999999);
+        }
+      }),
   );
 
   // Note: This test is skipped because creating reviews requires an existing deploy request

@@ -8,10 +8,7 @@ import {
   UpdateOrganizationTeamInput,
   UpdateOrganizationTeamOutput,
 } from "../src/operations/updateOrganizationTeam";
-import {
-  createOrganizationTeam,
-  CreateOrganizationTeamForbidden,
-} from "../src/operations/createOrganizationTeam";
+import { createOrganizationTeam } from "../src/operations/createOrganizationTeam";
 import { deleteOrganizationTeam } from "../src/operations/deleteOrganizationTeam";
 import { withMainLayer } from "./setup";
 
@@ -94,9 +91,7 @@ withMainLayer("updateOrganizationTeam", (it) => {
         organization,
         name: testTeamName,
         description: "Test team created by automated tests",
-      }).pipe(
-        Effect.catchTag("CreateOrganizationTeamForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreateOrganizationTeamForbidden", () => Effect.succeed(null)));
 
       // Skip test gracefully if creation is forbidden
       if (created === null) {

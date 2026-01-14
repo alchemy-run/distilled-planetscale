@@ -34,7 +34,14 @@ withMainLayer("listDatabaseRegions", (it) => {
         database: TEST_DATABASE,
       }).pipe(
         Effect.catchTag("ListDatabaseRegionsNotfound", () =>
-          Effect.succeed({ data: [], current_page: 1, next_page: 0, next_page_url: "", prev_page: 0, prev_page_url: "" }),
+          Effect.succeed({
+            data: [],
+            current_page: 1,
+            next_page: 0,
+            next_page_url: "",
+            prev_page: 0,
+            prev_page_url: "",
+          }),
         ),
       );
 
@@ -55,7 +62,14 @@ withMainLayer("listDatabaseRegions", (it) => {
         per_page: 5,
       }).pipe(
         Effect.catchTag("ListDatabaseRegionsNotfound", () =>
-          Effect.succeed({ data: [], current_page: 1, next_page: 0, next_page_url: "", prev_page: 0, prev_page_url: "" }),
+          Effect.succeed({
+            data: [],
+            current_page: 1,
+            next_page: 0,
+            next_page_url: "",
+            prev_page: 0,
+            prev_page_url: "",
+          }),
         ),
       );
 

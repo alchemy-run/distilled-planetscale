@@ -2,9 +2,7 @@ import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
 
 // Input Schema
-export const GetCurrentUserInput = Schema.Struct({
-
-}).annotations({
+export const GetCurrentUserInput = Schema.Struct({}).annotations({
   [ApiMethod]: "GET",
   [ApiPath]: () => "/user",
   [ApiPathParams]: [] as const,
@@ -21,13 +19,15 @@ export const GetCurrentUserOutput = Schema.Struct({
   created_at: Schema.String,
   updated_at: Schema.String,
   two_factor_auth_configured: Schema.Boolean,
-  default_organization: Schema.optional(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-  })),
+  default_organization: Schema.optional(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    }),
+  ),
   sso: Schema.optional(Schema.Boolean),
   managed: Schema.optional(Schema.Boolean),
   directory_managed: Schema.optional(Schema.Boolean),
@@ -39,7 +39,6 @@ export type GetCurrentUserOutput = typeof GetCurrentUserOutput.Type;
 export class GetCurrentUserUnauthorized extends Schema.TaggedError<GetCurrentUserUnauthorized>()(
   "GetCurrentUserUnauthorized",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -48,7 +47,6 @@ export class GetCurrentUserUnauthorized extends Schema.TaggedError<GetCurrentUse
 export class GetCurrentUserForbidden extends Schema.TaggedError<GetCurrentUserForbidden>()(
   "GetCurrentUserForbidden",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -57,7 +55,6 @@ export class GetCurrentUserForbidden extends Schema.TaggedError<GetCurrentUserFo
 export class GetCurrentUserNotfound extends Schema.TaggedError<GetCurrentUserNotfound>()(
   "GetCurrentUserNotfound",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

@@ -31,17 +31,21 @@ export const CreateDatabaseOutput = Schema.Struct({
   ready: Schema.Boolean,
   at_backup_restore_branches_limit: Schema.optional(Schema.Boolean),
   at_development_branch_usage_limit: Schema.optional(Schema.Boolean),
-  data_import: Schema.optional(Schema.NullOr(Schema.Struct({
-    state: Schema.String,
-    import_check_errors: Schema.String,
-    started_at: Schema.String,
-    finished_at: Schema.String,
-    data_source: Schema.Struct({
-      hostname: Schema.String,
-      port: Schema.Number,
-      database: Schema.String,
-    }),
-  }))),
+  data_import: Schema.optional(
+    Schema.NullOr(
+      Schema.Struct({
+        state: Schema.String,
+        import_check_errors: Schema.String,
+        started_at: Schema.String,
+        finished_at: Schema.String,
+        data_source: Schema.Struct({
+          hostname: Schema.String,
+          port: Schema.Number,
+          database: Schema.String,
+        }),
+      }),
+    ),
+  ),
   region: Schema.Struct({
     id: Schema.String,
     provider: Schema.String,
@@ -54,7 +58,15 @@ export const CreateDatabaseOutput = Schema.Struct({
   }),
   html_url: Schema.String,
   name: Schema.String,
-  state: Schema.Literal("pending", "importing", "sleep_in_progress", "sleeping", "awakening", "import_ready", "ready"),
+  state: Schema.Literal(
+    "pending",
+    "importing",
+    "sleep_in_progress",
+    "sleeping",
+    "awakening",
+    "import_ready",
+    "ready",
+  ),
   sharded: Schema.optional(Schema.Boolean),
   default_branch_shard_count: Schema.optional(Schema.Number),
   default_branch_read_only_regions_count: Schema.optional(Schema.Number),

@@ -9,50 +9,39 @@ import {
   GetOrganizationUnauthorized,
   GetOrganizationForbidden,
 } from "../src/operations/getOrganization";
-import {
-  DeleteDatabaseNotfound,
-} from "../src/operations/deleteDatabase";
+import { DeleteDatabaseNotfound } from "../src/operations/deleteDatabase";
 
 // Test error classes with different categories
-class TestAuthError extends S.TaggedError<TestAuthError>()(
-  "TestAuthError",
-  { message: S.String },
-).pipe(Category.withAuthError) {}
+class TestAuthError extends S.TaggedError<TestAuthError>()("TestAuthError", {
+  message: S.String,
+}).pipe(Category.withAuthError) {}
 
-class TestNotFoundError extends S.TaggedError<TestNotFoundError>()(
-  "TestNotFoundError",
-  { resource: S.String },
-).pipe(Category.withNotFoundError) {}
+class TestNotFoundError extends S.TaggedError<TestNotFoundError>()("TestNotFoundError", {
+  resource: S.String,
+}).pipe(Category.withNotFoundError) {}
 
-class TestConflictError extends S.TaggedError<TestConflictError>()(
-  "TestConflictError",
-  {},
-).pipe(Category.withConflictError) {}
+class TestConflictError extends S.TaggedError<TestConflictError>()("TestConflictError", {}).pipe(
+  Category.withConflictError,
+) {}
 
-class TestThrottlingError extends S.TaggedError<TestThrottlingError>()(
-  "TestThrottlingError",
-  { retryAfterSeconds: S.optional(S.Number) },
-).pipe(Category.withThrottlingError) {}
+class TestThrottlingError extends S.TaggedError<TestThrottlingError>()("TestThrottlingError", {
+  retryAfterSeconds: S.optional(S.Number),
+}).pipe(Category.withThrottlingError) {}
 
-class TestNetworkError extends S.TaggedError<TestNetworkError>()(
-  "TestNetworkError",
-  {},
-).pipe(Category.withNetworkError) {}
+class TestNetworkError extends S.TaggedError<TestNetworkError>()("TestNetworkError", {}).pipe(
+  Category.withNetworkError,
+) {}
 
-class TestServerError extends S.TaggedError<TestServerError>()(
-  "TestServerError",
-  {},
-).pipe(Category.withServerError) {}
+class TestServerError extends S.TaggedError<TestServerError>()("TestServerError", {}).pipe(
+  Category.withServerError,
+) {}
 
 class TestMultiCategoryError extends S.TaggedError<TestMultiCategoryError>()(
   "TestMultiCategoryError",
   {},
 ).pipe(Category.withCategory(Category.ServerError, Category.ThrottlingError)) {}
 
-class UncategorizedError extends S.TaggedError<UncategorizedError>()(
-  "UncategorizedError",
-  {},
-) {}
+class UncategorizedError extends S.TaggedError<UncategorizedError>()("UncategorizedError", {}) {}
 
 describe("Category", () => {
   describe("hasCategory", () => {
@@ -122,7 +111,9 @@ describe("Category", () => {
     });
 
     it("isParseError", () => {
-      expect(Category.isParseError(new PlanetScaleParseError({ body: {}, cause: null }))).toBe(true);
+      expect(Category.isParseError(new PlanetScaleParseError({ body: {}, cause: null }))).toBe(
+        true,
+      );
       expect(Category.isParseError(new TestAuthError({ message: "test" }))).toBe(false);
     });
   });
@@ -157,7 +148,10 @@ describe("Category", () => {
     });
 
     it("unauthorized errors have AuthError category", () => {
-      const error = new GetOrganizationUnauthorized({ organization: "test", message: "unauthorized" });
+      const error = new GetOrganizationUnauthorized({
+        organization: "test",
+        message: "unauthorized",
+      });
       expect(Category.isAuthError(error)).toBe(true);
       expect(Category.isNotFoundError(error)).toBe(false);
     });
@@ -170,7 +164,11 @@ describe("Category", () => {
 
     it("not_found errors from different operations share the same category", () => {
       const orgError = new GetOrganizationNotfound({ organization: "test", message: "not found" });
-      const dbError = new DeleteDatabaseNotfound({ organization: "test", database: "db", message: "not found" });
+      const dbError = new DeleteDatabaseNotfound({
+        organization: "test",
+        database: "db",
+        message: "not found",
+      });
       expect(Category.isNotFoundError(orgError)).toBe(true);
       expect(Category.isNotFoundError(dbError)).toBe(true);
     });
@@ -218,9 +216,9 @@ describe("Category", () => {
   describe("catch* catchers", () => {
     it.effect("catchAuthError catches auth errors", () =>
       Effect.gen(function* () {
-        const result = yield* Effect.fail(
-          new TestAuthError({ message: "unauthorized" }),
-        ).pipe(Category.catchAuthError(() => Effect.succeed("caught")));
+        const result = yield* Effect.fail(new TestAuthError({ message: "unauthorized" })).pipe(
+          Category.catchAuthError(() => Effect.succeed("caught")),
+        );
         expect(result).toBe("caught");
       }),
     );
@@ -291,18 +289,16 @@ describe("Category", () => {
 
     it.effect("catchParseError catches parse errors", () =>
       Effect.gen(function* () {
-        const result = yield* Effect.fail(new PlanetScaleParseError({ body: {}, cause: null })).pipe(
-          Category.catchParseError(() => Effect.succeed("caught")),
-        );
+        const result = yield* Effect.fail(
+          new PlanetScaleParseError({ body: {}, cause: null }),
+        ).pipe(Category.catchParseError(() => Effect.succeed("caught")));
         expect(result).toBe("caught");
       }),
     );
 
     it.effect("error handler receives the error", () =>
       Effect.gen(function* () {
-        const result = yield* Effect.fail(
-          new TestAuthError({ message: "my message" }),
-        ).pipe(
+        const result = yield* Effect.fail(new TestAuthError({ message: "my message" })).pipe(
           Category.catchAuthError((err) => Effect.succeed(err.message)),
         );
         expect(result).toBe("my message");
@@ -313,12 +309,8 @@ describe("Category", () => {
   describe("catchErrors (multi-category catcher)", () => {
     it.effect("catches errors with single category", () =>
       Effect.gen(function* () {
-        const result = yield* Effect.fail(
-          new TestAuthError({ message: "test" }),
-        ).pipe(
-          Category.catchErrors(Category.AuthError, () =>
-            Effect.succeed("caught"),
-          ),
+        const result = yield* Effect.fail(new TestAuthError({ message: "test" })).pipe(
+          Category.catchErrors(Category.AuthError, () => Effect.succeed("caught")),
         );
         expect(result).toBe("caught");
       }),
@@ -327,10 +319,8 @@ describe("Category", () => {
     it.effect("catches errors matching any of multiple categories", () =>
       Effect.gen(function* () {
         const result = yield* Effect.fail(new TestMultiCategoryError()).pipe(
-          Category.catchErrors(
-            Category.ServerError,
-            Category.ThrottlingError,
-            () => Effect.succeed("caught"),
+          Category.catchErrors(Category.ServerError, Category.ThrottlingError, () =>
+            Effect.succeed("caught"),
           ),
         );
         expect(result).toBe("caught");
@@ -340,10 +330,8 @@ describe("Category", () => {
     it.effect("catches auth error when listing multiple categories", () =>
       Effect.gen(function* () {
         const result = yield* Effect.fail(new TestAuthError({ message: "test" })).pipe(
-          Category.catchErrors(
-            Category.NotFoundError,
-            Category.AuthError,
-            () => Effect.succeed("caught"),
+          Category.catchErrors(Category.NotFoundError, Category.AuthError, () =>
+            Effect.succeed("caught"),
           ),
         );
         expect(result).toBe("caught");
@@ -353,10 +341,8 @@ describe("Category", () => {
     it.effect("does not catch errors not in category list", () =>
       Effect.gen(function* () {
         const result = yield* Effect.fail(new TestAuthError({ message: "test" })).pipe(
-          Category.catchErrors(
-            Category.NotFoundError,
-            Category.ServerError,
-            () => Effect.succeed("caught"),
+          Category.catchErrors(Category.NotFoundError, Category.ServerError, () =>
+            Effect.succeed("caught"),
           ),
           Effect.catchAll(() => Effect.succeed("not caught")),
         );
@@ -366,12 +352,8 @@ describe("Category", () => {
 
     it.effect("catches errors using string literals", () =>
       Effect.gen(function* () {
-        const result = yield* Effect.fail(
-          new TestAuthError({ message: "test" }),
-        ).pipe(
-          Category.catchErrors("AuthError", () =>
-            Effect.succeed("caught"),
-          ),
+        const result = yield* Effect.fail(new TestAuthError({ message: "test" })).pipe(
+          Category.catchErrors("AuthError", () => Effect.succeed("caught")),
         );
         expect(result).toBe("caught");
       }),

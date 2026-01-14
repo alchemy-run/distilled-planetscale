@@ -8,10 +8,7 @@ import {
   DeleteOrganizationTeamInput,
   DeleteOrganizationTeamOutput,
 } from "../src/operations/deleteOrganizationTeam";
-import {
-  createOrganizationTeam,
-  CreateOrganizationTeamForbidden,
-} from "../src/operations/createOrganizationTeam";
+import { createOrganizationTeam } from "../src/operations/createOrganizationTeam";
 import { withMainLayer } from "./setup";
 
 withMainLayer("deleteOrganizationTeam", (it) => {
@@ -25,26 +22,28 @@ withMainLayer("deleteOrganizationTeam", (it) => {
     expect(DeleteOrganizationTeamOutput).toBeDefined();
   });
 
-  it.effect("should return DeleteOrganizationTeamNotfound or DeleteOrganizationTeamForbidden for non-existent team", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
+  it.effect(
+    "should return DeleteOrganizationTeamNotfound or DeleteOrganizationTeamForbidden for non-existent team",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
 
-      const result = yield* deleteOrganizationTeam({
-        organization,
-        team: "this-team-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+        const result = yield* deleteOrganizationTeam({
+          organization,
+          team: "this-team-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      // The API may return forbidden or not_found for non-existent teams
-      const isExpectedError =
-        result instanceof DeleteOrganizationTeamNotfound ||
-        result instanceof DeleteOrganizationTeamForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        // The API may return forbidden or not_found for non-existent teams
+        const isExpectedError =
+          result instanceof DeleteOrganizationTeamNotfound ||
+          result instanceof DeleteOrganizationTeamForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   it.effect("should return DeleteOrganizationTeamNotfound for non-existent organization", () =>
@@ -79,9 +78,7 @@ withMainLayer("deleteOrganizationTeam", (it) => {
         organization,
         name: testTeamName,
         description: "Test team to be deleted",
-      }).pipe(
-        Effect.catchTag("CreateOrganizationTeamForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreateOrganizationTeamForbidden", () => Effect.succeed(null)));
 
       // Skip test gracefully if creation is forbidden
       if (created === null) {

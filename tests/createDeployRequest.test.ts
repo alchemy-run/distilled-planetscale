@@ -48,7 +48,9 @@ withMainLayer("createDeployRequest", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof CreateDeployRequestNotfound || result instanceof CreateDeployRequestForbidden;
+      const isExpectedError =
+        result instanceof CreateDeployRequestNotfound ||
+        result instanceof CreateDeployRequestForbidden;
       expect(isExpectedError).toBe(true);
       if (result instanceof CreateDeployRequestNotfound) {
         expect(result._tag).toBe("CreateDeployRequestNotfound");
@@ -72,7 +74,9 @@ withMainLayer("createDeployRequest", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof CreateDeployRequestNotfound || result instanceof CreateDeployRequestForbidden;
+      const isExpectedError =
+        result instanceof CreateDeployRequestNotfound ||
+        result instanceof CreateDeployRequestForbidden;
       expect(isExpectedError).toBe(true);
       if (result instanceof CreateDeployRequestNotfound) {
         expect(result._tag).toBe("CreateDeployRequestNotfound");
@@ -98,7 +102,9 @@ withMainLayer("createDeployRequest", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof CreateDeployRequestNotfound || result instanceof CreateDeployRequestForbidden;
+      const isExpectedError =
+        result instanceof CreateDeployRequestNotfound ||
+        result instanceof CreateDeployRequestForbidden;
       expect(isExpectedError).toBe(true);
       if (result instanceof CreateDeployRequestNotfound) {
         expect(result._tag).toBe("CreateDeployRequestNotfound");
@@ -123,9 +129,7 @@ withMainLayer("createDeployRequest", (it) => {
         branch,
         into_branch: "main",
         notes: "Test deploy request",
-      }).pipe(
-        Effect.catchTag("CreateDeployRequestForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreateDeployRequestForbidden", () => Effect.succeed(null)));
 
       if (result === null) {
         return; // Skip test gracefully if forbidden

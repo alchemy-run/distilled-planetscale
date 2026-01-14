@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleParseError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import {
   listPasswords,
@@ -43,47 +42,54 @@ withMainLayer("listPasswords", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ListPasswordsNotfound || result instanceof ListPasswordsForbidden;
+      const isExpectedError =
+        result instanceof ListPasswordsNotfound || result instanceof ListPasswordsForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
 
-  it.effect("should return ListPasswordsNotfound or ListPasswordsForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* listPasswords({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListPasswordsNotfound or ListPasswordsForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* listPasswords({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListPasswordsNotfound || result instanceof ListPasswordsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListPasswordsNotfound || result instanceof ListPasswordsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return ListPasswordsNotfound or ListPasswordsForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* listPasswords({
-        organization,
-        database: TEST_DATABASE,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListPasswordsNotfound or ListPasswordsForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* listPasswords({
+          organization,
+          database: TEST_DATABASE,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListPasswordsNotfound || result instanceof ListPasswordsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListPasswordsNotfound || result instanceof ListPasswordsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   it.effect("should list passwords successfully", () =>

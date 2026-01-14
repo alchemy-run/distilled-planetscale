@@ -1,4 +1,4 @@
-import { Cause, Effect, Exit, Layer } from "effect";
+import { Cause, Effect, Exit } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
 import {

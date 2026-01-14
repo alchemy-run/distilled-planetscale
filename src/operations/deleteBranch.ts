@@ -8,7 +8,8 @@ export const DeleteBranchInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type DeleteBranchInput = typeof DeleteBranchInput.Type;

@@ -7,7 +7,8 @@ export const DeleteOrganizationTeamInput = Schema.Struct({
   team: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; team: string }) => `/organizations/${input.organization}/teams/${input.team}`,
+  [ApiPath]: (input: { organization: string; team: string }) =>
+    `/organizations/${input.organization}/teams/${input.team}`,
   [ApiPathParams]: ["organization", "team"] as const,
 });
 export type DeleteOrganizationTeamInput = typeof DeleteOrganizationTeamInput.Type;
@@ -67,5 +68,10 @@ export class DeleteOrganizationTeamUnprocessableentity extends Schema.TaggedErro
 export const deleteOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteOrganizationTeamInput,
   outputSchema: DeleteOrganizationTeamOutput,
-  errors: [DeleteOrganizationTeamUnauthorized, DeleteOrganizationTeamForbidden, DeleteOrganizationTeamNotfound, DeleteOrganizationTeamUnprocessableentity],
+  errors: [
+    DeleteOrganizationTeamUnauthorized,
+    DeleteOrganizationTeamForbidden,
+    DeleteOrganizationTeamNotfound,
+    DeleteOrganizationTeamUnprocessableentity,
+  ],
 }));

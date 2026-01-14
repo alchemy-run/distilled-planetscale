@@ -69,28 +69,30 @@ withMainLayer("listDeployRequestReviews", (it) => {
     }),
   );
 
-  it.effect("should return ListDeployRequestReviewsNotfound for non-existent deploy request number", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const database = TEST_DATABASE;
-      const result = yield* listDeployRequestReviews({
-        organization,
-        database,
-        number: 999999999,
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListDeployRequestReviewsNotfound for non-existent deploy request number",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const database = TEST_DATABASE;
+        const result = yield* listDeployRequestReviews({
+          organization,
+          database,
+          number: 999999999,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      expect(result).toBeInstanceOf(ListDeployRequestReviewsNotfound);
-      if (result instanceof ListDeployRequestReviewsNotfound) {
-        expect(result._tag).toBe("ListDeployRequestReviewsNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe(database);
-        expect(result.number).toBe(999999999);
-      }
-    }),
+        expect(result).toBeInstanceOf(ListDeployRequestReviewsNotfound);
+        if (result instanceof ListDeployRequestReviewsNotfound) {
+          expect(result._tag).toBe("ListDeployRequestReviewsNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe(database);
+          expect(result.number).toBe(999999999);
+        }
+      }),
   );
 });

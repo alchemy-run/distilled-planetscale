@@ -10,7 +10,13 @@ export const UpdateKeyspaceVschemaInput = Schema.Struct({
   vschema: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
+  [ApiPath]: (input: {
+    organization: string;
+    database: string;
+    branch: string;
+    keyspace: string;
+  }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
   [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type UpdateKeyspaceVschemaInput = typeof UpdateKeyspaceVschemaInput.Type;
@@ -83,5 +89,10 @@ export class UpdateKeyspaceVschemaUnprocessableentity extends Schema.TaggedError
 export const updateKeyspaceVschema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateKeyspaceVschemaInput,
   outputSchema: UpdateKeyspaceVschemaOutput,
-  errors: [UpdateKeyspaceVschemaUnauthorized, UpdateKeyspaceVschemaForbidden, UpdateKeyspaceVschemaNotfound, UpdateKeyspaceVschemaUnprocessableentity],
+  errors: [
+    UpdateKeyspaceVschemaUnauthorized,
+    UpdateKeyspaceVschemaForbidden,
+    UpdateKeyspaceVschemaNotfound,
+    UpdateKeyspaceVschemaUnprocessableentity,
+  ],
 }));

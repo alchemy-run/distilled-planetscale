@@ -8,7 +8,7 @@ import {
   DeleteBackupInput,
   DeleteBackupOutput,
 } from "../src/operations/deleteBackup";
-import { createBackup, CreateBackupForbidden } from "../src/operations/createBackup";
+import { createBackup } from "../src/operations/createBackup";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("deleteBackup", (it) => {
@@ -44,72 +44,78 @@ withMainLayer("deleteBackup", (it) => {
     }),
   );
 
-  it.effect("should return DeleteBackupNotfound or DeleteBackupForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* deleteBackup({
-        id: "some-backup-id",
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeleteBackupNotfound or DeleteBackupForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* deleteBackup({
+          id: "some-backup-id",
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError =
-        result instanceof DeleteBackupNotfound || result instanceof DeleteBackupForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof DeleteBackupNotfound || result instanceof DeleteBackupForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return DeleteBackupNotfound or DeleteBackupForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const result = yield* deleteBackup({
-        id: "some-backup-id",
-        organization,
-        database,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeleteBackupNotfound or DeleteBackupForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const result = yield* deleteBackup({
+          id: "some-backup-id",
+          organization,
+          database,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError =
-        result instanceof DeleteBackupNotfound || result instanceof DeleteBackupForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof DeleteBackupNotfound || result instanceof DeleteBackupForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return DeleteBackupNotfound or DeleteBackupForbidden for non-existent backup id", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const branch = "main";
-      const result = yield* deleteBackup({
-        id: "this-backup-id-definitely-does-not-exist-12345",
-        organization,
-        database,
-        branch,
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeleteBackupNotfound or DeleteBackupForbidden for non-existent backup id",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const branch = "main";
+        const result = yield* deleteBackup({
+          id: "this-backup-id-definitely-does-not-exist-12345",
+          organization,
+          database,
+          branch,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError =
-        result instanceof DeleteBackupNotfound || result instanceof DeleteBackupForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof DeleteBackupNotfound || result instanceof DeleteBackupForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   // Note: This test creates an actual backup and then deletes it.

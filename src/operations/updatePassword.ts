@@ -11,7 +11,8 @@ export const UpdatePasswordInput = Schema.Struct({
   cidrs: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type UpdatePasswordInput = typeof UpdatePasswordInput.Type;

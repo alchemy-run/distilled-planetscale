@@ -10,18 +10,21 @@ export const GetBranchSchemaInput = Schema.Struct({
   namespace: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/schema`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/schema`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type GetBranchSchemaInput = typeof GetBranchSchemaInput.Type;
 
 // Output Schema
 export const GetBranchSchemaOutput = Schema.Struct({
-  data: Schema.Array(Schema.Struct({
-    name: Schema.String,
-    html: Schema.String,
-    raw: Schema.String,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      name: Schema.String,
+      html: Schema.String,
+      raw: Schema.String,
+    }),
+  ),
 });
 export type GetBranchSchemaOutput = typeof GetBranchSchemaOutput.Type;
 

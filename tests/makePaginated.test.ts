@@ -67,10 +67,9 @@ withMainLayer("API.makePaginated integration", (it) => {
     Effect.gen(function* () {
       const { organization } = yield* Credentials;
 
-      const pages = yield* testListDatabases.pages({ organization }).pipe(
-        Stream.take(2),
-        Stream.runCollect,
-      );
+      const pages = yield* testListDatabases
+        .pages({ organization })
+        .pipe(Stream.take(2), Stream.runCollect);
 
       expect(pages.length).toBeGreaterThan(0);
 
@@ -85,10 +84,9 @@ withMainLayer("API.makePaginated integration", (it) => {
     Effect.gen(function* () {
       const { organization } = yield* Credentials;
 
-      const items = yield* testListDatabases.items({ organization }).pipe(
-        Stream.take(5),
-        Stream.runCollect,
-      );
+      const items = yield* testListDatabases
+        .items({ organization })
+        .pipe(Stream.take(5), Stream.runCollect);
 
       for (const item of items) {
         expect(item).toHaveProperty("id");

@@ -66,28 +66,30 @@ withMainLayer("getDeployRequestThrottler", (it) => {
     }),
   );
 
-  it.effect("should return GetDeployRequestThrottlerNotfound for non-existent deploy request number", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const database = TEST_DATABASE;
-      const result = yield* getDeployRequestThrottler({
-        organization,
-        database,
-        number: 999999999,
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return GetDeployRequestThrottlerNotfound for non-existent deploy request number",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const database = TEST_DATABASE;
+        const result = yield* getDeployRequestThrottler({
+          organization,
+          database,
+          number: 999999999,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      expect(result).toBeInstanceOf(GetDeployRequestThrottlerNotfound);
-      if (result instanceof GetDeployRequestThrottlerNotfound) {
-        expect(result._tag).toBe("GetDeployRequestThrottlerNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe(database);
-        expect(result.number).toBe(999999999);
-      }
-    }),
+        expect(result).toBeInstanceOf(GetDeployRequestThrottlerNotfound);
+        if (result instanceof GetDeployRequestThrottlerNotfound) {
+          expect(result._tag).toBe("GetDeployRequestThrottlerNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe(database);
+          expect(result.number).toBe(999999999);
+        }
+      }),
   );
 });

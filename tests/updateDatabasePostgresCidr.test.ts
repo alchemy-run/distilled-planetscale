@@ -3,16 +3,10 @@ import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
 import {
   updateDatabasePostgresCidr,
-  UpdateDatabasePostgresCidrNotfound,
-  UpdateDatabasePostgresCidrForbidden,
   UpdateDatabasePostgresCidrInput,
   UpdateDatabasePostgresCidrOutput,
 } from "../src/operations/updateDatabasePostgresCidr";
-import {
-  createDatabasePostgresCidr,
-  CreateDatabasePostgresCidrForbidden,
-  CreateDatabasePostgresCidrNotfound,
-} from "../src/operations/createDatabasePostgresCidr";
+import { createDatabasePostgresCidr } from "../src/operations/createDatabasePostgresCidr";
 import { deleteDatabasePostgresCidr } from "../src/operations/deleteDatabasePostgresCidr";
 import { withMainLayer } from "./setup";
 

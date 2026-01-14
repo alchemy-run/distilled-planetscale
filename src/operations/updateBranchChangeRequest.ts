@@ -11,7 +11,8 @@ export const UpdateBranchChangeRequestInput = Schema.Struct({
   parameters: Schema.optional(Schema.Unknown),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type UpdateBranchChangeRequestInput = typeof UpdateBranchChangeRequestInput.Type;
@@ -105,5 +106,9 @@ export class UpdateBranchChangeRequestNotfound extends Schema.TaggedError<Update
 export const updateBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBranchChangeRequestInput,
   outputSchema: UpdateBranchChangeRequestOutput,
-  errors: [UpdateBranchChangeRequestUnauthorized, UpdateBranchChangeRequestForbidden, UpdateBranchChangeRequestNotfound],
+  errors: [
+    UpdateBranchChangeRequestUnauthorized,
+    UpdateBranchChangeRequestForbidden,
+    UpdateBranchChangeRequestNotfound,
+  ],
 }));

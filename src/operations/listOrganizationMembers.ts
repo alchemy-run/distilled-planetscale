@@ -21,33 +21,37 @@ export const ListOrganizationMembersOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    user: Schema.Struct({
+  data: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
-      display_name: Schema.String,
-      name: Schema.optional(Schema.NullOr(Schema.String)),
-      email: Schema.String,
-      avatar_url: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      two_factor_auth_configured: Schema.Boolean,
-      default_organization: Schema.optional(Schema.Struct({
+      user: Schema.Struct({
         id: Schema.String,
-        name: Schema.String,
+        display_name: Schema.String,
+        name: Schema.optional(Schema.NullOr(Schema.String)),
+        email: Schema.String,
+        avatar_url: Schema.String,
         created_at: Schema.String,
         updated_at: Schema.String,
-        deleted_at: Schema.String,
-      })),
-      sso: Schema.optional(Schema.Boolean),
-      managed: Schema.optional(Schema.Boolean),
-      directory_managed: Schema.optional(Schema.Boolean),
-      email_verified: Schema.optional(Schema.Boolean),
+        two_factor_auth_configured: Schema.Boolean,
+        default_organization: Schema.optional(
+          Schema.Struct({
+            id: Schema.String,
+            name: Schema.String,
+            created_at: Schema.String,
+            updated_at: Schema.String,
+            deleted_at: Schema.String,
+          }),
+        ),
+        sso: Schema.optional(Schema.Boolean),
+        managed: Schema.optional(Schema.Boolean),
+        directory_managed: Schema.optional(Schema.Boolean),
+        email_verified: Schema.optional(Schema.Boolean),
+      }),
+      role: Schema.Literal("member", "admin"),
+      created_at: Schema.String,
+      updated_at: Schema.String,
     }),
-    role: Schema.Literal("member", "admin"),
-    created_at: Schema.String,
-    updated_at: Schema.String,
-  })),
+  ),
 });
 export type ListOrganizationMembersOutput = typeof ListOrganizationMembersOutput.Type;
 
@@ -91,5 +95,9 @@ export class ListOrganizationMembersNotfound extends Schema.TaggedError<ListOrga
 export const listOrganizationMembers = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationMembersInput,
   outputSchema: ListOrganizationMembersOutput,
-  errors: [ListOrganizationMembersUnauthorized, ListOrganizationMembersForbidden, ListOrganizationMembersNotfound],
+  errors: [
+    ListOrganizationMembersUnauthorized,
+    ListOrganizationMembersForbidden,
+    ListOrganizationMembersNotfound,
+  ],
 }));

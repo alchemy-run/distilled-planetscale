@@ -8,7 +8,8 @@ export const CreateQueryPatternsReportInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateQueryPatternsReportInput = typeof CreateQueryPatternsReportInput.Type;
@@ -74,5 +75,9 @@ export class CreateQueryPatternsReportNotfound extends Schema.TaggedError<Create
 export const createQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateQueryPatternsReportInput,
   outputSchema: CreateQueryPatternsReportOutput,
-  errors: [CreateQueryPatternsReportUnauthorized, CreateQueryPatternsReportForbidden, CreateQueryPatternsReportNotfound],
+  errors: [
+    CreateQueryPatternsReportUnauthorized,
+    CreateQueryPatternsReportForbidden,
+    CreateQueryPatternsReportNotfound,
+  ],
 }));

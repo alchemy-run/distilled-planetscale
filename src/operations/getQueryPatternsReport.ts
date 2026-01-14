@@ -9,7 +9,8 @@ export const GetQueryPatternsReportInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}/download`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}/download`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type GetQueryPatternsReportInput = typeof GetQueryPatternsReportInput.Type;
@@ -67,5 +68,9 @@ export class GetQueryPatternsReportNotfound extends Schema.TaggedError<GetQueryP
 export const getQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetQueryPatternsReportInput,
   outputSchema: GetQueryPatternsReportOutput,
-  errors: [GetQueryPatternsReportUnauthorized, GetQueryPatternsReportForbidden, GetQueryPatternsReportNotfound],
+  errors: [
+    GetQueryPatternsReportUnauthorized,
+    GetQueryPatternsReportForbidden,
+    GetQueryPatternsReportNotfound,
+  ],
 }));

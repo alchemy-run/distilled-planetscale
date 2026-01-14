@@ -8,7 +8,7 @@ import {
   GetBouncerInput,
   GetBouncerOutput,
 } from "../src/operations/getBouncer";
-import { createBouncer, CreateBouncerForbidden } from "../src/operations/createBouncer";
+import { createBouncer } from "../src/operations/createBouncer";
 import { deleteBouncer } from "../src/operations/deleteBouncer";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
@@ -34,43 +34,49 @@ withMainLayer("getBouncer", (it) => {
     expect(GetBouncerOutput.fields.parameters).toBeDefined();
   });
 
-  it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* getBouncer({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "test-db",
-        branch: "main",
-        bouncer: "some-bouncer-id",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return GetBouncerNotfound or GetBouncerForbidden for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* getBouncer({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "test-db",
+          branch: "main",
+          bouncer: "some-bouncer-id",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* getBouncer({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-        bouncer: "some-bouncer-id",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return GetBouncerNotfound or GetBouncerForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* getBouncer({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+          bouncer: "some-bouncer-id",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent branch", () =>
@@ -90,32 +96,36 @@ withMainLayer("getBouncer", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
+      const isExpectedError =
+        result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
 
-  it.effect("should return GetBouncerNotfound or GetBouncerForbidden for non-existent bouncer", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const branch = "main";
-      const result = yield* getBouncer({
-        organization,
-        database,
-        branch,
-        bouncer: "this-bouncer-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return GetBouncerNotfound or GetBouncerForbidden for non-existent bouncer",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const branch = "main";
+        const result = yield* getBouncer({
+          organization,
+          database,
+          branch,
+          bouncer: "this-bouncer-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof GetBouncerNotfound || result instanceof GetBouncerForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   // Note: This test creates an actual bouncer, fetches it, and cleans it up.

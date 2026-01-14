@@ -9,7 +9,8 @@ export const CancelBouncerResizeRequestInput = Schema.Struct({
   bouncer: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
   [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
 });
 export type CancelBouncerResizeRequestInput = typeof CancelBouncerResizeRequestInput.Type;
@@ -67,5 +68,9 @@ export class CancelBouncerResizeRequestNotfound extends Schema.TaggedError<Cance
 export const cancelBouncerResizeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CancelBouncerResizeRequestInput,
   outputSchema: CancelBouncerResizeRequestOutput,
-  errors: [CancelBouncerResizeRequestUnauthorized, CancelBouncerResizeRequestForbidden, CancelBouncerResizeRequestNotfound],
+  errors: [
+    CancelBouncerResizeRequestUnauthorized,
+    CancelBouncerResizeRequestForbidden,
+    CancelBouncerResizeRequestNotfound,
+  ],
 }));

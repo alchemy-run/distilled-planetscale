@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { CredentialsFromEnv } from "../src/credentials";
 import {
   getServiceToken,
   GetServiceTokenNotfound,

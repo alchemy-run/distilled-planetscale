@@ -1,9 +1,11 @@
 ## Operations
 
 ### Audit Logs
+
 - [x] listAuditLogs
 
 ### Backups
+
 - [x] createBackup
 - [x] deleteBackup
 - [x] getBackup
@@ -11,6 +13,7 @@
 - [x] updateBackup
 
 ### Bouncers
+
 - [x] cancelBouncerResizeRequest
 - [x] createBouncer
 - [x] deleteBouncer
@@ -21,6 +24,7 @@
 - [x] updateBouncerResizeRequest
 
 ### Branches
+
 - [x] createBranch
 - [x] deleteBranch
 - [x] demoteBranch
@@ -32,15 +36,18 @@
 - [x] updateBranchClusterConfig
 
 ### Branch Change Requests
+
 - [x] cancelBranchChangeRequest
 - [x] getBranchChangeRequest
 - [x] listBranchChangeRequests
 - [x] updateBranchChangeRequest
 
 ### Cluster
+
 - [x] listClusterSizeSkus
 
 ### Databases
+
 - [x] getDatabase
 - [x] listDatabases
 - [x] createDatabase
@@ -51,6 +58,7 @@
 - [x] updateDatabaseThrottler
 
 ### Database Postgres CIDRs
+
 - [x] createDatabasePostgresCidr
 - [x] deleteDatabasePostgresCidr
 - [x] getDatabasePostgresCidr
@@ -58,6 +66,7 @@
 - [x] updateDatabasePostgresCidr
 
 ### Deploy Requests
+
 - [x] cancelDeployRequest
 - [x] closeDeployRequest
 - [x] completeErroredDeploy
@@ -79,14 +88,17 @@
 - [x] updateDeployRequestThrottler
 
 ### Extensions
+
 - [x] listExtensions
 
 ### Invoices
+
 - [x] getInvoice
 - [x] getInvoiceLineItems
 - [x] listInvoices
 
 ### Keyspaces
+
 - [x] createKeyspace
 - [x] deleteKeyspace
 - [x] getKeyspace
@@ -97,6 +109,7 @@
 - [x] updateKeyspaceVschema
 
 ### OAuth
+
 - [x] createOauthToken
 - [x] deleteOauthToken
 - [x] getOauthApplication
@@ -105,17 +118,20 @@
 - [x] listOauthTokens
 
 ### Organizations
+
 - [x] getOrganization
 - [x] listOrganizations
 - [x] updateOrganization
 
 ### Organization Members
+
 - [x] getOrganizationMembership
 - [x] listOrganizationMembers
 - [x] removeOrganizationMember
 - [x] updateOrganizationMembership
 
 ### Organization Teams
+
 - [x] createOrganizationTeam
 - [x] deleteOrganizationTeam
 - [x] getOrganizationTeam
@@ -123,9 +139,11 @@
 - [x] updateOrganizationTeam
 
 ### Parameters
+
 - [x] listParameters
 
 ### Passwords
+
 - [x] createPassword
 - [x] deletePassword
 - [x] getPassword
@@ -134,6 +152,7 @@
 - [x] updatePassword
 
 ### Query Patterns Reports
+
 - [x] createQueryPatternsReport
 - [x] deleteQueryPatternsReport
 - [x] getQueryPatternsReport
@@ -141,11 +160,13 @@
 - [x] listGeneratedQueryPatternsReports
 
 ### Regions
+
 - [x] listPublicRegions
 - [x] listReadOnlyRegions
 - [x] listRegionsForOrganization
 
 ### Roles
+
 - [x] createRole
 - [x] deleteRole
 - [x] getDefaultRole
@@ -158,19 +179,23 @@
 - [x] updateRole
 
 ### Safe Migrations
+
 - [x] disableSafeMigrations
 - [x] enableSafeMigrations
 
 ### Service Tokens
+
 - [x] createServiceToken
 - [x] deleteServiceToken
 - [x] getServiceToken
 - [x] listServiceTokens
 
 ### Users
+
 - [x] getCurrentUser
 
 ### Webhooks
+
 - [x] createWebhook
 - [x] deleteWebhook
 - [x] getWebhook
@@ -179,6 +204,7 @@
 - [x] updateWebhook
 
 ### Workflows
+
 - [x] createWorkflow
 - [x] getWorkflow
 - [x] listWorkflows

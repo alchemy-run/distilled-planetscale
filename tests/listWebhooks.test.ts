@@ -114,7 +114,8 @@ withMainLayer("listWebhooks", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ListWebhooksNotfound || result instanceof ListWebhooksForbidden;
+      const isExpectedError =
+        result instanceof ListWebhooksNotfound || result instanceof ListWebhooksForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -132,7 +133,8 @@ withMainLayer("listWebhooks", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ListWebhooksNotfound || result instanceof ListWebhooksForbidden;
+      const isExpectedError =
+        result instanceof ListWebhooksNotfound || result instanceof ListWebhooksForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );

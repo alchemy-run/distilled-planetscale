@@ -10,7 +10,8 @@ export const ReviewDeployRequestInput = Schema.Struct({
   body: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type ReviewDeployRequestInput = typeof ReviewDeployRequestInput.Type;
@@ -80,5 +81,9 @@ export class ReviewDeployRequestNotfound extends Schema.TaggedError<ReviewDeploy
 export const reviewDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ReviewDeployRequestInput,
   outputSchema: ReviewDeployRequestOutput,
-  errors: [ReviewDeployRequestUnauthorized, ReviewDeployRequestForbidden, ReviewDeployRequestNotfound],
+  errors: [
+    ReviewDeployRequestUnauthorized,
+    ReviewDeployRequestForbidden,
+    ReviewDeployRequestNotfound,
+  ],
 }));

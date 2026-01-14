@@ -9,7 +9,8 @@ export const GetBranchChangeRequestInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type GetBranchChangeRequestInput = typeof GetBranchChangeRequestInput.Type;
@@ -104,5 +105,9 @@ export class GetBranchChangeRequestNotfound extends Schema.TaggedError<GetBranch
 export const getBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBranchChangeRequestInput,
   outputSchema: GetBranchChangeRequestOutput,
-  errors: [GetBranchChangeRequestUnauthorized, GetBranchChangeRequestForbidden, GetBranchChangeRequestNotfound],
+  errors: [
+    GetBranchChangeRequestUnauthorized,
+    GetBranchChangeRequestForbidden,
+    GetBranchChangeRequestNotfound,
+  ],
 }));

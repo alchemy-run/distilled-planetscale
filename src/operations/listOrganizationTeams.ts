@@ -19,48 +19,54 @@ export const ListOrganizationTeamsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    display_name: Schema.String,
-    creator: Schema.Struct({
+  data: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
       display_name: Schema.String,
-      avatar_url: Schema.String,
-    }),
-    members: Schema.Array(Schema.Struct({
-      id: Schema.String,
-      display_name: Schema.String,
+      creator: Schema.Struct({
+        id: Schema.String,
+        display_name: Schema.String,
+        avatar_url: Schema.String,
+      }),
+      members: Schema.Array(
+        Schema.Struct({
+          id: Schema.String,
+          display_name: Schema.String,
+          name: Schema.String,
+          email: Schema.String,
+          avatar_url: Schema.String,
+          created_at: Schema.String,
+          updated_at: Schema.String,
+          two_factor_auth_configured: Schema.Boolean,
+          default_organization: Schema.Struct({
+            id: Schema.String,
+            name: Schema.String,
+            created_at: Schema.String,
+            updated_at: Schema.String,
+            deleted_at: Schema.String,
+          }),
+          sso: Schema.Boolean,
+          managed: Schema.Boolean,
+          directory_managed: Schema.Boolean,
+          email_verified: Schema.Boolean,
+        }),
+      ),
+      databases: Schema.Array(
+        Schema.Struct({
+          id: Schema.String,
+          name: Schema.String,
+          url: Schema.String,
+          branches_url: Schema.String,
+        }),
+      ),
       name: Schema.String,
-      email: Schema.String,
-      avatar_url: Schema.String,
+      slug: Schema.String,
       created_at: Schema.String,
       updated_at: Schema.String,
-      two_factor_auth_configured: Schema.Boolean,
-      default_organization: Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        deleted_at: Schema.String,
-      }),
-      sso: Schema.Boolean,
+      description: Schema.String,
       managed: Schema.Boolean,
-      directory_managed: Schema.Boolean,
-      email_verified: Schema.Boolean,
-    })),
-    databases: Schema.Array(Schema.Struct({
-      id: Schema.String,
-      name: Schema.String,
-      url: Schema.String,
-      branches_url: Schema.String,
-    })),
-    name: Schema.String,
-    slug: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    description: Schema.String,
-    managed: Schema.Boolean,
-  })),
+    }),
+  ),
 });
 export type ListOrganizationTeamsOutput = typeof ListOrganizationTeamsOutput.Type;
 
@@ -111,5 +117,10 @@ export class ListOrganizationTeamsUnprocessableentity extends Schema.TaggedError
 export const listOrganizationTeams = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationTeamsInput,
   outputSchema: ListOrganizationTeamsOutput,
-  errors: [ListOrganizationTeamsUnauthorized, ListOrganizationTeamsForbidden, ListOrganizationTeamsNotfound, ListOrganizationTeamsUnprocessableentity],
+  errors: [
+    ListOrganizationTeamsUnauthorized,
+    ListOrganizationTeamsForbidden,
+    ListOrganizationTeamsNotfound,
+    ListOrganizationTeamsUnprocessableentity,
+  ],
 }));

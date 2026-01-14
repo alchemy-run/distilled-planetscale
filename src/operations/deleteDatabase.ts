@@ -7,7 +7,8 @@ export const DeleteDatabaseInput = Schema.Struct({
   database: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}`,
+  [ApiPath]: (input: { organization: string; database: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type DeleteDatabaseInput = typeof DeleteDatabaseInput.Type;

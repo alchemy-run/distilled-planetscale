@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleParseError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import {
   listBackups,
@@ -77,48 +76,55 @@ withMainLayer("listBackups", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ListBackupsNotfound || result instanceof ListBackupsForbidden;
+      const isExpectedError =
+        result instanceof ListBackupsNotfound || result instanceof ListBackupsForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
 
-  it.effect("should return ListBackupsNotfound or ListBackupsForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* listBackups({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListBackupsNotfound or ListBackupsForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* listBackups({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListBackupsNotfound || result instanceof ListBackupsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListBackupsNotfound || result instanceof ListBackupsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return ListBackupsNotfound or ListBackupsForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const result = yield* listBackups({
-        organization,
-        database,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListBackupsNotfound or ListBackupsForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const result = yield* listBackups({
+          organization,
+          database,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListBackupsNotfound || result instanceof ListBackupsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListBackupsNotfound || result instanceof ListBackupsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 });

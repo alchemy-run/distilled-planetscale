@@ -9,7 +9,8 @@ export const DeleteBackupInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { id: string; organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups/${input.id}`,
+  [ApiPath]: (input: { id: string; organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups/${input.id}`,
   [ApiPathParams]: ["id", "organization", "database", "branch"] as const,
 });
 export type DeleteBackupInput = typeof DeleteBackupInput.Type;

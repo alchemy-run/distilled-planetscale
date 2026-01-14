@@ -3,7 +3,6 @@ import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
 import {
   updateOrganization,
-  UpdateOrganizationForbidden,
   UpdateOrganizationInput,
   UpdateOrganizationNotfound,
   UpdateOrganizationOutput,

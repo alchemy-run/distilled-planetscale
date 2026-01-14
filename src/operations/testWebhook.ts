@@ -8,7 +8,8 @@ export const TestWebhookInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}/test`,
+  [ApiPath]: (input: { organization: string; database: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}/test`,
   [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type TestWebhookInput = typeof TestWebhookInput.Type;

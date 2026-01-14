@@ -9,7 +9,8 @@ export const RenewPasswordInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}/renew`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}/renew`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type RenewPasswordInput = typeof RenewPasswordInput.Type;

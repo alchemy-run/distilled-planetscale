@@ -34,9 +34,7 @@ withMainLayer("listParameters", (it) => {
         branch,
       }).pipe(
         // Handle case where database/branch doesn't exist
-        Effect.catchTag("ListParametersNotfound", () =>
-          Effect.succeed([]),
-        ),
+        Effect.catchTag("ListParametersNotfound", () => Effect.succeed([])),
       );
 
       expect(Array.isArray(result)).toBe(true);

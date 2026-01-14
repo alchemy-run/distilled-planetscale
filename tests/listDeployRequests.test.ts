@@ -39,7 +39,14 @@ withMainLayer("listDeployRequests", (it) => {
       }).pipe(
         // Handle case where database doesn't exist or has no deploy requests
         Effect.catchTag("ListDeployRequestsNotfound", () =>
-          Effect.succeed({ data: [], current_page: 1, next_page: 0, prev_page: 0, next_page_url: "", prev_page_url: "" }),
+          Effect.succeed({
+            data: [],
+            current_page: 1,
+            next_page: 0,
+            prev_page: 0,
+            next_page_url: "",
+            prev_page_url: "",
+          }),
         ),
       );
 
@@ -60,7 +67,14 @@ withMainLayer("listDeployRequests", (it) => {
         per_page: 5,
       }).pipe(
         Effect.catchTag("ListDeployRequestsNotfound", () =>
-          Effect.succeed({ data: [], current_page: 1, next_page: 0, prev_page: 0, next_page_url: "", prev_page_url: "" }),
+          Effect.succeed({
+            data: [],
+            current_page: 1,
+            next_page: 0,
+            prev_page: 0,
+            next_page_url: "",
+            prev_page_url: "",
+          }),
         ),
       );
 

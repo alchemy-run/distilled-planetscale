@@ -8,7 +8,8 @@ export const ListOauthApplicationsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/oauth-applications`,
+  [ApiPath]: (input: { organization: string }) =>
+    `/organizations/${input.organization}/oauth-applications`,
   [ApiPathParams]: ["organization"] as const,
 });
 export type ListOauthApplicationsInput = typeof ListOauthApplicationsInput.Type;
@@ -20,18 +21,20 @@ export const ListOauthApplicationsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    redirect_uri: Schema.String,
-    domain: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    scopes: Schema.Array(Schema.String),
-    avatar: Schema.String,
-    client_id: Schema.String,
-    tokens: Schema.Number,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      redirect_uri: Schema.String,
+      domain: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      scopes: Schema.Array(Schema.String),
+      avatar: Schema.String,
+      client_id: Schema.String,
+      tokens: Schema.Number,
+    }),
+  ),
 });
 export type ListOauthApplicationsOutput = typeof ListOauthApplicationsOutput.Type;
 
@@ -74,5 +77,9 @@ export class ListOauthApplicationsNotfound extends Schema.TaggedError<ListOauthA
 export const listOauthApplications = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOauthApplicationsInput,
   outputSchema: ListOauthApplicationsOutput,
-  errors: [ListOauthApplicationsUnauthorized, ListOauthApplicationsForbidden, ListOauthApplicationsNotfound],
+  errors: [
+    ListOauthApplicationsUnauthorized,
+    ListOauthApplicationsForbidden,
+    ListOauthApplicationsNotfound,
+  ],
 }));

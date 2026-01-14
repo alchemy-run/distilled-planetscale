@@ -9,7 +9,8 @@ export const ListDatabaseRegionsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/regions`,
+  [ApiPath]: (input: { organization: string; database: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/regions`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type ListDatabaseRegionsInput = typeof ListDatabaseRegionsInput.Type;
@@ -21,16 +22,18 @@ export const ListDatabaseRegionsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    provider: Schema.String,
-    enabled: Schema.Boolean,
-    public_ip_addresses: Schema.Array(Schema.String),
-    display_name: Schema.String,
-    location: Schema.String,
-    slug: Schema.String,
-    current_default: Schema.Boolean,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      provider: Schema.String,
+      enabled: Schema.Boolean,
+      public_ip_addresses: Schema.Array(Schema.String),
+      display_name: Schema.String,
+      location: Schema.String,
+      slug: Schema.String,
+      current_default: Schema.Boolean,
+    }),
+  ),
 });
 export type ListDatabaseRegionsOutput = typeof ListDatabaseRegionsOutput.Type;
 
@@ -77,5 +80,9 @@ export class ListDatabaseRegionsNotfound extends Schema.TaggedError<ListDatabase
 export const listDatabaseRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDatabaseRegionsInput,
   outputSchema: ListDatabaseRegionsOutput,
-  errors: [ListDatabaseRegionsUnauthorized, ListDatabaseRegionsForbidden, ListDatabaseRegionsNotfound],
+  errors: [
+    ListDatabaseRegionsUnauthorized,
+    ListDatabaseRegionsForbidden,
+    ListDatabaseRegionsNotfound,
+  ],
 }));

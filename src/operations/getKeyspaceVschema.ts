@@ -9,7 +9,13 @@ export const GetKeyspaceVschemaInput = Schema.Struct({
   keyspace: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
+  [ApiPath]: (input: {
+    organization: string;
+    database: string;
+    branch: string;
+    keyspace: string;
+  }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
   [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type GetKeyspaceVschemaInput = typeof GetKeyspaceVschemaInput.Type;

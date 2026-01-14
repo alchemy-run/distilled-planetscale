@@ -7,7 +7,8 @@ export const GetServiceTokenInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/service-tokens/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) =>
+    `/organizations/${input.organization}/service-tokens/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type GetServiceTokenInput = typeof GetServiceTokenInput.Type;
@@ -27,67 +28,85 @@ export const GetServiceTokenOutput = Schema.Struct({
   actor_id: Schema.String,
   actor_display_name: Schema.String,
   actor_type: Schema.String,
-  service_token_accesses: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    access: Schema.String,
-    description: Schema.String,
-    resource_name: Schema.String,
-    resource_id: Schema.String,
-    resource_type: Schema.String,
-    resource: Schema.Struct({
+  service_token_accesses: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
-      name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
+      access: Schema.String,
+      description: Schema.String,
+      resource_name: Schema.String,
+      resource_id: Schema.String,
+      resource_type: Schema.String,
+      resource: Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      }),
     }),
-  })),
+  ),
   oauth_accesses_by_resource: Schema.Struct({
     database: Schema.Struct({
-      databases: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        id: Schema.String,
-        organization: Schema.String,
-        url: Schema.String,
-      })),
-      accesses: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        description: Schema.String,
-      })),
+      databases: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          organization: Schema.String,
+          url: Schema.String,
+        }),
+      ),
+      accesses: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        }),
+      ),
     }),
     organization: Schema.Struct({
-      organizations: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        id: Schema.String,
-        url: Schema.String,
-      })),
-      accesses: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        description: Schema.String,
-      })),
+      organizations: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          url: Schema.String,
+        }),
+      ),
+      accesses: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        }),
+      ),
     }),
     branch: Schema.Struct({
-      branches: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        id: Schema.String,
-        database: Schema.String,
-        organization: Schema.String,
-        url: Schema.String,
-      })),
-      accesses: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        description: Schema.String,
-      })),
+      branches: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          database: Schema.String,
+          organization: Schema.String,
+          url: Schema.String,
+        }),
+      ),
+      accesses: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        }),
+      ),
     }),
     user: Schema.Struct({
-      users: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        id: Schema.String,
-      })),
-      accesses: Schema.Array(Schema.Struct({
-        name: Schema.String,
-        description: Schema.String,
-      })),
+      users: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+        }),
+      ),
+      accesses: Schema.Array(
+        Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        }),
+      ),
     }),
   }),
 });

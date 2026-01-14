@@ -10,7 +10,8 @@ export const UpdateDeployRequestThrottlerInput = Schema.Struct({
   configurations: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/throttler`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/throttler`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type UpdateDeployRequestThrottlerInput = typeof UpdateDeployRequestThrottlerInput.Type;
@@ -25,10 +26,12 @@ export const UpdateDeployRequestThrottlerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  configurations: Schema.Array(Schema.Struct({
-    keyspace_name: Schema.String,
-    ratio: Schema.Number,
-  })),
+  configurations: Schema.Array(
+    Schema.Struct({
+      keyspace_name: Schema.String,
+      ratio: Schema.Number,
+    }),
+  ),
 });
 export type UpdateDeployRequestThrottlerOutput = typeof UpdateDeployRequestThrottlerOutput.Type;
 
@@ -79,5 +82,9 @@ export class UpdateDeployRequestThrottlerNotfound extends Schema.TaggedError<Upd
 export const updateDeployRequestThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDeployRequestThrottlerInput,
   outputSchema: UpdateDeployRequestThrottlerOutput,
-  errors: [UpdateDeployRequestThrottlerUnauthorized, UpdateDeployRequestThrottlerForbidden, UpdateDeployRequestThrottlerNotfound],
+  errors: [
+    UpdateDeployRequestThrottlerUnauthorized,
+    UpdateDeployRequestThrottlerForbidden,
+    UpdateDeployRequestThrottlerNotfound,
+  ],
 }));

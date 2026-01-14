@@ -10,7 +10,8 @@ export const ReassignRoleObjectsInput = Schema.Struct({
   successor: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reassign`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reassign`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type ReassignRoleObjectsInput = typeof ReassignRoleObjectsInput.Type;
@@ -69,5 +70,9 @@ export class ReassignRoleObjectsNotfound extends Schema.TaggedError<ReassignRole
 export const reassignRoleObjects = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ReassignRoleObjectsInput,
   outputSchema: ReassignRoleObjectsOutput,
-  errors: [ReassignRoleObjectsUnauthorized, ReassignRoleObjectsForbidden, ReassignRoleObjectsNotfound],
+  errors: [
+    ReassignRoleObjectsUnauthorized,
+    ReassignRoleObjectsForbidden,
+    ReassignRoleObjectsNotfound,
+  ],
 }));

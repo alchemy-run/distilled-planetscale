@@ -1,4 +1,4 @@
-import { Cause, Effect, Exit, Layer } from "effect";
+import { Cause, Effect, Exit } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
 import {
@@ -57,7 +57,9 @@ withMainLayer("removeOrganizationMember", (it) => {
         const error = Cause.failureOption(exit.cause);
         if (error._tag === "Some" && error.value instanceof RemoveOrganizationMemberNotfound) {
           expect(error.value._tag).toBe("RemoveOrganizationMemberNotfound");
-          expect(error.value.organization).toBe("this-organization-definitely-does-not-exist-12345");
+          expect(error.value.organization).toBe(
+            "this-organization-definitely-does-not-exist-12345",
+          );
         }
         // Otherwise, the API may have returned a different error format
         // which is acceptable for this test

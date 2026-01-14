@@ -20,12 +20,14 @@ export const ListInvoicesOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    total: Schema.String,
-    billing_period_start: Schema.String,
-    billing_period_end: Schema.String,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      total: Schema.String,
+      billing_period_start: Schema.String,
+      billing_period_end: Schema.String,
+    }),
+  ),
 });
 export type ListInvoicesOutput = typeof ListInvoicesOutput.Type;
 

@@ -9,7 +9,8 @@ export const DeleteQueryPatternsReportInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type DeleteQueryPatternsReportInput = typeof DeleteQueryPatternsReportInput.Type;
@@ -67,5 +68,9 @@ export class DeleteQueryPatternsReportNotfound extends Schema.TaggedError<Delete
 export const deleteQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteQueryPatternsReportInput,
   outputSchema: DeleteQueryPatternsReportOutput,
-  errors: [DeleteQueryPatternsReportUnauthorized, DeleteQueryPatternsReportForbidden, DeleteQueryPatternsReportNotfound],
+  errors: [
+    DeleteQueryPatternsReportUnauthorized,
+    DeleteQueryPatternsReportForbidden,
+    DeleteQueryPatternsReportNotfound,
+  ],
 }));

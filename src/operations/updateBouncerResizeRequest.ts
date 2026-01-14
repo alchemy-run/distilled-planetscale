@@ -12,7 +12,8 @@ export const UpdateBouncerResizeRequestInput = Schema.Struct({
   parameters: Schema.optional(Schema.Unknown),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
   [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
 });
 export type UpdateBouncerResizeRequestInput = typeof UpdateBouncerResizeRequestInput.Type;
@@ -110,5 +111,9 @@ export class UpdateBouncerResizeRequestNotfound extends Schema.TaggedError<Updat
 export const updateBouncerResizeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBouncerResizeRequestInput,
   outputSchema: UpdateBouncerResizeRequestOutput,
-  errors: [UpdateBouncerResizeRequestUnauthorized, UpdateBouncerResizeRequestForbidden, UpdateBouncerResizeRequestNotfound],
+  errors: [
+    UpdateBouncerResizeRequestUnauthorized,
+    UpdateBouncerResizeRequestForbidden,
+    UpdateBouncerResizeRequestNotfound,
+  ],
 }));

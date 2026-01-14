@@ -9,7 +9,8 @@ export const UpdateDatabaseThrottlerInput = Schema.Struct({
   configurations: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/throttler`,
+  [ApiPath]: (input: { organization: string; database: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/throttler`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type UpdateDatabaseThrottlerInput = typeof UpdateDatabaseThrottlerInput.Type;
@@ -24,10 +25,12 @@ export const UpdateDatabaseThrottlerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  configurations: Schema.Array(Schema.Struct({
-    keyspace_name: Schema.String,
-    ratio: Schema.Number,
-  })),
+  configurations: Schema.Array(
+    Schema.Struct({
+      keyspace_name: Schema.String,
+      ratio: Schema.Number,
+    }),
+  ),
 });
 export type UpdateDatabaseThrottlerOutput = typeof UpdateDatabaseThrottlerOutput.Type;
 
@@ -74,5 +77,9 @@ export class UpdateDatabaseThrottlerNotfound extends Schema.TaggedError<UpdateDa
 export const updateDatabaseThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabaseThrottlerInput,
   outputSchema: UpdateDatabaseThrottlerOutput,
-  errors: [UpdateDatabaseThrottlerUnauthorized, UpdateDatabaseThrottlerForbidden, UpdateDatabaseThrottlerNotfound],
+  errors: [
+    UpdateDatabaseThrottlerUnauthorized,
+    UpdateDatabaseThrottlerForbidden,
+    UpdateDatabaseThrottlerNotfound,
+  ],
 }));

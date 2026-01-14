@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleParseError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import {
   listWorkflows,
@@ -70,26 +69,30 @@ withMainLayer("listWorkflows", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof ListWorkflowsNotfound || result instanceof ListWorkflowsForbidden;
+      const isExpectedError =
+        result instanceof ListWorkflowsNotfound || result instanceof ListWorkflowsForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
 
-  it.effect("should return ListWorkflowsNotfound or ListWorkflowsForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* listWorkflows({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListWorkflowsNotfound or ListWorkflowsForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* listWorkflows({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListWorkflowsNotfound || result instanceof ListWorkflowsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListWorkflowsNotfound || result instanceof ListWorkflowsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 });

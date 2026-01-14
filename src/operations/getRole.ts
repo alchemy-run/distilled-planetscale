@@ -9,7 +9,8 @@ export const GetRoleInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type GetRoleInput = typeof GetRoleInput.Type;
@@ -34,7 +35,23 @@ export const GetRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
+  inherited_roles: Schema.Array(
+    Schema.Literal(
+      "pscale_managed",
+      "pg_checkpoint",
+      "pg_create_subscription",
+      "pg_maintain",
+      "pg_monitor",
+      "pg_read_all_data",
+      "pg_read_all_settings",
+      "pg_read_all_stats",
+      "pg_signal_backend",
+      "pg_stat_scan_tables",
+      "pg_use_reserved_connections",
+      "pg_write_all_data",
+      "postgres",
+    ),
+  ),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,

@@ -29,74 +29,83 @@ withMainLayer("promoteBranch", (it) => {
     expect(PromoteBranchOutput.fields.parent_branch).toBeDefined();
   });
 
-  it.effect("should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* promoteBranch({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "some-db",
-        branch: "some-branch",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* promoteBranch({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "some-db",
+          branch: "some-branch",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof PromoteBranchNotfound || result instanceof PromoteBranchForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof PromoteBranchNotfound) {
-        expect(result._tag).toBe("PromoteBranchNotfound");
-        expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof PromoteBranchNotfound || result instanceof PromoteBranchForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof PromoteBranchNotfound) {
+          expect(result._tag).toBe("PromoteBranchNotfound");
+          expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* promoteBranch({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "some-branch",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* promoteBranch({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "some-branch",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof PromoteBranchNotfound || result instanceof PromoteBranchForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof PromoteBranchNotfound) {
-        expect(result._tag).toBe("PromoteBranchNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof PromoteBranchNotfound || result instanceof PromoteBranchForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof PromoteBranchNotfound) {
+          expect(result._tag).toBe("PromoteBranchNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* promoteBranch({
-        organization,
-        database: TEST_DATABASE,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return PromoteBranchNotfound or PromoteBranchForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* promoteBranch({
+          organization,
+          database: TEST_DATABASE,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof PromoteBranchNotfound || result instanceof PromoteBranchForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof PromoteBranchNotfound) {
-        expect(result._tag).toBe("PromoteBranchNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof PromoteBranchNotfound || result instanceof PromoteBranchForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof PromoteBranchNotfound) {
+          expect(result._tag).toBe("PromoteBranchNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   // Note: This test is skipped because promoting a branch to production is a

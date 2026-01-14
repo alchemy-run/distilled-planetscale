@@ -55,9 +55,7 @@ export const withCategory =
   <Args extends Array<any>, Ret, C extends { new (...args: Args): Ret }>(
     C: C,
   ): C & {
-    new (
-      ...args: Args
-    ): Ret & { [categoriesKey]: { [Cat in Categories[number]]: true } };
+    new (...args: Args): Ret & { [categoriesKey]: { [Cat in Categories[number]]: true } };
   } => {
     for (const category of categories) {
       if (!(categoriesKey in C.prototype)) {
@@ -91,42 +89,30 @@ export const withConfigurationError = withCategory(ConfigurationError);
  * Check if an error has a specific category
  */
 export const hasCategory = (error: unknown, category: Category): boolean => {
-  if (
-    Predicate.isObject(error) &&
-    Predicate.hasProperty(categoriesKey)(error)
-  ) {
+  if (Predicate.isObject(error) && Predicate.hasProperty(categoriesKey)(error)) {
     // @ts-expect-error - dynamic property access
     return category in error[categoriesKey];
   }
   return false;
 };
 
-export const isAuthError = (error: unknown): boolean =>
-  hasCategory(error, AuthError);
+export const isAuthError = (error: unknown): boolean => hasCategory(error, AuthError);
 
-export const isBadRequestError = (error: unknown): boolean =>
-  hasCategory(error, BadRequestError);
+export const isBadRequestError = (error: unknown): boolean => hasCategory(error, BadRequestError);
 
-export const isConflictError = (error: unknown): boolean =>
-  hasCategory(error, ConflictError);
+export const isConflictError = (error: unknown): boolean => hasCategory(error, ConflictError);
 
-export const isNotFoundError = (error: unknown): boolean =>
-  hasCategory(error, NotFoundError);
+export const isNotFoundError = (error: unknown): boolean => hasCategory(error, NotFoundError);
 
-export const isQuotaError = (error: unknown): boolean =>
-  hasCategory(error, QuotaError);
+export const isQuotaError = (error: unknown): boolean => hasCategory(error, QuotaError);
 
-export const isServerError = (error: unknown): boolean =>
-  hasCategory(error, ServerError);
+export const isServerError = (error: unknown): boolean => hasCategory(error, ServerError);
 
-export const isThrottlingError = (error: unknown): boolean =>
-  hasCategory(error, ThrottlingError);
+export const isThrottlingError = (error: unknown): boolean => hasCategory(error, ThrottlingError);
 
-export const isNetworkError = (error: unknown): boolean =>
-  hasCategory(error, NetworkError);
+export const isNetworkError = (error: unknown): boolean => hasCategory(error, NetworkError);
 
-export const isParseError = (error: unknown): boolean =>
-  hasCategory(error, ParseError);
+export const isParseError = (error: unknown): boolean => hasCategory(error, ParseError);
 
 export const isConfigurationError = (error: unknown): boolean =>
   hasCategory(error, ConfigurationError);
@@ -154,9 +140,7 @@ export const isTransientError = (error: unknown): boolean => {
 // Category Type Utilities
 // ============================================================================
 
-export type AllKeys<E> = E extends { [categoriesKey]: infer Q }
-  ? keyof Q
-  : never;
+export type AllKeys<E> = E extends { [categoriesKey]: infer Q } ? keyof Q : never;
 
 export type ExtractAll<E, Cats extends PropertyKey> = Cats extends any
   ? Extract<E, { [categoriesKey]: { [K in Cats]: any } }>
@@ -235,11 +219,7 @@ export const catchCategory =
   ) =>
   <A, R>(
     effect: Effect.Effect<A, E, R>,
-  ): Effect.Effect<
-    A | A2,
-    E2 | Exclude<E, ExtractAll<E, Categories[number]>>,
-    R | R2
-  > => {
+  ): Effect.Effect<A | A2, E2 | Exclude<E, ExtractAll<E, Categories[number]>>, R | R2> => {
     const f = args.pop()!;
     const categories = args;
     return Effect.catchIf(

@@ -1,7 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
-import { PlanetScaleApiError } from "../src/client";
 import {
   deleteWebhook,
   DeleteWebhookNotfound,
@@ -9,7 +8,7 @@ import {
   DeleteWebhookInput,
   DeleteWebhookOutput,
 } from "../src/operations/deleteWebhook";
-import { createWebhook, CreateWebhookForbidden } from "../src/operations/createWebhook";
+import { createWebhook } from "../src/operations/createWebhook";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("deleteWebhook", (it) => {
@@ -37,7 +36,8 @@ withMainLayer("deleteWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof DeleteWebhookNotfound || result instanceof DeleteWebhookForbidden;
+      const isExpectedError =
+        result instanceof DeleteWebhookNotfound || result instanceof DeleteWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -56,7 +56,8 @@ withMainLayer("deleteWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof DeleteWebhookNotfound || result instanceof DeleteWebhookForbidden;
+      const isExpectedError =
+        result instanceof DeleteWebhookNotfound || result instanceof DeleteWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -75,7 +76,8 @@ withMainLayer("deleteWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof DeleteWebhookNotfound || result instanceof DeleteWebhookForbidden;
+      const isExpectedError =
+        result instanceof DeleteWebhookNotfound || result instanceof DeleteWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -129,7 +131,9 @@ withMainLayer("deleteWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = secondDelete instanceof DeleteWebhookNotfound || secondDelete instanceof DeleteWebhookForbidden;
+      const isExpectedError =
+        secondDelete instanceof DeleteWebhookNotfound ||
+        secondDelete instanceof DeleteWebhookForbidden;
       expect(isExpectedError).toBe(true);
     });
   });

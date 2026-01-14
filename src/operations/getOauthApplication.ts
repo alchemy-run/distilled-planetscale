@@ -7,7 +7,8 @@ export const GetOauthApplicationInput = Schema.Struct({
   application_id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; application_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}`,
+  [ApiPath]: (input: { organization: string; application_id: string }) =>
+    `/organizations/${input.organization}/oauth-applications/${input.application_id}`,
   [ApiPathParams]: ["organization", "application_id"] as const,
 });
 export type GetOauthApplicationInput = typeof GetOauthApplicationInput.Type;
@@ -68,5 +69,9 @@ export class GetOauthApplicationNotfound extends Schema.TaggedError<GetOauthAppl
 export const getOauthApplication = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOauthApplicationInput,
   outputSchema: GetOauthApplicationOutput,
-  errors: [GetOauthApplicationUnauthorized, GetOauthApplicationForbidden, GetOauthApplicationNotfound],
+  errors: [
+    GetOauthApplicationUnauthorized,
+    GetOauthApplicationForbidden,
+    GetOauthApplicationNotfound,
+  ],
 }));

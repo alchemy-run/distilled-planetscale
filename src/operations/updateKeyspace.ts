@@ -9,7 +9,13 @@ export const UpdateKeyspaceInput = Schema.Struct({
   keyspace: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}`,
+  [ApiPath]: (input: {
+    organization: string;
+    database: string;
+    branch: string;
+    keyspace: string;
+  }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}`,
   [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type UpdateKeyspaceInput = typeof UpdateKeyspaceInput.Type;

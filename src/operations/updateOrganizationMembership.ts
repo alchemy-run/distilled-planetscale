@@ -8,7 +8,8 @@ export const UpdateOrganizationMembershipInput = Schema.Struct({
   role: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/members/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) =>
+    `/organizations/${input.organization}/members/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type UpdateOrganizationMembershipInput = typeof UpdateOrganizationMembershipInput.Type;
@@ -25,13 +26,15 @@ export const UpdateOrganizationMembershipOutput = Schema.Struct({
     created_at: Schema.String,
     updated_at: Schema.String,
     two_factor_auth_configured: Schema.Boolean,
-    default_organization: Schema.optional(Schema.Struct({
-      id: Schema.String,
-      name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
-    })),
+    default_organization: Schema.optional(
+      Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      }),
+    ),
     sso: Schema.optional(Schema.Boolean),
     managed: Schema.optional(Schema.Boolean),
     directory_managed: Schema.optional(Schema.Boolean),
@@ -85,5 +88,9 @@ export class UpdateOrganizationMembershipNotfound extends Schema.TaggedError<Upd
 export const updateOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationMembershipInput,
   outputSchema: UpdateOrganizationMembershipOutput,
-  errors: [UpdateOrganizationMembershipUnauthorized, UpdateOrganizationMembershipForbidden, UpdateOrganizationMembershipNotfound],
+  errors: [
+    UpdateOrganizationMembershipUnauthorized,
+    UpdateOrganizationMembershipForbidden,
+    UpdateOrganizationMembershipNotfound,
+  ],
 }));

@@ -8,7 +8,8 @@ export const DeleteOauthTokenInput = Schema.Struct({
   token_id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
+  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) =>
+    `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
   [ApiPathParams]: ["organization", "application_id", "token_id"] as const,
 });
 export type DeleteOauthTokenInput = typeof DeleteOauthTokenInput.Type;

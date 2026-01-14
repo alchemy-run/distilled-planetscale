@@ -8,7 +8,8 @@ export const DeleteDatabasePostgresCidrInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; id: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
   [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type DeleteDatabasePostgresCidrInput = typeof DeleteDatabasePostgresCidrInput.Type;
@@ -73,5 +74,10 @@ export class DeleteDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 export const deleteDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteDatabasePostgresCidrInput,
   outputSchema: DeleteDatabasePostgresCidrOutput,
-  errors: [DeleteDatabasePostgresCidrUnauthorized, DeleteDatabasePostgresCidrForbidden, DeleteDatabasePostgresCidrNotfound, DeleteDatabasePostgresCidrUnprocessableentity],
+  errors: [
+    DeleteDatabasePostgresCidrUnauthorized,
+    DeleteDatabasePostgresCidrForbidden,
+    DeleteDatabasePostgresCidrNotfound,
+    DeleteDatabasePostgresCidrUnprocessableentity,
+  ],
 }));

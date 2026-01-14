@@ -8,10 +8,7 @@ import {
   DeleteServiceTokenInput,
   DeleteServiceTokenOutput,
 } from "../src/operations/deleteServiceToken";
-import {
-  createServiceToken,
-  CreateServiceTokenForbidden,
-} from "../src/operations/createServiceToken";
+import { createServiceToken } from "../src/operations/createServiceToken";
 import { withMainLayer } from "./setup";
 
 withMainLayer("deleteServiceToken", (it) => {
@@ -79,9 +76,7 @@ withMainLayer("deleteServiceToken", (it) => {
       const created = yield* createServiceToken({
         organization,
         name: testTokenName,
-      }).pipe(
-        Effect.catchTag("CreateServiceTokenForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreateServiceTokenForbidden", () => Effect.succeed(null)));
 
       // Skip test gracefully if creation is forbidden
       if (created === null) {

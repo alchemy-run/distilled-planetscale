@@ -8,11 +8,7 @@ import {
   DeleteDatabasePostgresCidrInput,
   DeleteDatabasePostgresCidrOutput,
 } from "../src/operations/deleteDatabasePostgresCidr";
-import {
-  createDatabasePostgresCidr,
-  CreateDatabasePostgresCidrForbidden,
-  CreateDatabasePostgresCidrNotfound,
-} from "../src/operations/createDatabasePostgresCidr";
+import { createDatabasePostgresCidr } from "../src/operations/createDatabasePostgresCidr";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("deleteDatabasePostgresCidr", (it) => {

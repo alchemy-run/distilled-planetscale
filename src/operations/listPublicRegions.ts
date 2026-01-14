@@ -19,15 +19,17 @@ export const ListPublicRegionsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    provider: Schema.String,
-    enabled: Schema.Boolean,
-    public_ip_addresses: Schema.Array(Schema.String),
-    display_name: Schema.String,
-    location: Schema.String,
-    slug: Schema.String,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      provider: Schema.String,
+      enabled: Schema.Boolean,
+      public_ip_addresses: Schema.Array(Schema.String),
+      display_name: Schema.String,
+      location: Schema.String,
+      slug: Schema.String,
+    }),
+  ),
 });
 export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
 
@@ -35,7 +37,6 @@ export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
 export class ListPublicRegionsUnauthorized extends Schema.TaggedError<ListPublicRegionsUnauthorized>()(
   "ListPublicRegionsUnauthorized",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -44,7 +45,6 @@ export class ListPublicRegionsUnauthorized extends Schema.TaggedError<ListPublic
 export class ListPublicRegionsForbidden extends Schema.TaggedError<ListPublicRegionsForbidden>()(
   "ListPublicRegionsForbidden",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -53,7 +53,6 @@ export class ListPublicRegionsForbidden extends Schema.TaggedError<ListPublicReg
 export class ListPublicRegionsNotfound extends Schema.TaggedError<ListPublicRegionsNotfound>()(
   "ListPublicRegionsNotfound",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

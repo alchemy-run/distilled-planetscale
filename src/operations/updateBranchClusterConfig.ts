@@ -9,7 +9,8 @@ export const UpdateBranchClusterConfigInput = Schema.Struct({
   cluster_size: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/cluster`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/cluster`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type UpdateBranchClusterConfigInput = typeof UpdateBranchClusterConfigInput.Type;
@@ -64,5 +65,9 @@ export class UpdateBranchClusterConfigNotfound extends Schema.TaggedError<Update
 export const updateBranchClusterConfig = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBranchClusterConfigInput,
   outputSchema: UpdateBranchClusterConfigOutput,
-  errors: [UpdateBranchClusterConfigUnauthorized, UpdateBranchClusterConfigForbidden, UpdateBranchClusterConfigNotfound],
+  errors: [
+    UpdateBranchClusterConfigUnauthorized,
+    UpdateBranchClusterConfigForbidden,
+    UpdateBranchClusterConfigNotfound,
+  ],
 }));

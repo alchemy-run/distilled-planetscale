@@ -8,7 +8,7 @@ import {
   DeletePasswordInput,
   DeletePasswordOutput,
 } from "../src/operations/deletePassword";
-import { createPassword, CreatePasswordForbidden } from "../src/operations/createPassword";
+import { createPassword } from "../src/operations/createPassword";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("deletePassword", (it) => {
@@ -24,110 +24,122 @@ withMainLayer("deletePassword", (it) => {
     expect(DeletePasswordOutput).toBeDefined();
   });
 
-  it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* deletePassword({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "test-db",
-        branch: "main",
-        id: "some-password-id",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* deletePassword({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "test-db",
+          branch: "main",
+          id: "some-password-id",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DeletePasswordNotfound) {
-        expect(result._tag).toBe("DeletePasswordNotfound");
-        expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DeletePasswordNotfound) {
+          expect(result._tag).toBe("DeletePasswordNotfound");
+          expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* deletePassword({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-        id: "some-password-id",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* deletePassword({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+          id: "some-password-id",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DeletePasswordNotfound) {
-        expect(result._tag).toBe("DeletePasswordNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DeletePasswordNotfound) {
+          expect(result._tag).toBe("DeletePasswordNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const result = yield* deletePassword({
-        organization,
-        database,
-        branch: "this-branch-definitely-does-not-exist-12345",
-        id: "some-password-id",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const result = yield* deletePassword({
+          organization,
+          database,
+          branch: "this-branch-definitely-does-not-exist-12345",
+          id: "some-password-id",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DeletePasswordNotfound) {
-        expect(result._tag).toBe("DeletePasswordNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe(database);
-        expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DeletePasswordNotfound) {
+          expect(result._tag).toBe("DeletePasswordNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe(database);
+          expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent password id", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const branch = "main";
-      const result = yield* deletePassword({
-        organization,
-        database,
-        branch,
-        id: "this-password-id-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DeletePasswordNotfound or DeletePasswordForbidden for non-existent password id",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const branch = "main";
+        const result = yield* deletePassword({
+          organization,
+          database,
+          branch,
+          id: "this-password-id-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DeletePasswordNotfound) {
-        expect(result._tag).toBe("DeletePasswordNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe(database);
-        expect(result.branch).toBe(branch);
-        expect(result.id).toBe("this-password-id-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DeletePasswordNotfound || result instanceof DeletePasswordForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DeletePasswordNotfound) {
+          expect(result._tag).toBe("DeletePasswordNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe(database);
+          expect(result.branch).toBe(branch);
+          expect(result.id).toBe("this-password-id-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   // Note: This test creates an actual password and then deletes it.
@@ -148,9 +160,7 @@ withMainLayer("deletePassword", (it) => {
         branch,
         name: `test-password-${Date.now()}`,
         role: "reader",
-      }).pipe(
-        Effect.catchTag("CreatePasswordForbidden", () => Effect.succeed(null)),
-      );
+      }).pipe(Effect.catchTag("CreatePasswordForbidden", () => Effect.succeed(null)));
 
       if (password === null) {
         return; // Skip test gracefully if creation is forbidden

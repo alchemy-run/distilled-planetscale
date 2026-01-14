@@ -29,11 +29,7 @@ withMainLayer("getBranchSchema", (it) => {
         organization,
         database: TEST_DATABASE,
         branch: "main",
-      }).pipe(
-        Effect.catchTag("GetBranchSchemaNotfound", () =>
-          Effect.succeed({ data: [] }),
-        ),
-      );
+      }).pipe(Effect.catchTag("GetBranchSchemaNotfound", () => Effect.succeed({ data: [] })));
       expect(result).toHaveProperty("data");
       expect(Array.isArray(result.data)).toBe(true);
     }),

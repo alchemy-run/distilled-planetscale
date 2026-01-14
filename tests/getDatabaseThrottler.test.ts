@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleParseError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import {
   getDatabaseThrottler,
@@ -48,7 +47,9 @@ withMainLayer("getDatabaseThrottler", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof GetDatabaseThrottlerNotfound || result instanceof GetDatabaseThrottlerForbidden;
+      const isExpectedError =
+        result instanceof GetDatabaseThrottlerNotfound ||
+        result instanceof GetDatabaseThrottlerForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );

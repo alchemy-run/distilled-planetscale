@@ -7,7 +7,8 @@ export const DeleteServiceTokenInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/service-tokens/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) =>
+    `/organizations/${input.organization}/service-tokens/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type DeleteServiceTokenInput = typeof DeleteServiceTokenInput.Type;

@@ -80,10 +80,6 @@ function operationIdToFunctionName(operationId: string): string {
   return toCamelCase(operationId);
 }
 
-function operationIdToClassName(operationId: string): string {
-  return toPascalCase(operationId);
-}
-
 // ============================================================================
 // Schema Resolution
 // ============================================================================

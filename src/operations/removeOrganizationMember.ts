@@ -9,7 +9,8 @@ export const RemoveOrganizationMemberInput = Schema.Struct({
   delete_service_tokens: Schema.optional(Schema.Boolean),
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/members/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) =>
+    `/organizations/${input.organization}/members/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type RemoveOrganizationMemberInput = typeof RemoveOrganizationMemberInput.Type;
@@ -61,5 +62,9 @@ export class RemoveOrganizationMemberNotfound extends Schema.TaggedError<RemoveO
 export const removeOrganizationMember = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: RemoveOrganizationMemberInput,
   outputSchema: RemoveOrganizationMemberOutput,
-  errors: [RemoveOrganizationMemberUnauthorized, RemoveOrganizationMemberForbidden, RemoveOrganizationMemberNotfound],
+  errors: [
+    RemoveOrganizationMemberUnauthorized,
+    RemoveOrganizationMemberForbidden,
+    RemoveOrganizationMemberNotfound,
+  ],
 }));

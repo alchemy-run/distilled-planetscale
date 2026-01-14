@@ -8,7 +8,7 @@ import {
   GetBackupInput,
   GetBackupOutput,
 } from "../src/operations/getBackup";
-import { createBackup, CreateBackupForbidden } from "../src/operations/createBackup";
+import { createBackup } from "../src/operations/createBackup";
 import { deleteBackup } from "../src/operations/deleteBackup";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
@@ -101,28 +101,30 @@ withMainLayer("getBackup", (it) => {
     }),
   );
 
-  it.effect("should return GetBackupNotfound or GetBackupForbidden for non-existent backup id", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const branch = "main";
-      const result = yield* getBackup({
-        id: "this-backup-id-definitely-does-not-exist-12345",
-        organization,
-        database,
-        branch,
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return GetBackupNotfound or GetBackupForbidden for non-existent backup id",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const branch = "main";
+        const result = yield* getBackup({
+          id: "this-backup-id-definitely-does-not-exist-12345",
+          organization,
+          database,
+          branch,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError =
-        result instanceof GetBackupNotfound || result instanceof GetBackupForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof GetBackupNotfound || result instanceof GetBackupForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   // Note: This test creates an actual backup, fetches it, and cleans it up.

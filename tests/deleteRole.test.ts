@@ -8,7 +8,7 @@ import {
   DeleteRoleInput,
   DeleteRoleOutput,
 } from "../src/operations/deleteRole";
-import { createRole, CreateRoleForbidden } from "../src/operations/createRole";
+import { createRole } from "../src/operations/createRole";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("deleteRole", (it) => {

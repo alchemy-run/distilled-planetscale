@@ -12,7 +12,8 @@ export const CreateKeyspaceInput = Schema.Struct({
   shards: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateKeyspaceInput = typeof CreateKeyspaceInput.Type;

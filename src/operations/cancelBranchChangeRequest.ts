@@ -8,7 +8,8 @@ export const CancelBranchChangeRequestInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/resizes`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/resizes`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CancelBranchChangeRequestInput = typeof CancelBranchChangeRequestInput.Type;
@@ -62,5 +63,9 @@ export class CancelBranchChangeRequestNotfound extends Schema.TaggedError<Cancel
 export const cancelBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CancelBranchChangeRequestInput,
   outputSchema: CancelBranchChangeRequestOutput,
-  errors: [CancelBranchChangeRequestUnauthorized, CancelBranchChangeRequestForbidden, CancelBranchChangeRequestNotfound],
+  errors: [
+    CancelBranchChangeRequestUnauthorized,
+    CancelBranchChangeRequestForbidden,
+    CancelBranchChangeRequestNotfound,
+  ],
 }));

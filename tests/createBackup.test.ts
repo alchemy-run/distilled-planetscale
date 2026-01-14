@@ -53,46 +53,50 @@ withMainLayer("createBackup", (it) => {
     }),
   );
 
-  it.effect("should return CreateBackupNotfound or CreateBackupForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* createBackup({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return CreateBackupNotfound or CreateBackupForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* createBackup({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError =
-        result instanceof CreateBackupNotfound || result instanceof CreateBackupForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof CreateBackupNotfound || result instanceof CreateBackupForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return CreateBackupNotfound or CreateBackupForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      // Use a test database name - adjust based on your PlanetScale setup
-      const database = TEST_DATABASE;
-      const result = yield* createBackup({
-        organization,
-        database,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return CreateBackupNotfound or CreateBackupForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        // Use a test database name - adjust based on your PlanetScale setup
+        const database = TEST_DATABASE;
+        const result = yield* createBackup({
+          organization,
+          database,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError =
-        result instanceof CreateBackupNotfound || result instanceof CreateBackupForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof CreateBackupNotfound || result instanceof CreateBackupForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
   // Note: This test creates an actual backup and cleans it up.

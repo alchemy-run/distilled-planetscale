@@ -7,7 +7,8 @@ export const GetInvoiceInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/invoices/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) =>
+    `/organizations/${input.organization}/invoices/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type GetInvoiceInput = typeof GetInvoiceInput.Type;

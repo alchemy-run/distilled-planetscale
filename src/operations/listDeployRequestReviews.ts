@@ -8,7 +8,8 @@ export const ListDeployRequestReviewsInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type ListDeployRequestReviewsInput = typeof ListDeployRequestReviewsInput.Type;
@@ -20,19 +21,21 @@ export const ListDeployRequestReviewsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    body: Schema.String,
-    html_body: Schema.String,
-    state: Schema.Literal("commented", "approved"),
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    actor: Schema.Struct({
+  data: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
-      display_name: Schema.String,
-      avatar_url: Schema.String,
+      body: Schema.String,
+      html_body: Schema.String,
+      state: Schema.Literal("commented", "approved"),
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      actor: Schema.Struct({
+        id: Schema.String,
+        display_name: Schema.String,
+        avatar_url: Schema.String,
+      }),
     }),
-  })),
+  ),
 });
 export type ListDeployRequestReviewsOutput = typeof ListDeployRequestReviewsOutput.Type;
 
@@ -81,5 +84,9 @@ export class ListDeployRequestReviewsNotfound extends Schema.TaggedError<ListDep
 export const listDeployRequestReviews = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployRequestReviewsInput,
   outputSchema: ListDeployRequestReviewsOutput,
-  errors: [ListDeployRequestReviewsUnauthorized, ListDeployRequestReviewsForbidden, ListDeployRequestReviewsNotfound],
+  errors: [
+    ListDeployRequestReviewsUnauthorized,
+    ListDeployRequestReviewsForbidden,
+    ListDeployRequestReviewsNotfound,
+  ],
 }));

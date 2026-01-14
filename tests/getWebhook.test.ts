@@ -1,7 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
-import { PlanetScaleApiError } from "../src/client";
 import {
   getWebhook,
   GetWebhookNotfound,
@@ -9,7 +8,7 @@ import {
   GetWebhookInput,
   GetWebhookOutput,
 } from "../src/operations/getWebhook";
-import { createWebhook, CreateWebhookForbidden } from "../src/operations/createWebhook";
+import { createWebhook } from "../src/operations/createWebhook";
 import { deleteWebhook } from "../src/operations/deleteWebhook";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
@@ -46,7 +45,8 @@ withMainLayer("getWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof GetWebhookNotfound || result instanceof GetWebhookForbidden;
+      const isExpectedError =
+        result instanceof GetWebhookNotfound || result instanceof GetWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -65,7 +65,8 @@ withMainLayer("getWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof GetWebhookNotfound || result instanceof GetWebhookForbidden;
+      const isExpectedError =
+        result instanceof GetWebhookNotfound || result instanceof GetWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );
@@ -84,7 +85,8 @@ withMainLayer("getWebhook", (it) => {
         }),
       );
 
-      const isExpectedError = result instanceof GetWebhookNotfound || result instanceof GetWebhookForbidden;
+      const isExpectedError =
+        result instanceof GetWebhookNotfound || result instanceof GetWebhookForbidden;
       expect(isExpectedError).toBe(true);
     }),
   );

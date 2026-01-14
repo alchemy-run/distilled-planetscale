@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleParseError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import {
   listGeneratedQueryPatternsReports,
@@ -57,59 +56,71 @@ withMainLayer("listGeneratedQueryPatternsReports", (it) => {
     }),
   );
 
-  it.effect("should return ListGeneratedQueryPatternsReportsNotfound for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* listGeneratedQueryPatternsReports({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "test-db",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListGeneratedQueryPatternsReportsNotfound for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* listGeneratedQueryPatternsReports({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "test-db",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListGeneratedQueryPatternsReportsNotfound || result instanceof ListGeneratedQueryPatternsReportsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListGeneratedQueryPatternsReportsNotfound ||
+          result instanceof ListGeneratedQueryPatternsReportsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return ListGeneratedQueryPatternsReportsNotfound or ListGeneratedQueryPatternsReportsForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* listGeneratedQueryPatternsReports({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListGeneratedQueryPatternsReportsNotfound or ListGeneratedQueryPatternsReportsForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* listGeneratedQueryPatternsReports({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListGeneratedQueryPatternsReportsNotfound || result instanceof ListGeneratedQueryPatternsReportsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListGeneratedQueryPatternsReportsNotfound ||
+          result instanceof ListGeneratedQueryPatternsReportsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 
-  it.effect("should return ListGeneratedQueryPatternsReportsNotfound or ListGeneratedQueryPatternsReportsForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* listGeneratedQueryPatternsReports({
-        organization,
-        database: TEST_DATABASE,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListGeneratedQueryPatternsReportsNotfound or ListGeneratedQueryPatternsReportsForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* listGeneratedQueryPatternsReports({
+          organization,
+          database: TEST_DATABASE,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof ListGeneratedQueryPatternsReportsNotfound || result instanceof ListGeneratedQueryPatternsReportsForbidden;
-      expect(isExpectedError).toBe(true);
-    }),
+        const isExpectedError =
+          result instanceof ListGeneratedQueryPatternsReportsNotfound ||
+          result instanceof ListGeneratedQueryPatternsReportsForbidden;
+        expect(isExpectedError).toBe(true);
+      }),
   );
 });

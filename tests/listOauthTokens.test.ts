@@ -29,28 +29,30 @@ withMainLayer("listOauthTokens", (it) => {
     expect(ListOauthTokensOutput.fields.data).toBeDefined();
   });
 
-  it.effect("should return ListOauthTokensForbidden for non-existent application in valid organization", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
+  it.effect(
+    "should return ListOauthTokensForbidden for non-existent application in valid organization",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
 
-      const result = yield* listOauthTokens({
-        organization,
-        application_id: "this-application-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+        const result = yield* listOauthTokens({
+          organization,
+          application_id: "this-application-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      // API returns forbidden when accessing an application that doesn't exist in your organization
-      expect(result).toBeInstanceOf(ListOauthTokensForbidden);
-      if (result instanceof ListOauthTokensForbidden) {
-        expect(result._tag).toBe("ListOauthTokensForbidden");
-        expect(result.organization).toBe(organization);
-        expect(result.application_id).toBe("this-application-definitely-does-not-exist-12345");
-      }
-    }),
+        // API returns forbidden when accessing an application that doesn't exist in your organization
+        expect(result).toBeInstanceOf(ListOauthTokensForbidden);
+        if (result instanceof ListOauthTokensForbidden) {
+          expect(result._tag).toBe("ListOauthTokensForbidden");
+          expect(result.organization).toBe(organization);
+          expect(result.application_id).toBe("this-application-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   it.effect("should return ListOauthTokensNotfound for non-existent organization", () =>

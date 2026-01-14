@@ -8,7 +8,8 @@ export const EnableSafeMigrationsInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/safe-migrations`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/safe-migrations`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type EnableSafeMigrationsInput = typeof EnableSafeMigrationsInput.Type;
@@ -44,13 +45,15 @@ export const EnableSafeMigrationsOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  restored_from_branch: Schema.NullOr(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-  })),
+  restored_from_branch: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    }),
+  ),
   private_edge_connectivity: Schema.Boolean,
   has_replicas: Schema.Boolean,
   has_read_only_replicas: Schema.Boolean,
@@ -115,5 +118,9 @@ export class EnableSafeMigrationsNotfound extends Schema.TaggedError<EnableSafeM
 export const enableSafeMigrations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: EnableSafeMigrationsInput,
   outputSchema: EnableSafeMigrationsOutput,
-  errors: [EnableSafeMigrationsUnauthorized, EnableSafeMigrationsForbidden, EnableSafeMigrationsNotfound],
+  errors: [
+    EnableSafeMigrationsUnauthorized,
+    EnableSafeMigrationsForbidden,
+    EnableSafeMigrationsNotfound,
+  ],
 }));

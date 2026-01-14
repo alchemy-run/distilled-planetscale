@@ -19,28 +19,30 @@ export const ListOrganizationsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    billing_email: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    plan: Schema.String,
-    valid_billing_info: Schema.Boolean,
-    sso: Schema.Boolean,
-    sso_directory: Schema.Boolean,
-    single_tenancy: Schema.Boolean,
-    managed_tenancy: Schema.Boolean,
-    has_past_due_invoices: Schema.optional(Schema.Boolean),
-    database_count: Schema.Number,
-    sso_portal_url: Schema.optional(Schema.String),
-    features: Schema.Unknown,
-    idp_managed_roles: Schema.Boolean,
-    invoice_budget_amount: Schema.String,
-    keyspace_shard_limit: Schema.Number,
-    has_card: Schema.Boolean,
-    payment_info_required: Schema.Boolean,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      billing_email: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      plan: Schema.String,
+      valid_billing_info: Schema.Boolean,
+      sso: Schema.Boolean,
+      sso_directory: Schema.Boolean,
+      single_tenancy: Schema.Boolean,
+      managed_tenancy: Schema.Boolean,
+      has_past_due_invoices: Schema.optional(Schema.Boolean),
+      database_count: Schema.Number,
+      sso_portal_url: Schema.optional(Schema.String),
+      features: Schema.Unknown,
+      idp_managed_roles: Schema.Boolean,
+      invoice_budget_amount: Schema.String,
+      keyspace_shard_limit: Schema.Number,
+      has_card: Schema.Boolean,
+      payment_info_required: Schema.Boolean,
+    }),
+  ),
 });
 export type ListOrganizationsOutput = typeof ListOrganizationsOutput.Type;
 
@@ -48,7 +50,6 @@ export type ListOrganizationsOutput = typeof ListOrganizationsOutput.Type;
 export class ListOrganizationsUnauthorized extends Schema.TaggedError<ListOrganizationsUnauthorized>()(
   "ListOrganizationsUnauthorized",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
@@ -57,7 +58,6 @@ export class ListOrganizationsUnauthorized extends Schema.TaggedError<ListOrgani
 export class ListOrganizationsForbidden extends Schema.TaggedError<ListOrganizationsForbidden>()(
   "ListOrganizationsForbidden",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
@@ -66,7 +66,6 @@ export class ListOrganizationsForbidden extends Schema.TaggedError<ListOrganizat
 export class ListOrganizationsNotfound extends Schema.TaggedError<ListOrganizationsNotfound>()(
   "ListOrganizationsNotfound",
   {
-
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },

@@ -12,7 +12,8 @@ export const CreateBackupInput = Schema.Struct({
   emergency: Schema.optional(Schema.Boolean),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateBackupInput = typeof CreateBackupInput.Type;
@@ -33,13 +34,15 @@ export const CreateBackupOutput = Schema.Struct({
   pvc_size: Schema.Number,
   protected: Schema.Boolean,
   required: Schema.Boolean,
-  restored_branches: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-  })),
+  restored_branches: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    }),
+  ),
   actor: Schema.Struct({
     id: Schema.String,
     display_name: Schema.String,

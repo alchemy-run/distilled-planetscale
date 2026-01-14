@@ -14,7 +14,8 @@ export const CreateWorkflowInput = Schema.Struct({
   tables: Schema.Array(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows`,
+  [ApiPath]: (input: { organization: string; database: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/workflows`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateWorkflowInput = typeof CreateWorkflowInput.Type;
@@ -24,7 +25,27 @@ export const CreateWorkflowOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
+  state: Schema.Literal(
+    "pending",
+    "copying",
+    "running",
+    "stopped",
+    "verifying_data",
+    "verified_data",
+    "switching_replicas",
+    "switched_replicas",
+    "switching_primaries",
+    "switched_primaries",
+    "reversing_traffic",
+    "reversing_traffic_for_cancel",
+    "cutting_over",
+    "cutover",
+    "reversed_cutover",
+    "completed",
+    "cancelling",
+    "cancelled",
+    "error",
+  ),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,

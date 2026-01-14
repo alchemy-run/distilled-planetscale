@@ -14,7 +14,8 @@ export const CreatePasswordInput = Schema.Struct({
   direct_vtgate: Schema.optional(Schema.Boolean),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreatePasswordInput = typeof CreatePasswordInput.Type;
@@ -127,5 +128,10 @@ export class CreatePasswordUnprocessableentity extends Schema.TaggedError<Create
 export const createPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreatePasswordInput,
   outputSchema: CreatePasswordOutput,
-  errors: [CreatePasswordUnauthorized, CreatePasswordForbidden, CreatePasswordNotfound, CreatePasswordUnprocessableentity],
+  errors: [
+    CreatePasswordUnauthorized,
+    CreatePasswordForbidden,
+    CreatePasswordNotfound,
+    CreatePasswordUnprocessableentity,
+  ],
 }));

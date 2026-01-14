@@ -27,25 +27,27 @@ withMainLayer("listBranchBouncerResizeRequests", (it) => {
     expect(ListBranchBouncerResizeRequestsOutput.fields.data).toBeDefined();
   });
 
-  it.effect("should return ListBranchBouncerResizeRequestsNotfound for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* listBranchBouncerResizeRequests({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "test-db",
-        branch: "main",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListBranchBouncerResizeRequestsNotfound for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* listBranchBouncerResizeRequests({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "test-db",
+          branch: "main",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      expect(result).toBeInstanceOf(ListBranchBouncerResizeRequestsNotfound);
-      if (result instanceof ListBranchBouncerResizeRequestsNotfound) {
-        expect(result._tag).toBe("ListBranchBouncerResizeRequestsNotfound");
-        expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
-      }
-    }),
+        expect(result).toBeInstanceOf(ListBranchBouncerResizeRequestsNotfound);
+        if (result instanceof ListBranchBouncerResizeRequestsNotfound) {
+          expect(result._tag).toBe("ListBranchBouncerResizeRequestsNotfound");
+          expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   it.effect("should return ListBranchBouncerResizeRequestsNotfound for non-existent database", () =>

@@ -7,7 +7,8 @@ export const GetOrganizationMembershipInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/members/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) =>
+    `/organizations/${input.organization}/members/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type GetOrganizationMembershipInput = typeof GetOrganizationMembershipInput.Type;
@@ -24,13 +25,15 @@ export const GetOrganizationMembershipOutput = Schema.Struct({
     created_at: Schema.String,
     updated_at: Schema.String,
     two_factor_auth_configured: Schema.Boolean,
-    default_organization: Schema.optional(Schema.Struct({
-      id: Schema.String,
-      name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
-    })),
+    default_organization: Schema.optional(
+      Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      }),
+    ),
     sso: Schema.optional(Schema.Boolean),
     managed: Schema.optional(Schema.Boolean),
     directory_managed: Schema.optional(Schema.Boolean),
@@ -83,5 +86,9 @@ export class GetOrganizationMembershipNotfound extends Schema.TaggedError<GetOrg
 export const getOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationMembershipInput,
   outputSchema: GetOrganizationMembershipOutput,
-  errors: [GetOrganizationMembershipUnauthorized, GetOrganizationMembershipForbidden, GetOrganizationMembershipNotfound],
+  errors: [
+    GetOrganizationMembershipUnauthorized,
+    GetOrganizationMembershipForbidden,
+    GetOrganizationMembershipNotfound,
+  ],
 }));

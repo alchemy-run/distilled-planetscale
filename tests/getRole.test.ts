@@ -1,12 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
-import {
-  getRole,
-  GetRoleNotfound,
-  GetRoleInput,
-  GetRoleOutput,
-} from "../src/operations/getRole";
+import { getRole, GetRoleNotfound, GetRoleInput, GetRoleOutput } from "../src/operations/getRole";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getRole", (it) => {

@@ -9,7 +9,8 @@ export const DeleteBouncerInput = Schema.Struct({
   bouncer: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) =>
+    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}`,
   [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
 });
 export type DeleteBouncerInput = typeof DeleteBouncerInput.Type;

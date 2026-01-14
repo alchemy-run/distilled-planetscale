@@ -34,9 +34,7 @@ withMainLayer("listExtensions", (it) => {
         branch,
       }).pipe(
         // Handle case where database/branch doesn't exist
-        Effect.catchTag("ListExtensionsNotfound", () =>
-          Effect.succeed([]),
-        ),
+        Effect.catchTag("ListExtensionsNotfound", () => Effect.succeed([])),
       );
 
       expect(Array.isArray(result)).toBe(true);

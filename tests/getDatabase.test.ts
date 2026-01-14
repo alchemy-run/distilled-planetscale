@@ -1,10 +1,7 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
-import {
-  getDatabase,
-  GetDatabaseNotfound,
-} from "../src/operations/getDatabase";
+import { getDatabase, GetDatabaseNotfound } from "../src/operations/getDatabase";
 import { withMainLayer, TEST_DATABASE } from "./setup";
 
 withMainLayer("getDatabase", (it) => {

@@ -1,7 +1,6 @@
 import { Effect } from "effect";
 import { expect } from "vitest";
 import { Credentials } from "../src/credentials";
-import { PlanetScaleApiError } from "../src/client";
 import {
   demoteBranch,
   DemoteBranchNotfound,
@@ -30,74 +29,83 @@ withMainLayer("demoteBranch", (it) => {
     expect(DemoteBranchOutput.fields.parent_branch).toBeDefined();
   });
 
-  it.effect("should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* demoteBranch({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "some-db",
-        branch: "some-branch",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* demoteBranch({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "some-db",
+          branch: "some-branch",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DemoteBranchNotfound || result instanceof DemoteBranchForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DemoteBranchNotfound) {
-        expect(result._tag).toBe("DemoteBranchNotfound");
-        expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DemoteBranchNotfound || result instanceof DemoteBranchForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DemoteBranchNotfound) {
+          expect(result._tag).toBe("DemoteBranchNotfound");
+          expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent database", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* demoteBranch({
-        organization,
-        database: "this-database-definitely-does-not-exist-12345",
-        branch: "some-branch",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent database",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* demoteBranch({
+          organization,
+          database: "this-database-definitely-does-not-exist-12345",
+          branch: "some-branch",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DemoteBranchNotfound || result instanceof DemoteBranchForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DemoteBranchNotfound) {
-        expect(result._tag).toBe("DemoteBranchNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DemoteBranchNotfound || result instanceof DemoteBranchForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DemoteBranchNotfound) {
+          expect(result._tag).toBe("DemoteBranchNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe("this-database-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
-  it.effect("should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent branch", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const result = yield* demoteBranch({
-        organization,
-        database: TEST_DATABASE,
-        branch: "this-branch-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return DemoteBranchNotfound or DemoteBranchForbidden for non-existent branch",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const result = yield* demoteBranch({
+          organization,
+          database: TEST_DATABASE,
+          branch: "this-branch-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      const isExpectedError = result instanceof DemoteBranchNotfound || result instanceof DemoteBranchForbidden;
-      expect(isExpectedError).toBe(true);
-      if (result instanceof DemoteBranchNotfound) {
-        expect(result._tag).toBe("DemoteBranchNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
-      }
-    }),
+        const isExpectedError =
+          result instanceof DemoteBranchNotfound || result instanceof DemoteBranchForbidden;
+        expect(isExpectedError).toBe(true);
+        if (result instanceof DemoteBranchNotfound) {
+          expect(result._tag).toBe("DemoteBranchNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.branch).toBe("this-branch-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   // Note: This test is skipped because demoting a branch requires a production branch

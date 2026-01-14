@@ -186,7 +186,10 @@ export function applyPatch(obj: unknown, patch: JsonPatch): void {
 /**
  * Load and apply all patches from the specs directory
  */
-export function applyAllPatches(spec: unknown, specsDir: string): { applied: string[]; errors: string[] } {
+export function applyAllPatches(
+  spec: unknown,
+  specsDir: string,
+): { applied: string[]; errors: string[] } {
   const applied: string[] = [];
   const errors: string[] = [];
 

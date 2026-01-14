@@ -7,7 +7,8 @@ export const GetOrganizationTeamInput = Schema.Struct({
   team: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; team: string }) => `/organizations/${input.organization}/teams/${input.team}`,
+  [ApiPath]: (input: { organization: string; team: string }) =>
+    `/organizations/${input.organization}/teams/${input.team}`,
   [ApiPathParams]: ["organization", "team"] as const,
 });
 export type GetOrganizationTeamInput = typeof GetOrganizationTeamInput.Type;
@@ -21,33 +22,37 @@ export const GetOrganizationTeamOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  members: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    display_name: Schema.String,
-    name: Schema.String,
-    email: Schema.String,
-    avatar_url: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    two_factor_auth_configured: Schema.Boolean,
-    default_organization: Schema.Struct({
+  members: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
+      display_name: Schema.String,
       name: Schema.String,
+      email: Schema.String,
+      avatar_url: Schema.String,
       created_at: Schema.String,
       updated_at: Schema.String,
-      deleted_at: Schema.String,
+      two_factor_auth_configured: Schema.Boolean,
+      default_organization: Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      }),
+      sso: Schema.Boolean,
+      managed: Schema.Boolean,
+      directory_managed: Schema.Boolean,
+      email_verified: Schema.Boolean,
     }),
-    sso: Schema.Boolean,
-    managed: Schema.Boolean,
-    directory_managed: Schema.Boolean,
-    email_verified: Schema.Boolean,
-  })),
-  databases: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    url: Schema.String,
-    branches_url: Schema.String,
-  })),
+  ),
+  databases: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      url: Schema.String,
+      branches_url: Schema.String,
+    }),
+  ),
   name: Schema.String,
   slug: Schema.String,
   created_at: Schema.String,
@@ -108,5 +113,10 @@ export class GetOrganizationTeamUnprocessableentity extends Schema.TaggedError<G
 export const getOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationTeamInput,
   outputSchema: GetOrganizationTeamOutput,
-  errors: [GetOrganizationTeamUnauthorized, GetOrganizationTeamForbidden, GetOrganizationTeamNotfound, GetOrganizationTeamUnprocessableentity],
+  errors: [
+    GetOrganizationTeamUnauthorized,
+    GetOrganizationTeamForbidden,
+    GetOrganizationTeamNotfound,
+    GetOrganizationTeamUnprocessableentity,
+  ],
 }));

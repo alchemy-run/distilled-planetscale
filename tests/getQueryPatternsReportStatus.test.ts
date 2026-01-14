@@ -27,26 +27,28 @@ withMainLayer("getQueryPatternsReportStatus", (it) => {
     expect(GetQueryPatternsReportStatusOutput.fields.actor).toBeDefined();
   });
 
-  it.effect("should return GetQueryPatternsReportStatusNotfound for non-existent organization", () =>
-    Effect.gen(function* () {
-      const result = yield* getQueryPatternsReportStatus({
-        organization: "this-org-definitely-does-not-exist-12345",
-        database: "test-db",
-        branch: "main",
-        id: "non-existent-report-id",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return GetQueryPatternsReportStatusNotfound for non-existent organization",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* getQueryPatternsReportStatus({
+          organization: "this-org-definitely-does-not-exist-12345",
+          database: "test-db",
+          branch: "main",
+          id: "non-existent-report-id",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      expect(result).toBeInstanceOf(GetQueryPatternsReportStatusNotfound);
-      if (result instanceof GetQueryPatternsReportStatusNotfound) {
-        expect(result._tag).toBe("GetQueryPatternsReportStatusNotfound");
-        expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
-      }
-    }),
+        expect(result).toBeInstanceOf(GetQueryPatternsReportStatusNotfound);
+        if (result instanceof GetQueryPatternsReportStatusNotfound) {
+          expect(result._tag).toBe("GetQueryPatternsReportStatusNotfound");
+          expect(result.organization).toBe("this-org-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   it.effect("should return GetQueryPatternsReportStatusNotfound for non-existent database", () =>

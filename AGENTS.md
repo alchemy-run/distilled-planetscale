@@ -17,13 +17,13 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ## Scripts
 
-| Script                                   | Description                                          |
-| ---------------------------------------- | ---------------------------------------------------- |
-| `bun run setup`                          | Fetch the latest PlanetScale OpenAPI spec            |
-| `bun run generate`                       | Generate operations from OpenAPI spec using Claude   |
-| `bun run typecheck`                      | Type check with tsgo                                 |
-| `bunx vitest run`                        | Run tests                                            |
-| `bun run scripts/write-tests.ts`         | Auto-generate tests for unchecked operations         |
+| Script                           | Description                                        |
+| -------------------------------- | -------------------------------------------------- |
+| `bun run setup`                  | Fetch the latest PlanetScale OpenAPI spec          |
+| `bun run generate`               | Generate operations from OpenAPI spec using Claude |
+| `bun run typecheck`              | Type check with tsgo                               |
+| `bunx vitest run`                | Run tests                                          |
+| `bun run scripts/write-tests.ts` | Auto-generate tests for unchecked operations       |
 
 ## Project Structure
 
@@ -94,17 +94,17 @@ export const getOrganization = API.make(() => ({
 
 When generating operations, use the following mapping from API error codes to categories:
 
-| Error Code | Category | Decorator |
-|------------|----------|-----------|
-| `unauthorized` | `AuthError` | `Category.withAuthError` |
-| `forbidden` | `AuthError` | `Category.withAuthError` |
-| `not_found` | `NotFoundError` | `Category.withNotFoundError` |
-| `conflict` | `ConflictError` | `Category.withConflictError` |
-| `unprocessable_entity` | `BadRequestError` | `Category.withBadRequestError` |
-| `bad_request` | `BadRequestError` | `Category.withBadRequestError` |
-| `too_many_requests` | `ThrottlingError` | `Category.withThrottlingError` |
-| `internal_server_error` | `ServerError` | `Category.withServerError` |
-| `service_unavailable` | `ServerError` | `Category.withServerError` |
+| Error Code              | Category          | Decorator                      |
+| ----------------------- | ----------------- | ------------------------------ |
+| `unauthorized`          | `AuthError`       | `Category.withAuthError`       |
+| `forbidden`             | `AuthError`       | `Category.withAuthError`       |
+| `not_found`             | `NotFoundError`   | `Category.withNotFoundError`   |
+| `conflict`              | `ConflictError`   | `Category.withConflictError`   |
+| `unprocessable_entity`  | `BadRequestError` | `Category.withBadRequestError` |
+| `bad_request`           | `BadRequestError` | `Category.withBadRequestError` |
+| `too_many_requests`     | `ThrottlingError` | `Category.withThrottlingError` |
+| `internal_server_error` | `ServerError`     | `Category.withServerError`     |
+| `service_unavailable`   | `ServerError`     | `Category.withServerError`     |
 
 This mapping is also documented in `specs/error-categories.patch.json`.
 
@@ -121,18 +121,18 @@ Errors can be annotated with categories for semantic grouping and handling. Cate
 
 ### Available Categories
 
-| Category | Description | Built-in Errors |
-|----------|-------------|-----------------|
-| `AuthError` | Authentication/authorization failures (401, 403) | - |
-| `BadRequestError` | Invalid request parameters (400) | - |
-| `ConflictError` | Resource conflicts (409) | - |
-| `NotFoundError` | Resource not found (404) | - |
-| `QuotaError` | Quota/limit exceeded | - |
-| `ServerError` | Server-side errors (5xx) | `PlanetScaleApiError`, `PlanetScaleError` |
-| `ThrottlingError` | Rate limiting (429) | - |
-| `NetworkError` | Connection/network failures | - |
-| `ParseError` | Response parsing failures | `PlanetScaleParseError` |
-| `ConfigurationError` | Missing configuration | `ConfigError` |
+| Category             | Description                                      | Built-in Errors                           |
+| -------------------- | ------------------------------------------------ | ----------------------------------------- |
+| `AuthError`          | Authentication/authorization failures (401, 403) | -                                         |
+| `BadRequestError`    | Invalid request parameters (400)                 | -                                         |
+| `ConflictError`      | Resource conflicts (409)                         | -                                         |
+| `NotFoundError`      | Resource not found (404)                         | -                                         |
+| `QuotaError`         | Quota/limit exceeded                             | -                                         |
+| `ServerError`        | Server-side errors (5xx)                         | `PlanetScaleApiError`, `PlanetScaleError` |
+| `ThrottlingError`    | Rate limiting (429)                              | -                                         |
+| `NetworkError`       | Connection/network failures                      | -                                         |
+| `ParseError`         | Response parsing failures                        | `PlanetScaleParseError`                   |
+| `ConfigurationError` | Missing configuration                            | `ConfigError`                             |
 
 ### Adding Categories to Errors
 
@@ -153,10 +153,9 @@ export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationN
 ).pipe(Category.withNotFoundError) {}
 
 // Multiple categories
-export class RateLimitError extends Schema.TaggedError<RateLimitError>()(
-  "RateLimitError",
-  { retryAfter: Schema.Number },
-).pipe(Category.withCategory(Category.ThrottlingError, Category.ServerError)) {}
+export class RateLimitError extends Schema.TaggedError<RateLimitError>()("RateLimitError", {
+  retryAfter: Schema.Number,
+}).pipe(Category.withCategory(Category.ThrottlingError, Category.ServerError)) {}
 ```
 
 ### Catching Errors by Category
@@ -167,17 +166,13 @@ import { Category } from "distilled-planetscale";
 
 // Catch a single category
 const program = getOrganization({ organization: "test" }).pipe(
-  Category.catchNotFoundError((err) =>
-    Effect.succeed({ fallback: true })
-  ),
+  Category.catchNotFoundError((err) => Effect.succeed({ fallback: true })),
 );
 
 // Catch multiple categories
 const program2 = getOrganization({ organization: "test" }).pipe(
-  Category.catchErrors(
-    Category.NotFoundError,
-    Category.AuthError,
-    (err) => Effect.succeed({ fallback: true })
+  Category.catchErrors(Category.NotFoundError, Category.AuthError, (err) =>
+    Effect.succeed({ fallback: true }),
   ),
 );
 ```
@@ -190,12 +185,12 @@ Use predicates for retry logic or conditional handling:
 import { Category } from "distilled-planetscale";
 
 // Individual predicates
-Category.isAuthError(error);       // true if has AuthError category
-Category.isNotFoundError(error);   // true if has NotFoundError category
-Category.isServerError(error);     // true if has ServerError category
+Category.isAuthError(error); // true if has AuthError category
+Category.isNotFoundError(error); // true if has NotFoundError category
+Category.isServerError(error); // true if has ServerError category
 
 // Transient errors (good for retry logic)
-Category.isTransientError(error);  // true if ThrottlingError | ServerError | NetworkError
+Category.isTransientError(error); // true if ThrottlingError | ServerError | NetworkError
 
 // Use with Effect.retry
 const program = myOperation().pipe(
@@ -307,13 +302,13 @@ const allDatabases = listDatabases.items({ organization: "my-org" });
 
 PlanetScale uses page-based pagination with the following structure:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `page` (input) | number | 1-indexed page number |
-| `per_page` (input) | number | Number of items per page |
-| `current_page` (output) | number | Current page number |
-| `next_page` (output) | number \| null | Next page number, or null if no more pages |
-| `data` (output) | array | Array of items for the current page |
+| Field                   | Type           | Description                                |
+| ----------------------- | -------------- | ------------------------------------------ |
+| `page` (input)          | number         | 1-indexed page number                      |
+| `per_page` (input)      | number         | Number of items per page                   |
+| `current_page` (output) | number         | Current page number                        |
+| `next_page` (output)    | number \| null | Next page number, or null if no more pages |
+| `data` (output)         | array          | Array of items for the current page        |
 
 The default pagination trait is:
 
@@ -338,6 +333,7 @@ bun run generate
 ```
 
 The generator:
+
 1. Uses Claude Haiku (via CLI) to analyze the OpenAPI spec and discover all operations
 2. Compares against existing operations and tests in `src/operations/` and `tests/`
 3. Uses Claude Opus (via CLI) to generate missing operations and tests
@@ -412,10 +408,12 @@ withMainLayer("operationName", (it) => {
   it.effect("should fetch data successfully", () =>
     Effect.gen(function* () {
       const { organization } = yield* PlanetScaleCredentials;
-      const result = yield* operationName({ organization, /* ... */ }).pipe(
+      const result = yield* operationName({ organization /* ... */ }).pipe(
         // Handle case where test resource doesn't exist
         Effect.catchTag("OperationNameNotfound", () =>
-          Effect.succeed({ /* fallback shape */ }),
+          Effect.succeed({
+            /* fallback shape */
+          }),
         ),
       );
       expect(result).toHaveProperty("expectedField");
@@ -519,18 +517,19 @@ Patches use the [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902) for
 
 ### Supported Operations
 
-| Operation | Description |
-|-----------|-------------|
-| `add` | Add a new property or array element |
-| `remove` | Remove a property or array element |
-| `replace` | Replace an existing value |
-| `move` | Move a value from one location to another |
-| `copy` | Copy a value to a new location |
-| `test` | Test that a value matches (fails if not) |
+| Operation | Description                               |
+| --------- | ----------------------------------------- |
+| `add`     | Add a new property or array element       |
+| `remove`  | Remove a property or array element        |
+| `replace` | Replace an existing value                 |
+| `move`    | Move a value from one location to another |
+| `copy`    | Copy a value to a new location            |
+| `test`    | Test that a value matches (fails if not)  |
 
 ### Common Patches
 
 **Make a field optional** (remove from required array):
+
 ```json
 {
   "op": "replace",
@@ -540,6 +539,7 @@ Patches use the [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902) for
 ```
 
 **Make a field nullable** (add x-nullable extension):
+
 ```json
 {
   "op": "add",
@@ -549,6 +549,7 @@ Patches use the [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902) for
 ```
 
 **Change a field type**:
+
 ```json
 {
   "op": "replace",
@@ -568,6 +569,7 @@ bun run scripts/apply-patches.ts
 ### JSON Pointer Syntax
 
 Paths use [JSON Pointer (RFC 6901)](https://tools.ietf.org/html/rfc6901) syntax:
+
 - `/` separates path segments
 - `~0` escapes `~` characters
 - `~1` escapes `/` characters
@@ -575,6 +577,7 @@ Paths use [JSON Pointer (RFC 6901)](https://tools.ietf.org/html/rfc6901) syntax:
 - `-` refers to the end of an array (for `add` operations)
 
 Example paths:
+
 - `/definitions/Organization/required` - the required array
 - `/definitions/Organization/properties/name/type` - a property's type
 - `/paths/~1organizations~1{organization}/get/responses/200` - a response (note `~1` escapes `/`)

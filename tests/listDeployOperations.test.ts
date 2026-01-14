@@ -71,28 +71,30 @@ withMainLayer("listDeployOperations", (it) => {
     }),
   );
 
-  it.effect("should return ListDeployOperationsNotfound for non-existent deploy request number", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
-      const database = TEST_DATABASE;
-      const result = yield* listDeployOperations({
-        organization,
-        database,
-        number: 999999999,
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+  it.effect(
+    "should return ListDeployOperationsNotfound for non-existent deploy request number",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
+        const database = TEST_DATABASE;
+        const result = yield* listDeployOperations({
+          organization,
+          database,
+          number: 999999999,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      expect(result).toBeInstanceOf(ListDeployOperationsNotfound);
-      if (result instanceof ListDeployOperationsNotfound) {
-        expect(result._tag).toBe("ListDeployOperationsNotfound");
-        expect(result.organization).toBe(organization);
-        expect(result.database).toBe(database);
-        expect(result.number).toBe(999999999);
-      }
-    }),
+        expect(result).toBeInstanceOf(ListDeployOperationsNotfound);
+        if (result instanceof ListDeployOperationsNotfound) {
+          expect(result._tag).toBe("ListDeployOperationsNotfound");
+          expect(result.organization).toBe(organization);
+          expect(result.database).toBe(database);
+          expect(result.number).toBe(999999999);
+        }
+      }),
   );
 });

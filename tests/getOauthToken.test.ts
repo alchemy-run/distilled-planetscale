@@ -35,30 +35,32 @@ withMainLayer("getOauthToken", (it) => {
     expect(GetOauthTokenOutput.fields.oauth_accesses_by_resource).toBeDefined();
   });
 
-  it.effect("should return GetOauthTokenForbidden for non-existent token in valid organization", () =>
-    Effect.gen(function* () {
-      const { organization } = yield* Credentials;
+  it.effect(
+    "should return GetOauthTokenForbidden for non-existent token in valid organization",
+    () =>
+      Effect.gen(function* () {
+        const { organization } = yield* Credentials;
 
-      const result = yield* getOauthToken({
-        organization,
-        application_id: "this-application-definitely-does-not-exist-12345",
-        token_id: "this-token-definitely-does-not-exist-12345",
-      }).pipe(
-        Effect.matchEffect({
-          onFailure: (error) => Effect.succeed(error),
-          onSuccess: () => Effect.succeed(null),
-        }),
-      );
+        const result = yield* getOauthToken({
+          organization,
+          application_id: "this-application-definitely-does-not-exist-12345",
+          token_id: "this-token-definitely-does-not-exist-12345",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (error) => Effect.succeed(error),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        );
 
-      // API returns forbidden when accessing an application/token that doesn't exist in your organization
-      expect(result).toBeInstanceOf(GetOauthTokenForbidden);
-      if (result instanceof GetOauthTokenForbidden) {
-        expect(result._tag).toBe("GetOauthTokenForbidden");
-        expect(result.organization).toBe(organization);
-        expect(result.application_id).toBe("this-application-definitely-does-not-exist-12345");
-        expect(result.token_id).toBe("this-token-definitely-does-not-exist-12345");
-      }
-    }),
+        // API returns forbidden when accessing an application/token that doesn't exist in your organization
+        expect(result).toBeInstanceOf(GetOauthTokenForbidden);
+        if (result instanceof GetOauthTokenForbidden) {
+          expect(result._tag).toBe("GetOauthTokenForbidden");
+          expect(result.organization).toBe(organization);
+          expect(result.application_id).toBe("this-application-definitely-does-not-exist-12345");
+          expect(result.token_id).toBe("this-token-definitely-does-not-exist-12345");
+        }
+      }),
   );
 
   it.effect("should return GetOauthTokenNotfound for non-existent organization", () =>

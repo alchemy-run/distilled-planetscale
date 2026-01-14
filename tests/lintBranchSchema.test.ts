@@ -36,7 +36,14 @@ withMainLayer("lintBranchSchema", (it) => {
         branch: "main",
       }).pipe(
         Effect.catchTag("LintBranchSchemaNotfound", () =>
-          Effect.succeed({ current_page: 1, next_page: 0, next_page_url: "", prev_page: 0, prev_page_url: "", data: [] }),
+          Effect.succeed({
+            current_page: 1,
+            next_page: 0,
+            next_page_url: "",
+            prev_page: 0,
+            prev_page_url: "",
+            data: [],
+          }),
         ),
       );
       expect(result).toHaveProperty("data");

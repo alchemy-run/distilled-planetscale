@@ -43,10 +43,7 @@ const program = Effect.gen(function* () {
 });
 
 // Compose layers and run
-const PlanetScaleLive = Layer.mergeAll(
-  FetchHttpClient.layer,
-  ps.PlanetScaleCredentialsFromEnv,
-);
+const PlanetScaleLive = Layer.mergeAll(FetchHttpClient.layer, ps.PlanetScaleCredentialsFromEnv);
 
 program.pipe(Effect.provide(PlanetScaleLive), Effect.runPromise);
 ```
@@ -77,7 +74,7 @@ import * as ps from "distilled-planetscale";
 
 // From environment variables (recommended)
 // Reads PLANETSCALE_API_TOKEN and PLANETSCALE_ORGANIZATION
-Effect.provide(ps.PlanetScaleCredentialsFromEnv)
+Effect.provide(ps.PlanetScaleCredentialsFromEnv);
 ```
 
 Set the following environment variables:
@@ -97,9 +94,9 @@ import { FetchHttpClient } from "@effect/platform";
 // or for Node.js
 import { NodeHttpClient } from "@effect/platform-node";
 
-Effect.provide(FetchHttpClient.layer)
+Effect.provide(FetchHttpClient.layer);
 // or
-Effect.provide(NodeHttpClient.layer)
+Effect.provide(NodeHttpClient.layer);
 ```
 
 ## Complete Examples
@@ -147,10 +144,7 @@ const program = Effect.gen(function* () {
   yield* Console.log("Database deleted");
 });
 
-const PlanetScaleLive = Layer.mergeAll(
-  FetchHttpClient.layer,
-  ps.PlanetScaleCredentialsFromEnv,
-);
+const PlanetScaleLive = Layer.mergeAll(FetchHttpClient.layer, ps.PlanetScaleCredentialsFromEnv);
 
 program.pipe(Effect.provide(PlanetScaleLive), Effect.runPromise);
 ```
@@ -207,10 +201,7 @@ const program = Effect.gen(function* () {
   });
 });
 
-const PlanetScaleLive = Layer.mergeAll(
-  FetchHttpClient.layer,
-  ps.PlanetScaleCredentialsFromEnv,
-);
+const PlanetScaleLive = Layer.mergeAll(FetchHttpClient.layer, ps.PlanetScaleCredentialsFromEnv);
 
 program.pipe(Effect.provide(PlanetScaleLive), Effect.runPromise);
 ```
@@ -263,10 +254,7 @@ const program = Effect.gen(function* () {
   }
 });
 
-const PlanetScaleLive = Layer.mergeAll(
-  FetchHttpClient.layer,
-  ps.PlanetScaleCredentialsFromEnv,
-);
+const PlanetScaleLive = Layer.mergeAll(FetchHttpClient.layer, ps.PlanetScaleCredentialsFromEnv);
 
 program.pipe(Effect.provide(PlanetScaleLive), Effect.runPromise);
 ```
@@ -311,10 +299,7 @@ const program = Effect.gen(function* () {
   });
 });
 
-const PlanetScaleLive = Layer.mergeAll(
-  FetchHttpClient.layer,
-  ps.PlanetScaleCredentialsFromEnv,
-);
+const PlanetScaleLive = Layer.mergeAll(FetchHttpClient.layer, ps.PlanetScaleCredentialsFromEnv);
 
 program.pipe(Effect.provide(PlanetScaleLive), Effect.runPromise);
 ```
@@ -327,31 +312,31 @@ All operations return typed errors that can be pattern-matched:
 import { Effect } from "effect";
 import * as ps from "distilled-planetscale";
 
-const program = ps.getDatabase({
-  organization: "my-org",
-  database: "missing-db",
-}).pipe(
-  Effect.catchTags({
-    GetDatabaseNotfound: (error) =>
-      Effect.succeed({ found: false, message: error.message }),
-    PlanetScaleApiError: (error) =>
-      Effect.fail(new Error(`API error: ${JSON.stringify(error.body)}`)),
-    PlanetScaleParseError: (error) =>
-      Effect.fail(new Error(`Parse error: ${error.cause}`)),
-  }),
-);
+const program = ps
+  .getDatabase({
+    organization: "my-org",
+    database: "missing-db",
+  })
+  .pipe(
+    Effect.catchTags({
+      GetDatabaseNotfound: (error) => Effect.succeed({ found: false, message: error.message }),
+      PlanetScaleApiError: (error) =>
+        Effect.fail(new Error(`API error: ${JSON.stringify(error.body)}`)),
+      PlanetScaleParseError: (error) => Effect.fail(new Error(`Parse error: ${error.cause}`)),
+    }),
+  );
 ```
 
 ### Error Types
 
-| Error Type | Description |
-|------------|-------------|
-| `{Operation}Unauthorized` | Authentication failed (401) |
-| `{Operation}Forbidden` | Permission denied (403) |
-| `{Operation}Notfound` | Resource not found (404) |
-| `PlanetScaleApiError` | Uncatalogued API error (body: unknown) |
-| `PlanetScaleParseError` | Schema validation failure (body + cause) |
-| `ConfigError` | Missing configuration |
+| Error Type                | Description                              |
+| ------------------------- | ---------------------------------------- |
+| `{Operation}Unauthorized` | Authentication failed (401)              |
+| `{Operation}Forbidden`    | Permission denied (403)                  |
+| `{Operation}Notfound`     | Resource not found (404)                 |
+| `PlanetScaleApiError`     | Uncatalogued API error (body: unknown)   |
+| `PlanetScaleParseError`   | Schema validation failure (body + cause) |
+| `ConfigError`             | Missing configuration                    |
 
 ### Error Categories
 
@@ -364,18 +349,18 @@ import * as ps from "distilled-planetscale";
 ps.Category.isAuthError(error);
 ```
 
-| Category | Description |
-|----------|-------------|
-| `AuthError` | Authentication/authorization failures (401, 403) |
-| `BadRequestError` | Invalid request parameters (400) |
-| `ConflictError` | Resource state conflicts (409) |
-| `NotFoundError` | Resource not found (404) |
-| `QuotaError` | Quota/limit exceeded |
-| `ThrottlingError` | Rate limiting (429) |
-| `ServerError` | PlanetScale service errors (5xx) |
-| `NetworkError` | Network/transport failures |
-| `ParseError` | Response parsing failures |
-| `ConfigurationError` | Missing configuration |
+| Category             | Description                                      |
+| -------------------- | ------------------------------------------------ |
+| `AuthError`          | Authentication/authorization failures (401, 403) |
+| `BadRequestError`    | Invalid request parameters (400)                 |
+| `ConflictError`      | Resource state conflicts (409)                   |
+| `NotFoundError`      | Resource not found (404)                         |
+| `QuotaError`         | Quota/limit exceeded                             |
+| `ThrottlingError`    | Rate limiting (429)                              |
+| `ServerError`        | PlanetScale service errors (5xx)                 |
+| `NetworkError`       | Network/transport failures                       |
+| `ParseError`         | Response parsing failures                        |
+| `ConfigurationError` | Missing configuration                            |
 
 #### Category Predicates
 
@@ -385,16 +370,18 @@ Use predicates with `Effect.retry`:
 import { Effect } from "effect";
 import * as ps from "distilled-planetscale";
 
-const program = ps.createDatabase({
-  organization: "my-org",
-  name: "my-db",
-  cluster_size: "PS_10",
-}).pipe(
-  Effect.retry({
-    times: 3,
-    while: ps.Category.isThrottlingError,
-  }),
-);
+const program = ps
+  .createDatabase({
+    organization: "my-org",
+    name: "my-db",
+    cluster_size: "PS_10",
+  })
+  .pipe(
+    Effect.retry({
+      times: 3,
+      while: ps.Category.isThrottlingError,
+    }),
+  );
 ```
 
 Available predicates: `isAuthError`, `isNotFoundError`, `isConflictError`, `isThrottlingError`, `isServerError`, `isTransientError`.
@@ -405,26 +392,24 @@ Available predicates: `isAuthError`, `isNotFoundError`, `isConflictError`, `isTh
 import { Effect } from "effect";
 import * as ps from "distilled-planetscale";
 
-const program = ps.getDatabase({
-  organization: "my-org",
-  database: "my-db",
-}).pipe(
-  ps.Category.catchNotFoundError((err) =>
-    Effect.succeed({ fallback: true }),
-  ),
-);
+const program = ps
+  .getDatabase({
+    organization: "my-org",
+    database: "my-db",
+  })
+  .pipe(ps.Category.catchNotFoundError((err) => Effect.succeed({ fallback: true })));
 
 // Or catch multiple categories
-const program2 = ps.getDatabase({
-  organization: "my-org",
-  database: "my-db",
-}).pipe(
-  ps.Category.catchErrors(
-    ps.Category.NotFoundError,
-    ps.Category.AuthError,
-    (err) => Effect.succeed({ fallback: true }),
-  ),
-);
+const program2 = ps
+  .getDatabase({
+    organization: "my-org",
+    database: "my-db",
+  })
+  .pipe(
+    ps.Category.catchErrors(ps.Category.NotFoundError, ps.Category.AuthError, (err) =>
+      Effect.succeed({ fallback: true }),
+    ),
+  );
 ```
 
 ## Pagination
@@ -441,12 +426,10 @@ const program = Effect.gen(function* () {
   const { organization } = yield* ps.PlanetScaleCredentials;
 
   // Stream all pages
-  const allDatabases = yield* ps.listDatabases
-    .pages({ organization })
-    .pipe(
-      Stream.flatMap((page) => Stream.fromIterable(page.data)),
-      Stream.runCollect,
-    );
+  const allDatabases = yield* ps.listDatabases.pages({ organization }).pipe(
+    Stream.flatMap((page) => Stream.fromIterable(page.data)),
+    Stream.runCollect,
+  );
 
   console.log(`Found ${allDatabases.length} databases across all pages`);
 });
@@ -462,12 +445,10 @@ const program = Effect.gen(function* () {
   const { organization } = yield* ps.PlanetScaleCredentials;
 
   // Stream individual branches
-  const productionBranches = yield* ps.listBranches
-    .items({ organization, database: "my-db" })
-    .pipe(
-      Stream.filter((branch) => branch.production),
-      Stream.runCollect,
-    );
+  const productionBranches = yield* ps.listBranches.items({ organization, database: "my-db" }).pipe(
+    Stream.filter((branch) => branch.production),
+    Stream.runCollect,
+  );
 
   console.log(`Found ${productionBranches.length} production branches`);
 });
@@ -498,12 +479,12 @@ bun run generate
 
 HTTP binding traits are modeled as Schema annotations in [`src/client.ts`](./src/client.ts):
 
-| Trait | Annotation | Purpose |
-|-------|------------|---------|
-| HTTP Method | `ApiMethod` | GET, POST, PUT, PATCH, DELETE |
-| Path Template | `ApiPath` | URL path with parameter substitution |
-| Path Parameters | `ApiPathParams` | Parameters extracted from path |
-| Error Code | `ApiErrorCode` | Maps API error codes to error classes |
+| Trait           | Annotation      | Purpose                               |
+| --------------- | --------------- | ------------------------------------- |
+| HTTP Method     | `ApiMethod`     | GET, POST, PUT, PATCH, DELETE         |
+| Path Template   | `ApiPath`       | URL path with parameter substitution  |
+| Path Parameters | `ApiPathParams` | Parameters extracted from path        |
+| Error Code      | `ApiErrorCode`  | Maps API error codes to error classes |
 
 ### Generated Code Example
 
@@ -590,6 +571,7 @@ bun run format
 ## Available Operations
 
 ### Organizations
+
 - `listOrganizations` - List all organizations
 - `getOrganization` - Get organization details
 - `updateOrganization` - Update organization settings
@@ -597,6 +579,7 @@ bun run format
 - `listRegionsForOrganization` - List available regions
 
 ### Databases
+
 - `listDatabases` - List all databases
 - `createDatabase` - Create a new database
 - `getDatabase` - Get database details
@@ -605,6 +588,7 @@ bun run format
 - `listDatabaseRegions` - List database regions
 
 ### Branches
+
 - `listBranches` - List all branches
 - `createBranch` - Create a new branch
 - `getBranch` - Get branch details
@@ -615,6 +599,7 @@ bun run format
 - `lintBranchSchema` - Lint branch schema
 
 ### Deploy Requests
+
 - `listDeployRequests` - List deploy requests
 - `createDeployRequest` - Create a deploy request
 - `getDeployRequest` - Get deploy request details
@@ -623,6 +608,7 @@ bun run format
 - `cancelDeployRequest` - Cancel deploy request
 
 ### Passwords
+
 - `listPasswords` - List passwords
 - `createPassword` - Create a password
 - `getPassword` - Get password details
@@ -631,6 +617,7 @@ bun run format
 - `renewPassword` - Renew password
 
 ### Backups
+
 - `listBackups` - List backups
 - `createBackup` - Create a backup
 - `getBackup` - Get backup details
@@ -638,6 +625,7 @@ bun run format
 - `deleteBackup` - Delete a backup
 
 ### Webhooks
+
 - `listWebhooks` - List webhooks
 - `createWebhook` - Create a webhook
 - `getWebhook` - Get webhook details
@@ -646,6 +634,7 @@ bun run format
 - `testWebhook` - Test a webhook
 
 ### Service Tokens
+
 - `listServiceTokens` - List service tokens
 - `createServiceToken` - Create a service token
 - `getServiceToken` - Get service token details
