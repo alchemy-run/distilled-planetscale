@@ -221,36 +221,36 @@ function escapeJsDoc(text: string): string {
 
 function formatDescription(description: string | undefined): string[] {
   if (!description) return [];
-  
+
   // Clean up the description - remove markdown tables and authorization sections
   // for cleaner JSDoc output
   const lines = description.split("\n");
   const result: string[] = [];
   let inTable = false;
-  
+
   for (const line of lines) {
     const trimmed = line.trim();
-    
+
     // Skip authorization sections (markdown headers starting with ###)
     if (trimmed.startsWith("### Authorization")) {
       break; // Stop processing after Authorization header
     }
-    
+
     // Skip markdown table markers
     if (trimmed.startsWith("|") || trimmed.startsWith("| :")) {
       inTable = true;
       continue;
     }
-    
+
     if (inTable && !trimmed.startsWith("|")) {
       inTable = false;
     }
-    
+
     if (!inTable && trimmed) {
       result.push(escapeJsDoc(trimmed));
     }
   }
-  
+
   return result;
 }
 
@@ -260,12 +260,12 @@ function generateJsDoc(
   parameters: Parameter[],
 ): string {
   const lines: string[] = ["/**"];
-  
+
   // Add summary as the first line
   if (summary) {
     lines.push(` * ${escapeJsDoc(summary)}`);
   }
-  
+
   // Add description if different from summary
   const descLines = formatDescription(description);
   if (descLines.length > 0) {
@@ -278,7 +278,7 @@ function generateJsDoc(
       }
     }
   }
-  
+
   // Add @param tags for parameters with descriptions
   const documentedParams = parameters.filter((p) => p.description && p.in !== "body");
   if (documentedParams.length > 0) {
@@ -288,7 +288,7 @@ function generateJsDoc(
       lines.push(` * @param ${param.name} - ${desc}`);
     }
   }
-  
+
   // Add body parameter properties if present
   const bodyParam = parameters.find((p) => p.in === "body");
   if (bodyParam?.schema?.properties) {
@@ -298,14 +298,14 @@ function generateJsDoc(
       }
     }
   }
-  
+
   lines.push(" */");
-  
+
   // Don't generate empty JSDoc
   if (lines.length === 2) {
     return "";
   }
-  
+
   return lines.join("\n");
 }
 
@@ -315,7 +315,12 @@ function generateInputSchema(
   pathTemplate: string,
   parameters: Parameter[],
   spec: OpenAPISpec,
-): { inputSchemaCode: string; inputSchemaName: string; pathParamInfos: PathParamInfo[]; inputType: string } {
+): {
+  inputSchemaCode: string;
+  inputSchemaName: string;
+  pathParamInfos: PathParamInfo[];
+  inputType: string;
+} {
   const inputSchemaName = `${toPascalCase(operationId)}Input`;
   const pathParams = parameters.filter((p) => p.in === "path");
   const queryParams = parameters.filter((p) => p.in === "query");
@@ -520,11 +525,14 @@ function generateOperation(
   );
 
   // Generate error classes
-  const { errorCode, errorNames } = generateErrorClasses(operationId, operation.responses, pathParamInfos);
+  const { errorCode, errorNames } = generateErrorClasses(
+    operationId,
+    operation.responses,
+    pathParamInfos,
+  );
 
   // Generate the operation function
-  const errorsArray =
-    errorNames.length > 0 ? `[${errorNames.join(", ")}]` : "[]";
+  const errorsArray = errorNames.length > 0 ? `[${errorNames.join(", ")}]` : "[]";
 
   const operationCodeWithJsDoc = jsDoc
     ? `${jsDoc}
@@ -540,7 +548,7 @@ export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
 }));`;
 
   // Combine all code
-  const imports = `import { Schema } from "effect";
+  const imports = `import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";`;
 
   const code = [
@@ -615,7 +623,9 @@ async function main() {
       const operation = pathItem[method];
       if (!operation) continue;
 
-      console.log(`Generating ${method.toUpperCase()} ${pathTemplate} (${operation.operationId})...`);
+      console.log(
+        `Generating ${method.toUpperCase()} ${pathTemplate} (${operation.operationId})...`,
+      );
 
       try {
         const generated = generateOperation(spec, pathTemplate, method, operation);
