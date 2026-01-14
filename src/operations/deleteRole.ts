@@ -1,73 +1,20 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteRoleInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
   successor: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}" }));
 export type DeleteRoleInput = typeof DeleteRoleInput.Type;
 
 // Output Schema
 export const DeleteRoleOutput = Schema.Void;
 export type DeleteRoleOutput = typeof DeleteRoleOutput.Type;
-
-// Error Schemas
-export class DeleteRoleUnauthorized extends Schema.TaggedError<DeleteRoleUnauthorized>()(
-  "DeleteRoleUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteRoleForbidden extends Schema.TaggedError<DeleteRoleForbidden>()(
-  "DeleteRoleForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteRoleNotfound extends Schema.TaggedError<DeleteRoleNotfound>()(
-  "DeleteRoleNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteRoleInternalservererror extends Schema.TaggedError<DeleteRoleInternalservererror>()(
-  "DeleteRoleInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -82,5 +29,4 @@ export class DeleteRoleInternalservererror extends Schema.TaggedError<DeleteRole
 export const deleteRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteRoleInput,
   outputSchema: DeleteRoleOutput,
-  errors: [DeleteRoleUnauthorized, DeleteRoleForbidden, DeleteRoleNotfound, DeleteRoleInternalservererror],
 }));

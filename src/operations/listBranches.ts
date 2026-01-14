@@ -1,22 +1,18 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListBranchesInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   q: Schema.optional(Schema.String),
   production: Schema.optional(Schema.Boolean),
   safe_migrations: Schema.optional(Schema.Boolean),
   order: Schema.optional(Schema.Literal("asc", "desc")),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/branches`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches" }));
 export type ListBranchesInput = typeof ListBranchesInput.Type;
 
 // Output Schema
@@ -83,47 +79,6 @@ export const ListBranchesOutput = Schema.Struct({
 });
 export type ListBranchesOutput = typeof ListBranchesOutput.Type;
 
-// Error Schemas
-export class ListBranchesUnauthorized extends Schema.TaggedError<ListBranchesUnauthorized>()(
-  "ListBranchesUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListBranchesForbidden extends Schema.TaggedError<ListBranchesForbidden>()(
-  "ListBranchesForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListBranchesNotfound extends Schema.TaggedError<ListBranchesNotfound>()(
-  "ListBranchesNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListBranchesInternalservererror extends Schema.TaggedError<ListBranchesInternalservererror>()(
-  "ListBranchesInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List branches
@@ -140,5 +95,4 @@ export class ListBranchesInternalservererror extends Schema.TaggedError<ListBran
 export const listBranches = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBranchesInput,
   outputSchema: ListBranchesOutput,
-  errors: [ListBranchesUnauthorized, ListBranchesForbidden, ListBranchesNotfound, ListBranchesInternalservererror],
 }));

@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetDatabaseInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}" }));
 export type GetDatabaseInput = typeof GetDatabaseInput.Type;
 
 // Output Schema
@@ -76,47 +72,6 @@ export const GetDatabaseOutput = Schema.Struct({
 });
 export type GetDatabaseOutput = typeof GetDatabaseOutput.Type;
 
-// Error Schemas
-export class GetDatabaseUnauthorized extends Schema.TaggedError<GetDatabaseUnauthorized>()(
-  "GetDatabaseUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetDatabaseForbidden extends Schema.TaggedError<GetDatabaseForbidden>()(
-  "GetDatabaseForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetDatabaseNotfound extends Schema.TaggedError<GetDatabaseNotfound>()(
-  "GetDatabaseNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetDatabaseInternalservererror extends Schema.TaggedError<GetDatabaseInternalservererror>()(
-  "GetDatabaseInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a database
@@ -127,5 +82,4 @@ export class GetDatabaseInternalservererror extends Schema.TaggedError<GetDataba
 export const getDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDatabaseInput,
   outputSchema: GetDatabaseOutput,
-  errors: [GetDatabaseUnauthorized, GetDatabaseForbidden, GetDatabaseNotfound, GetDatabaseInternalservererror],
 }));

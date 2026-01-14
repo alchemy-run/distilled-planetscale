@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateOrganizationTeamInput = Schema.Struct({
-  organization: Schema.String,
-  team: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  team: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
   description: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; team: string }) => `/organizations/${input.organization}/teams/${input.team}`,
-  [ApiPathParams]: ["organization", "team"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/teams/{team}" }));
 export type UpdateOrganizationTeamInput = typeof UpdateOrganizationTeamInput.Type;
 
 // Output Schema
@@ -60,67 +56,6 @@ export const UpdateOrganizationTeamOutput = Schema.Struct({
 });
 export type UpdateOrganizationTeamOutput = typeof UpdateOrganizationTeamOutput.Type;
 
-// Error Schemas
-export class UpdateOrganizationTeamBadrequest extends Schema.TaggedError<UpdateOrganizationTeamBadrequest>()(
-  "UpdateOrganizationTeamBadrequest",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "bad_request" },
-).pipe(Category.withBadRequestError) {}
-
-export class UpdateOrganizationTeamUnauthorized extends Schema.TaggedError<UpdateOrganizationTeamUnauthorized>()(
-  "UpdateOrganizationTeamUnauthorized",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateOrganizationTeamForbidden extends Schema.TaggedError<UpdateOrganizationTeamForbidden>()(
-  "UpdateOrganizationTeamForbidden",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateOrganizationTeamNotfound extends Schema.TaggedError<UpdateOrganizationTeamNotfound>()(
-  "UpdateOrganizationTeamNotfound",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateOrganizationTeamUnprocessableentity extends Schema.TaggedError<UpdateOrganizationTeamUnprocessableentity>()(
-  "UpdateOrganizationTeamUnprocessableentity",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class UpdateOrganizationTeamInternalservererror extends Schema.TaggedError<UpdateOrganizationTeamInternalservererror>()(
-  "UpdateOrganizationTeamInternalservererror",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update an organization team
@@ -133,5 +68,4 @@ export class UpdateOrganizationTeamInternalservererror extends Schema.TaggedErro
 export const updateOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationTeamInput,
   outputSchema: UpdateOrganizationTeamOutput,
-  errors: [UpdateOrganizationTeamBadrequest, UpdateOrganizationTeamUnauthorized, UpdateOrganizationTeamForbidden, UpdateOrganizationTeamNotfound, UpdateOrganizationTeamUnprocessableentity, UpdateOrganizationTeamInternalservererror],
 }));

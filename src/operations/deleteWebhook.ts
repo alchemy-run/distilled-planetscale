@@ -1,67 +1,18 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteWebhookInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/webhooks/{id}" }));
 export type DeleteWebhookInput = typeof DeleteWebhookInput.Type;
 
 // Output Schema
 export const DeleteWebhookOutput = Schema.Void;
 export type DeleteWebhookOutput = typeof DeleteWebhookOutput.Type;
-
-// Error Schemas
-export class DeleteWebhookUnauthorized extends Schema.TaggedError<DeleteWebhookUnauthorized>()(
-  "DeleteWebhookUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteWebhookForbidden extends Schema.TaggedError<DeleteWebhookForbidden>()(
-  "DeleteWebhookForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteWebhookNotfound extends Schema.TaggedError<DeleteWebhookNotfound>()(
-  "DeleteWebhookNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteWebhookInternalservererror extends Schema.TaggedError<DeleteWebhookInternalservererror>()(
-  "DeleteWebhookInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -74,5 +25,4 @@ export class DeleteWebhookInternalservererror extends Schema.TaggedError<DeleteW
 export const deleteWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteWebhookInput,
   outputSchema: DeleteWebhookOutput,
-  errors: [DeleteWebhookUnauthorized, DeleteWebhookForbidden, DeleteWebhookNotfound, DeleteWebhookInternalservererror],
 }));

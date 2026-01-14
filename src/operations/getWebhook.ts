@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetWebhookInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/webhooks/{id}" }));
 export type GetWebhookInput = typeof GetWebhookInput.Type;
 
 // Output Schema
@@ -29,51 +25,6 @@ export const GetWebhookOutput = Schema.Struct({
 });
 export type GetWebhookOutput = typeof GetWebhookOutput.Type;
 
-// Error Schemas
-export class GetWebhookUnauthorized extends Schema.TaggedError<GetWebhookUnauthorized>()(
-  "GetWebhookUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetWebhookForbidden extends Schema.TaggedError<GetWebhookForbidden>()(
-  "GetWebhookForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetWebhookNotfound extends Schema.TaggedError<GetWebhookNotfound>()(
-  "GetWebhookNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetWebhookInternalservererror extends Schema.TaggedError<GetWebhookInternalservererror>()(
-  "GetWebhookInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a webhook
@@ -85,5 +36,4 @@ export class GetWebhookInternalservererror extends Schema.TaggedError<GetWebhook
 export const getWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetWebhookInput,
   outputSchema: GetWebhookOutput,
-  errors: [GetWebhookUnauthorized, GetWebhookForbidden, GetWebhookNotfound, GetWebhookInternalservererror],
 }));

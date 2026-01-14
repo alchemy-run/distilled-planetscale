@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetDatabasePostgresCidrInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }));
 export type GetDatabasePostgresCidrInput = typeof GetDatabasePostgresCidrInput.Type;
 
 // Output Schema
@@ -31,62 +27,6 @@ export const GetDatabasePostgresCidrOutput = Schema.Struct({
 });
 export type GetDatabasePostgresCidrOutput = typeof GetDatabasePostgresCidrOutput.Type;
 
-// Error Schemas
-export class GetDatabasePostgresCidrUnauthorized extends Schema.TaggedError<GetDatabasePostgresCidrUnauthorized>()(
-  "GetDatabasePostgresCidrUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetDatabasePostgresCidrForbidden extends Schema.TaggedError<GetDatabasePostgresCidrForbidden>()(
-  "GetDatabasePostgresCidrForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetDatabasePostgresCidrNotfound extends Schema.TaggedError<GetDatabasePostgresCidrNotfound>()(
-  "GetDatabasePostgresCidrNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetDatabasePostgresCidrUnprocessableentity extends Schema.TaggedError<GetDatabasePostgresCidrUnprocessableentity>()(
-  "GetDatabasePostgresCidrUnprocessableentity",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class GetDatabasePostgresCidrInternalservererror extends Schema.TaggedError<GetDatabasePostgresCidrInternalservererror>()(
-  "GetDatabasePostgresCidrInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get an IP restriction entry
@@ -98,5 +38,4 @@ export class GetDatabasePostgresCidrInternalservererror extends Schema.TaggedErr
 export const getDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDatabasePostgresCidrInput,
   outputSchema: GetDatabasePostgresCidrOutput,
-  errors: [GetDatabasePostgresCidrUnauthorized, GetDatabasePostgresCidrForbidden, GetDatabasePostgresCidrNotfound, GetDatabasePostgresCidrUnprocessableentity, GetDatabasePostgresCidrInternalservererror],
 }));

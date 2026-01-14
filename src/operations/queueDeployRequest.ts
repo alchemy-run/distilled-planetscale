@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const QueueDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
   instant_ddl: Schema.optional(Schema.Boolean),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/deploy`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/deploy" }));
 export type QueueDeployRequestInput = typeof QueueDeployRequestInput.Type;
 
 // Output Schema
@@ -149,51 +145,6 @@ export const QueueDeployRequestOutput = Schema.Struct({
 });
 export type QueueDeployRequestOutput = typeof QueueDeployRequestOutput.Type;
 
-// Error Schemas
-export class QueueDeployRequestUnauthorized extends Schema.TaggedError<QueueDeployRequestUnauthorized>()(
-  "QueueDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class QueueDeployRequestForbidden extends Schema.TaggedError<QueueDeployRequestForbidden>()(
-  "QueueDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class QueueDeployRequestNotfound extends Schema.TaggedError<QueueDeployRequestNotfound>()(
-  "QueueDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class QueueDeployRequestInternalservererror extends Schema.TaggedError<QueueDeployRequestInternalservererror>()(
-  "QueueDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Queue a deploy request
@@ -206,5 +157,4 @@ export class QueueDeployRequestInternalservererror extends Schema.TaggedError<Qu
 export const queueDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: QueueDeployRequestInput,
   outputSchema: QueueDeployRequestOutput,
-  errors: [QueueDeployRequestUnauthorized, QueueDeployRequestForbidden, QueueDeployRequestNotfound, QueueDeployRequestInternalservererror],
 }));

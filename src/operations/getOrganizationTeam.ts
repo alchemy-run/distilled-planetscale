@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetOrganizationTeamInput = Schema.Struct({
-  organization: Schema.String,
-  team: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; team: string }) => `/organizations/${input.organization}/teams/${input.team}`,
-  [ApiPathParams]: ["organization", "team"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  team: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/teams/{team}" }));
 export type GetOrganizationTeamInput = typeof GetOrganizationTeamInput.Type;
 
 // Output Schema
@@ -58,67 +54,6 @@ export const GetOrganizationTeamOutput = Schema.Struct({
 });
 export type GetOrganizationTeamOutput = typeof GetOrganizationTeamOutput.Type;
 
-// Error Schemas
-export class GetOrganizationTeamBadrequest extends Schema.TaggedError<GetOrganizationTeamBadrequest>()(
-  "GetOrganizationTeamBadrequest",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "bad_request" },
-).pipe(Category.withBadRequestError) {}
-
-export class GetOrganizationTeamUnauthorized extends Schema.TaggedError<GetOrganizationTeamUnauthorized>()(
-  "GetOrganizationTeamUnauthorized",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetOrganizationTeamForbidden extends Schema.TaggedError<GetOrganizationTeamForbidden>()(
-  "GetOrganizationTeamForbidden",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetOrganizationTeamNotfound extends Schema.TaggedError<GetOrganizationTeamNotfound>()(
-  "GetOrganizationTeamNotfound",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetOrganizationTeamUnprocessableentity extends Schema.TaggedError<GetOrganizationTeamUnprocessableentity>()(
-  "GetOrganizationTeamUnprocessableentity",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class GetOrganizationTeamInternalservererror extends Schema.TaggedError<GetOrganizationTeamInternalservererror>()(
-  "GetOrganizationTeamInternalservererror",
-  {
-    organization: Schema.String,
-    team: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get an organization team
@@ -129,5 +64,4 @@ export class GetOrganizationTeamInternalservererror extends Schema.TaggedError<G
 export const getOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationTeamInput,
   outputSchema: GetOrganizationTeamOutput,
-  errors: [GetOrganizationTeamBadrequest, GetOrganizationTeamUnauthorized, GetOrganizationTeamForbidden, GetOrganizationTeamNotfound, GetOrganizationTeamUnprocessableentity, GetOrganizationTeamInternalservererror],
 }));

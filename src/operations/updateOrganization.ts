@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateOrganizationInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   billing_email: Schema.optional(Schema.String),
   idp_managed_roles: Schema.optional(Schema.Boolean),
   invoice_budget_amount: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}" }));
 export type UpdateOrganizationInput = typeof UpdateOrganizationInput.Type;
 
 // Output Schema
@@ -40,43 +36,6 @@ export const UpdateOrganizationOutput = Schema.Struct({
 });
 export type UpdateOrganizationOutput = typeof UpdateOrganizationOutput.Type;
 
-// Error Schemas
-export class UpdateOrganizationUnauthorized extends Schema.TaggedError<UpdateOrganizationUnauthorized>()(
-  "UpdateOrganizationUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateOrganizationForbidden extends Schema.TaggedError<UpdateOrganizationForbidden>()(
-  "UpdateOrganizationForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateOrganizationNotfound extends Schema.TaggedError<UpdateOrganizationNotfound>()(
-  "UpdateOrganizationNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateOrganizationInternalservererror extends Schema.TaggedError<UpdateOrganizationInternalservererror>()(
-  "UpdateOrganizationInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update an organization
@@ -89,5 +48,4 @@ export class UpdateOrganizationInternalservererror extends Schema.TaggedError<Up
 export const updateOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationInput,
   outputSchema: UpdateOrganizationOutput,
-  errors: [UpdateOrganizationUnauthorized, UpdateOrganizationForbidden, UpdateOrganizationNotfound, UpdateOrganizationInternalservererror],
 }));

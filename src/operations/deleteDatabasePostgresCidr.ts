@@ -1,78 +1,18 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteDatabasePostgresCidrInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }));
 export type DeleteDatabasePostgresCidrInput = typeof DeleteDatabasePostgresCidrInput.Type;
 
 // Output Schema
 export const DeleteDatabasePostgresCidrOutput = Schema.Void;
 export type DeleteDatabasePostgresCidrOutput = typeof DeleteDatabasePostgresCidrOutput.Type;
-
-// Error Schemas
-export class DeleteDatabasePostgresCidrUnauthorized extends Schema.TaggedError<DeleteDatabasePostgresCidrUnauthorized>()(
-  "DeleteDatabasePostgresCidrUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteDatabasePostgresCidrForbidden extends Schema.TaggedError<DeleteDatabasePostgresCidrForbidden>()(
-  "DeleteDatabasePostgresCidrForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteDatabasePostgresCidrNotfound extends Schema.TaggedError<DeleteDatabasePostgresCidrNotfound>()(
-  "DeleteDatabasePostgresCidrNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteDatabasePostgresCidrUnprocessableentity extends Schema.TaggedError<DeleteDatabasePostgresCidrUnprocessableentity>()(
-  "DeleteDatabasePostgresCidrUnprocessableentity",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class DeleteDatabasePostgresCidrInternalservererror extends Schema.TaggedError<DeleteDatabasePostgresCidrInternalservererror>()(
-  "DeleteDatabasePostgresCidrInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -85,5 +25,4 @@ export class DeleteDatabasePostgresCidrInternalservererror extends Schema.Tagged
 export const deleteDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteDatabasePostgresCidrInput,
   outputSchema: DeleteDatabasePostgresCidrOutput,
-  errors: [DeleteDatabasePostgresCidrUnauthorized, DeleteDatabasePostgresCidrForbidden, DeleteDatabasePostgresCidrNotfound, DeleteDatabasePostgresCidrUnprocessableentity, DeleteDatabasePostgresCidrInternalservererror],
 }));

@@ -1,17 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const GetOauthTokenInput = Schema.Struct({
-  organization: Schema.String,
-  application_id: Schema.String,
-  token_id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
-  [ApiPathParams]: ["organization", "application_id", "token_id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  application_id: Schema.String.pipe(T.PathParam()),
+  token_id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/oauth-applications/{application_id}/tokens/{token_id}" }));
 export type GetOauthTokenInput = typeof GetOauthTokenInput.Type;
 
 // Output Schema
@@ -19,8 +16,8 @@ export const GetOauthTokenOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   display_name: Schema.String,
-  token: Schema.String,
-  plain_text_refresh_token: Schema.String,
+  token: SensitiveString,
+  plain_text_refresh_token: SensitiveString,
   avatar_url: Schema.String,
   created_at: Schema.String,
   updated_at: Schema.String,
@@ -95,51 +92,6 @@ export const GetOauthTokenOutput = Schema.Struct({
 });
 export type GetOauthTokenOutput = typeof GetOauthTokenOutput.Type;
 
-// Error Schemas
-export class GetOauthTokenUnauthorized extends Schema.TaggedError<GetOauthTokenUnauthorized>()(
-  "GetOauthTokenUnauthorized",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    token_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetOauthTokenForbidden extends Schema.TaggedError<GetOauthTokenForbidden>()(
-  "GetOauthTokenForbidden",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    token_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetOauthTokenNotfound extends Schema.TaggedError<GetOauthTokenNotfound>()(
-  "GetOauthTokenNotfound",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    token_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetOauthTokenInternalservererror extends Schema.TaggedError<GetOauthTokenInternalservererror>()(
-  "GetOauthTokenInternalservererror",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    token_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get an OAuth token
@@ -151,5 +103,4 @@ export class GetOauthTokenInternalservererror extends Schema.TaggedError<GetOaut
 export const getOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOauthTokenInput,
   outputSchema: GetOauthTokenOutput,
-  errors: [GetOauthTokenUnauthorized, GetOauthTokenForbidden, GetOauthTokenNotfound, GetOauthTokenInternalservererror],
 }));

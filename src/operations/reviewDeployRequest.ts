@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ReviewDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
   state: Schema.optional(Schema.Literal("commented", "approved")),
   body: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews" }));
 export type ReviewDeployRequestInput = typeof ReviewDeployRequestInput.Type;
 
 // Output Schema
@@ -32,51 +28,6 @@ export const ReviewDeployRequestOutput = Schema.Struct({
 });
 export type ReviewDeployRequestOutput = typeof ReviewDeployRequestOutput.Type;
 
-// Error Schemas
-export class ReviewDeployRequestUnauthorized extends Schema.TaggedError<ReviewDeployRequestUnauthorized>()(
-  "ReviewDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ReviewDeployRequestForbidden extends Schema.TaggedError<ReviewDeployRequestForbidden>()(
-  "ReviewDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ReviewDeployRequestNotfound extends Schema.TaggedError<ReviewDeployRequestNotfound>()(
-  "ReviewDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ReviewDeployRequestInternalservererror extends Schema.TaggedError<ReviewDeployRequestInternalservererror>()(
-  "ReviewDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Review a deploy request
@@ -92,5 +43,4 @@ export class ReviewDeployRequestInternalservererror extends Schema.TaggedError<R
 export const reviewDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ReviewDeployRequestInput,
   outputSchema: ReviewDeployRequestOutput,
-  errors: [ReviewDeployRequestUnauthorized, ReviewDeployRequestForbidden, ReviewDeployRequestNotfound, ReviewDeployRequestInternalservererror],
 }));

@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListReadOnlyRegionsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/read-only-regions`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/read-only-regions" }));
 export type ListReadOnlyRegionsInput = typeof ListReadOnlyRegionsInput.Type;
 
 // Output Schema
@@ -48,47 +44,6 @@ export const ListReadOnlyRegionsOutput = Schema.Struct({
 });
 export type ListReadOnlyRegionsOutput = typeof ListReadOnlyRegionsOutput.Type;
 
-// Error Schemas
-export class ListReadOnlyRegionsUnauthorized extends Schema.TaggedError<ListReadOnlyRegionsUnauthorized>()(
-  "ListReadOnlyRegionsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListReadOnlyRegionsForbidden extends Schema.TaggedError<ListReadOnlyRegionsForbidden>()(
-  "ListReadOnlyRegionsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListReadOnlyRegionsNotfound extends Schema.TaggedError<ListReadOnlyRegionsNotfound>()(
-  "ListReadOnlyRegionsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListReadOnlyRegionsInternalservererror extends Schema.TaggedError<ListReadOnlyRegionsInternalservererror>()(
-  "ListReadOnlyRegionsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List read-only regions
@@ -103,5 +58,4 @@ export class ListReadOnlyRegionsInternalservererror extends Schema.TaggedError<L
 export const listReadOnlyRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListReadOnlyRegionsInput,
   outputSchema: ListReadOnlyRegionsOutput,
-  errors: [ListReadOnlyRegionsUnauthorized, ListReadOnlyRegionsForbidden, ListReadOnlyRegionsNotfound, ListReadOnlyRegionsInternalservererror],
 }));

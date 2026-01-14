@@ -1,12 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListBackupsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   all: Schema.optional(Schema.Boolean),
   state: Schema.optional(Schema.Literal("pending", "running", "success", "failed", "canceled", "ignored")),
   policy: Schema.optional(Schema.String),
@@ -16,11 +16,7 @@ export const ListBackupsInput = Schema.Struct({
   production: Schema.optional(Schema.Boolean),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/backups" }));
 export type ListBackupsInput = typeof ListBackupsInput.Type;
 
 // Output Schema
@@ -93,51 +89,6 @@ export const ListBackupsOutput = Schema.Struct({
 });
 export type ListBackupsOutput = typeof ListBackupsOutput.Type;
 
-// Error Schemas
-export class ListBackupsUnauthorized extends Schema.TaggedError<ListBackupsUnauthorized>()(
-  "ListBackupsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListBackupsForbidden extends Schema.TaggedError<ListBackupsForbidden>()(
-  "ListBackupsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListBackupsNotfound extends Schema.TaggedError<ListBackupsNotfound>()(
-  "ListBackupsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListBackupsInternalservererror extends Schema.TaggedError<ListBackupsInternalservererror>()(
-  "ListBackupsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List backups
@@ -158,5 +109,4 @@ export class ListBackupsInternalservererror extends Schema.TaggedError<ListBacku
 export const listBackups = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBackupsInput,
   outputSchema: ListBackupsOutput,
-  errors: [ListBackupsUnauthorized, ListBackupsForbidden, ListBackupsNotfound, ListBackupsInternalservererror],
 }));

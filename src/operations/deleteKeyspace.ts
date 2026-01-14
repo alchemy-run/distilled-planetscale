@@ -1,72 +1,19 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteKeyspaceInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  keyspace: Schema.String,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}`,
-  [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  keyspace: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}" }));
 export type DeleteKeyspaceInput = typeof DeleteKeyspaceInput.Type;
 
 // Output Schema
 export const DeleteKeyspaceOutput = Schema.Void;
 export type DeleteKeyspaceOutput = typeof DeleteKeyspaceOutput.Type;
-
-// Error Schemas
-export class DeleteKeyspaceUnauthorized extends Schema.TaggedError<DeleteKeyspaceUnauthorized>()(
-  "DeleteKeyspaceUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    keyspace: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteKeyspaceForbidden extends Schema.TaggedError<DeleteKeyspaceForbidden>()(
-  "DeleteKeyspaceForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    keyspace: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteKeyspaceNotfound extends Schema.TaggedError<DeleteKeyspaceNotfound>()(
-  "DeleteKeyspaceNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    keyspace: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteKeyspaceInternalservererror extends Schema.TaggedError<DeleteKeyspaceInternalservererror>()(
-  "DeleteKeyspaceInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    keyspace: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -80,5 +27,4 @@ export class DeleteKeyspaceInternalservererror extends Schema.TaggedError<Delete
 export const deleteKeyspace = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteKeyspaceInput,
   outputSchema: DeleteKeyspaceOutput,
-  errors: [DeleteKeyspaceUnauthorized, DeleteKeyspaceForbidden, DeleteKeyspaceNotfound, DeleteKeyspaceInternalservererror],
 }));

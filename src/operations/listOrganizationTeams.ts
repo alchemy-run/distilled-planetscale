@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListOrganizationTeamsInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   q: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/teams`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/teams" }));
 export type ListOrganizationTeamsInput = typeof ListOrganizationTeamsInput.Type;
 
 // Output Schema
@@ -65,61 +61,6 @@ export const ListOrganizationTeamsOutput = Schema.Struct({
 });
 export type ListOrganizationTeamsOutput = typeof ListOrganizationTeamsOutput.Type;
 
-// Error Schemas
-export class ListOrganizationTeamsBadrequest extends Schema.TaggedError<ListOrganizationTeamsBadrequest>()(
-  "ListOrganizationTeamsBadrequest",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "bad_request" },
-).pipe(Category.withBadRequestError) {}
-
-export class ListOrganizationTeamsUnauthorized extends Schema.TaggedError<ListOrganizationTeamsUnauthorized>()(
-  "ListOrganizationTeamsUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListOrganizationTeamsForbidden extends Schema.TaggedError<ListOrganizationTeamsForbidden>()(
-  "ListOrganizationTeamsForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListOrganizationTeamsNotfound extends Schema.TaggedError<ListOrganizationTeamsNotfound>()(
-  "ListOrganizationTeamsNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListOrganizationTeamsUnprocessableentity extends Schema.TaggedError<ListOrganizationTeamsUnprocessableentity>()(
-  "ListOrganizationTeamsUnprocessableentity",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class ListOrganizationTeamsInternalservererror extends Schema.TaggedError<ListOrganizationTeamsInternalservererror>()(
-  "ListOrganizationTeamsInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List teams in an organization
@@ -130,5 +71,4 @@ export class ListOrganizationTeamsInternalservererror extends Schema.TaggedError
 export const listOrganizationTeams = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationTeamsInput,
   outputSchema: ListOrganizationTeamsOutput,
-  errors: [ListOrganizationTeamsBadrequest, ListOrganizationTeamsUnauthorized, ListOrganizationTeamsForbidden, ListOrganizationTeamsNotfound, ListOrganizationTeamsUnprocessableentity, ListOrganizationTeamsInternalservererror],
 }));

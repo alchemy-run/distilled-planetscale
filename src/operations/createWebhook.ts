@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CreateWebhookInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   url: Schema.String,
   enabled: Schema.optional(Schema.Boolean),
   events: Schema.optional(Schema.Array(Schema.String)),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/webhooks" }));
 export type CreateWebhookInput = typeof CreateWebhookInput.Type;
 
 // Output Schema
@@ -31,47 +27,6 @@ export const CreateWebhookOutput = Schema.Struct({
 });
 export type CreateWebhookOutput = typeof CreateWebhookOutput.Type;
 
-// Error Schemas
-export class CreateWebhookUnauthorized extends Schema.TaggedError<CreateWebhookUnauthorized>()(
-  "CreateWebhookUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateWebhookForbidden extends Schema.TaggedError<CreateWebhookForbidden>()(
-  "CreateWebhookForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateWebhookNotfound extends Schema.TaggedError<CreateWebhookNotfound>()(
-  "CreateWebhookNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateWebhookInternalservererror extends Schema.TaggedError<CreateWebhookInternalservererror>()(
-  "CreateWebhookInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a webhook
@@ -85,5 +40,4 @@ export class CreateWebhookInternalservererror extends Schema.TaggedError<CreateW
 export const createWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateWebhookInput,
   outputSchema: CreateWebhookOutput,
-  errors: [CreateWebhookUnauthorized, CreateWebhookForbidden, CreateWebhookNotfound, CreateWebhookInternalservererror],
 }));

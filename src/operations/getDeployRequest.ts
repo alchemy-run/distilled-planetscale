@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}" }));
 export type GetDeployRequestInput = typeof GetDeployRequestInput.Type;
 
 // Output Schema
@@ -148,51 +144,6 @@ export const GetDeployRequestOutput = Schema.Struct({
 });
 export type GetDeployRequestOutput = typeof GetDeployRequestOutput.Type;
 
-// Error Schemas
-export class GetDeployRequestUnauthorized extends Schema.TaggedError<GetDeployRequestUnauthorized>()(
-  "GetDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetDeployRequestForbidden extends Schema.TaggedError<GetDeployRequestForbidden>()(
-  "GetDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetDeployRequestNotfound extends Schema.TaggedError<GetDeployRequestNotfound>()(
-  "GetDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetDeployRequestInternalservererror extends Schema.TaggedError<GetDeployRequestInternalservererror>()(
-  "GetDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a deploy request
@@ -204,5 +155,4 @@ export class GetDeployRequestInternalservererror extends Schema.TaggedError<GetD
 export const getDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeployRequestInput,
   outputSchema: GetDeployRequestOutput,
-  errors: [GetDeployRequestUnauthorized, GetDeployRequestForbidden, GetDeployRequestNotfound, GetDeployRequestInternalservererror],
 }));

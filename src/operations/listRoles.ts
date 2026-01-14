@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListRolesInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles" }));
 export type ListRolesInput = typeof ListRolesInput.Type;
 
 // Output Schema
@@ -59,51 +55,6 @@ export const ListRolesOutput = Schema.Struct({
 });
 export type ListRolesOutput = typeof ListRolesOutput.Type;
 
-// Error Schemas
-export class ListRolesUnauthorized extends Schema.TaggedError<ListRolesUnauthorized>()(
-  "ListRolesUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListRolesForbidden extends Schema.TaggedError<ListRolesForbidden>()(
-  "ListRolesForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListRolesNotfound extends Schema.TaggedError<ListRolesNotfound>()(
-  "ListRolesNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListRolesInternalservererror extends Schema.TaggedError<ListRolesInternalservererror>()(
-  "ListRolesInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List roles
@@ -117,5 +68,4 @@ export class ListRolesInternalservererror extends Schema.TaggedError<ListRolesIn
 export const listRoles = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListRolesInput,
   outputSchema: ListRolesOutput,
-  errors: [ListRolesUnauthorized, ListRolesForbidden, ListRolesNotfound, ListRolesInternalservererror],
 }));

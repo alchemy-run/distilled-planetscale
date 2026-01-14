@@ -1,20 +1,16 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateWebhookInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
   url: Schema.optional(Schema.String),
   enabled: Schema.optional(Schema.Boolean),
   events: Schema.optional(Schema.Array(Schema.String)),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "id"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/webhooks/{id}" }));
 export type UpdateWebhookInput = typeof UpdateWebhookInput.Type;
 
 // Output Schema
@@ -32,51 +28,6 @@ export const UpdateWebhookOutput = Schema.Struct({
 });
 export type UpdateWebhookOutput = typeof UpdateWebhookOutput.Type;
 
-// Error Schemas
-export class UpdateWebhookUnauthorized extends Schema.TaggedError<UpdateWebhookUnauthorized>()(
-  "UpdateWebhookUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateWebhookForbidden extends Schema.TaggedError<UpdateWebhookForbidden>()(
-  "UpdateWebhookForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateWebhookNotfound extends Schema.TaggedError<UpdateWebhookNotfound>()(
-  "UpdateWebhookNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateWebhookInternalservererror extends Schema.TaggedError<UpdateWebhookInternalservererror>()(
-  "UpdateWebhookInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update a webhook
@@ -91,5 +42,4 @@ export class UpdateWebhookInternalservererror extends Schema.TaggedError<UpdateW
 export const updateWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateWebhookInput,
   outputSchema: UpdateWebhookOutput,
-  errors: [UpdateWebhookUnauthorized, UpdateWebhookForbidden, UpdateWebhookNotfound, UpdateWebhookInternalservererror],
 }));

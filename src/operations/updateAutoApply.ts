@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateAutoApplyInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
   enable: Schema.optional(Schema.Boolean),
-}).annotations({
-  [ApiMethod]: "PUT",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/auto-apply`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+}).pipe(T.Http({ method: "PUT", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/auto-apply" }));
 export type UpdateAutoApplyInput = typeof UpdateAutoApplyInput.Type;
 
 // Output Schema
@@ -149,51 +145,6 @@ export const UpdateAutoApplyOutput = Schema.Struct({
 });
 export type UpdateAutoApplyOutput = typeof UpdateAutoApplyOutput.Type;
 
-// Error Schemas
-export class UpdateAutoApplyUnauthorized extends Schema.TaggedError<UpdateAutoApplyUnauthorized>()(
-  "UpdateAutoApplyUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateAutoApplyForbidden extends Schema.TaggedError<UpdateAutoApplyForbidden>()(
-  "UpdateAutoApplyForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateAutoApplyNotfound extends Schema.TaggedError<UpdateAutoApplyNotfound>()(
-  "UpdateAutoApplyNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateAutoApplyInternalservererror extends Schema.TaggedError<UpdateAutoApplyInternalservererror>()(
-  "UpdateAutoApplyInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update auto-apply for deploy request
@@ -208,5 +159,4 @@ export class UpdateAutoApplyInternalservererror extends Schema.TaggedError<Updat
 export const updateAutoApply = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateAutoApplyInput,
   outputSchema: UpdateAutoApplyOutput,
-  errors: [UpdateAutoApplyUnauthorized, UpdateAutoApplyForbidden, UpdateAutoApplyNotfound, UpdateAutoApplyInternalservererror],
 }));

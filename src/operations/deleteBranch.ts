@@ -1,67 +1,18 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteBranchInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}" }));
 export type DeleteBranchInput = typeof DeleteBranchInput.Type;
 
 // Output Schema
 export const DeleteBranchOutput = Schema.Void;
 export type DeleteBranchOutput = typeof DeleteBranchOutput.Type;
-
-// Error Schemas
-export class DeleteBranchUnauthorized extends Schema.TaggedError<DeleteBranchUnauthorized>()(
-  "DeleteBranchUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteBranchForbidden extends Schema.TaggedError<DeleteBranchForbidden>()(
-  "DeleteBranchForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteBranchNotfound extends Schema.TaggedError<DeleteBranchNotfound>()(
-  "DeleteBranchNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteBranchInternalservererror extends Schema.TaggedError<DeleteBranchInternalservererror>()(
-  "DeleteBranchInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -74,5 +25,4 @@ export class DeleteBranchInternalservererror extends Schema.TaggedError<DeleteBr
 export const deleteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteBranchInput,
   outputSchema: DeleteBranchOutput,
-  errors: [DeleteBranchUnauthorized, DeleteBranchForbidden, DeleteBranchNotfound, DeleteBranchInternalservererror],
 }));

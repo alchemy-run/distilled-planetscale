@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListExtensionsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/extensions`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/extensions" }));
 export type ListExtensionsInput = typeof ListExtensionsInput.Type;
 
 // Output Schema
@@ -51,51 +47,6 @@ export const ListExtensionsOutput = Schema.Array(Schema.Struct({
 }));
 export type ListExtensionsOutput = typeof ListExtensionsOutput.Type;
 
-// Error Schemas
-export class ListExtensionsUnauthorized extends Schema.TaggedError<ListExtensionsUnauthorized>()(
-  "ListExtensionsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListExtensionsForbidden extends Schema.TaggedError<ListExtensionsForbidden>()(
-  "ListExtensionsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListExtensionsNotfound extends Schema.TaggedError<ListExtensionsNotfound>()(
-  "ListExtensionsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListExtensionsInternalservererror extends Schema.TaggedError<ListExtensionsInternalservererror>()(
-  "ListExtensionsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List cluster extensions
@@ -107,5 +58,4 @@ export class ListExtensionsInternalservererror extends Schema.TaggedError<ListEx
 export const listExtensions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListExtensionsInput,
   outputSchema: ListExtensionsOutput,
-  errors: [ListExtensionsUnauthorized, ListExtensionsForbidden, ListExtensionsNotfound, ListExtensionsInternalservererror],
 }));

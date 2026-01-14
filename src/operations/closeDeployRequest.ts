@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CloseDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
   state: Schema.optional(Schema.Literal("closed")),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}" }));
 export type CloseDeployRequestInput = typeof CloseDeployRequestInput.Type;
 
 // Output Schema
@@ -149,51 +145,6 @@ export const CloseDeployRequestOutput = Schema.Struct({
 });
 export type CloseDeployRequestOutput = typeof CloseDeployRequestOutput.Type;
 
-// Error Schemas
-export class CloseDeployRequestUnauthorized extends Schema.TaggedError<CloseDeployRequestUnauthorized>()(
-  "CloseDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CloseDeployRequestForbidden extends Schema.TaggedError<CloseDeployRequestForbidden>()(
-  "CloseDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CloseDeployRequestNotfound extends Schema.TaggedError<CloseDeployRequestNotfound>()(
-  "CloseDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CloseDeployRequestInternalservererror extends Schema.TaggedError<CloseDeployRequestInternalservererror>()(
-  "CloseDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Close a deploy request
@@ -206,5 +157,4 @@ export class CloseDeployRequestInternalservererror extends Schema.TaggedError<Cl
 export const closeDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CloseDeployRequestInput,
   outputSchema: CloseDeployRequestOutput,
-  errors: [CloseDeployRequestUnauthorized, CloseDeployRequestForbidden, CloseDeployRequestNotfound, CloseDeployRequestInternalservererror],
 }));

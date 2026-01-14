@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListServiceTokensInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/service-tokens`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/service-tokens" }));
 export type ListServiceTokensInput = typeof ListServiceTokensInput.Type;
 
 // Output Schema
@@ -102,43 +98,6 @@ export const ListServiceTokensOutput = Schema.Struct({
 });
 export type ListServiceTokensOutput = typeof ListServiceTokensOutput.Type;
 
-// Error Schemas
-export class ListServiceTokensUnauthorized extends Schema.TaggedError<ListServiceTokensUnauthorized>()(
-  "ListServiceTokensUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListServiceTokensForbidden extends Schema.TaggedError<ListServiceTokensForbidden>()(
-  "ListServiceTokensForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListServiceTokensNotfound extends Schema.TaggedError<ListServiceTokensNotfound>()(
-  "ListServiceTokensNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListServiceTokensInternalservererror extends Schema.TaggedError<ListServiceTokensInternalservererror>()(
-  "ListServiceTokensInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List service tokens
@@ -152,5 +111,4 @@ export class ListServiceTokensInternalservererror extends Schema.TaggedError<Lis
 export const listServiceTokens = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListServiceTokensInput,
   outputSchema: ListServiceTokensOutput,
-  errors: [ListServiceTokensUnauthorized, ListServiceTokensForbidden, ListServiceTokensNotfound, ListServiceTokensInternalservererror],
 }));

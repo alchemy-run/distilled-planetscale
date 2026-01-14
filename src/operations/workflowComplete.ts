@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowCompleteInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/complete`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/complete" }));
 export type WorkflowCompleteInput = typeof WorkflowCompleteInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowCompleteOutput = Schema.Struct({
 });
 export type WorkflowCompleteOutput = typeof WorkflowCompleteOutput.Type;
 
-// Error Schemas
-export class WorkflowCompleteUnauthorized extends Schema.TaggedError<WorkflowCompleteUnauthorized>()(
-  "WorkflowCompleteUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowCompleteForbidden extends Schema.TaggedError<WorkflowCompleteForbidden>()(
-  "WorkflowCompleteForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowCompleteNotfound extends Schema.TaggedError<WorkflowCompleteNotfound>()(
-  "WorkflowCompleteNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowCompleteInternalservererror extends Schema.TaggedError<WorkflowCompleteInternalservererror>()(
-  "WorkflowCompleteInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Complete a workflow
@@ -180,5 +131,4 @@ export class WorkflowCompleteInternalservererror extends Schema.TaggedError<Work
 export const workflowComplete = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowCompleteInput,
   outputSchema: WorkflowCompleteOutput,
-  errors: [WorkflowCompleteUnauthorized, WorkflowCompleteForbidden, WorkflowCompleteNotfound, WorkflowCompleteInternalservererror],
 }));

@@ -1,20 +1,16 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListPasswordsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   read_only_region_id: Schema.optional(Schema.String),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords" }));
 export type ListPasswordsInput = typeof ListPasswordsInput.Type;
 
 // Output Schema
@@ -70,51 +66,6 @@ export const ListPasswordsOutput = Schema.Struct({
 });
 export type ListPasswordsOutput = typeof ListPasswordsOutput.Type;
 
-// Error Schemas
-export class ListPasswordsUnauthorized extends Schema.TaggedError<ListPasswordsUnauthorized>()(
-  "ListPasswordsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListPasswordsForbidden extends Schema.TaggedError<ListPasswordsForbidden>()(
-  "ListPasswordsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListPasswordsNotfound extends Schema.TaggedError<ListPasswordsNotfound>()(
-  "ListPasswordsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListPasswordsInternalservererror extends Schema.TaggedError<ListPasswordsInternalservererror>()(
-  "ListPasswordsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List passwords
@@ -129,5 +80,4 @@ export class ListPasswordsInternalservererror extends Schema.TaggedError<ListPas
 export const listPasswords = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListPasswordsInput,
   outputSchema: ListPasswordsOutput,
-  errors: [ListPasswordsUnauthorized, ListPasswordsForbidden, ListPasswordsNotfound, ListPasswordsInternalservererror],
 }));

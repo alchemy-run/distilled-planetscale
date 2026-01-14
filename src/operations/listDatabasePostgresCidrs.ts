@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListDatabasePostgresCidrsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/cidrs" }));
 export type ListDatabasePostgresCidrsInput = typeof ListDatabasePostgresCidrsInput.Type;
 
 // Output Schema
@@ -39,57 +35,6 @@ export const ListDatabasePostgresCidrsOutput = Schema.Struct({
 });
 export type ListDatabasePostgresCidrsOutput = typeof ListDatabasePostgresCidrsOutput.Type;
 
-// Error Schemas
-export class ListDatabasePostgresCidrsUnauthorized extends Schema.TaggedError<ListDatabasePostgresCidrsUnauthorized>()(
-  "ListDatabasePostgresCidrsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListDatabasePostgresCidrsForbidden extends Schema.TaggedError<ListDatabasePostgresCidrsForbidden>()(
-  "ListDatabasePostgresCidrsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListDatabasePostgresCidrsNotfound extends Schema.TaggedError<ListDatabasePostgresCidrsNotfound>()(
-  "ListDatabasePostgresCidrsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListDatabasePostgresCidrsUnprocessableentity extends Schema.TaggedError<ListDatabasePostgresCidrsUnprocessableentity>()(
-  "ListDatabasePostgresCidrsUnprocessableentity",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class ListDatabasePostgresCidrsInternalservererror extends Schema.TaggedError<ListDatabasePostgresCidrsInternalservererror>()(
-  "ListDatabasePostgresCidrsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List IP restriction entries
@@ -102,5 +47,4 @@ export class ListDatabasePostgresCidrsInternalservererror extends Schema.TaggedE
 export const listDatabasePostgresCidrs = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDatabasePostgresCidrsInput,
   outputSchema: ListDatabasePostgresCidrsOutput,
-  errors: [ListDatabasePostgresCidrsUnauthorized, ListDatabasePostgresCidrsForbidden, ListDatabasePostgresCidrsNotfound, ListDatabasePostgresCidrsUnprocessableentity, ListDatabasePostgresCidrsInternalservererror],
 }));

@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListOrganizationsInput = Schema.Struct({
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: () => "/organizations",
-  [ApiPathParams]: [] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations" }));
 export type ListOrganizationsInput = typeof ListOrganizationsInput.Type;
 
 // Output Schema
@@ -45,43 +41,6 @@ export const ListOrganizationsOutput = Schema.Struct({
 });
 export type ListOrganizationsOutput = typeof ListOrganizationsOutput.Type;
 
-// Error Schemas
-export class ListOrganizationsUnauthorized extends Schema.TaggedError<ListOrganizationsUnauthorized>()(
-  "ListOrganizationsUnauthorized",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListOrganizationsForbidden extends Schema.TaggedError<ListOrganizationsForbidden>()(
-  "ListOrganizationsForbidden",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListOrganizationsNotfound extends Schema.TaggedError<ListOrganizationsNotfound>()(
-  "ListOrganizationsNotfound",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListOrganizationsInternalservererror extends Schema.TaggedError<ListOrganizationsInternalservererror>()(
-  "ListOrganizationsInternalservererror",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List organizations
@@ -94,5 +53,4 @@ export class ListOrganizationsInternalservererror extends Schema.TaggedError<Lis
 export const listOrganizations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationsInput,
   outputSchema: ListOrganizationsOutput,
-  errors: [ListOrganizationsUnauthorized, ListOrganizationsForbidden, ListOrganizationsNotfound, ListOrganizationsInternalservererror],
 }));

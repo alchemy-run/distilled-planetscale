@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CompleteErroredDeployInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/complete-deploy`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/complete-deploy" }));
 export type CompleteErroredDeployInput = typeof CompleteErroredDeployInput.Type;
 
 // Output Schema
@@ -148,51 +144,6 @@ export const CompleteErroredDeployOutput = Schema.Struct({
 });
 export type CompleteErroredDeployOutput = typeof CompleteErroredDeployOutput.Type;
 
-// Error Schemas
-export class CompleteErroredDeployUnauthorized extends Schema.TaggedError<CompleteErroredDeployUnauthorized>()(
-  "CompleteErroredDeployUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CompleteErroredDeployForbidden extends Schema.TaggedError<CompleteErroredDeployForbidden>()(
-  "CompleteErroredDeployForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CompleteErroredDeployNotfound extends Schema.TaggedError<CompleteErroredDeployNotfound>()(
-  "CompleteErroredDeployNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CompleteErroredDeployInternalservererror extends Schema.TaggedError<CompleteErroredDeployInternalservererror>()(
-  "CompleteErroredDeployInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Complete an errored deploy
@@ -204,5 +155,4 @@ export class CompleteErroredDeployInternalservererror extends Schema.TaggedError
 export const completeErroredDeploy = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CompleteErroredDeployInput,
   outputSchema: CompleteErroredDeployOutput,
-  errors: [CompleteErroredDeployUnauthorized, CompleteErroredDeployForbidden, CompleteErroredDeployNotfound, CompleteErroredDeployInternalservererror],
 }));

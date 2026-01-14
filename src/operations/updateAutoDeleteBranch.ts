@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateAutoDeleteBranchInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
   enable: Schema.optional(Schema.Boolean),
-}).annotations({
-  [ApiMethod]: "PUT",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/auto-delete-branch`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+}).pipe(T.Http({ method: "PUT", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/auto-delete-branch" }));
 export type UpdateAutoDeleteBranchInput = typeof UpdateAutoDeleteBranchInput.Type;
 
 // Output Schema
@@ -149,51 +145,6 @@ export const UpdateAutoDeleteBranchOutput = Schema.Struct({
 });
 export type UpdateAutoDeleteBranchOutput = typeof UpdateAutoDeleteBranchOutput.Type;
 
-// Error Schemas
-export class UpdateAutoDeleteBranchUnauthorized extends Schema.TaggedError<UpdateAutoDeleteBranchUnauthorized>()(
-  "UpdateAutoDeleteBranchUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateAutoDeleteBranchForbidden extends Schema.TaggedError<UpdateAutoDeleteBranchForbidden>()(
-  "UpdateAutoDeleteBranchForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateAutoDeleteBranchNotfound extends Schema.TaggedError<UpdateAutoDeleteBranchNotfound>()(
-  "UpdateAutoDeleteBranchNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateAutoDeleteBranchInternalservererror extends Schema.TaggedError<UpdateAutoDeleteBranchInternalservererror>()(
-  "UpdateAutoDeleteBranchInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update auto-delete branch for deploy request
@@ -208,5 +159,4 @@ export class UpdateAutoDeleteBranchInternalservererror extends Schema.TaggedErro
 export const updateAutoDeleteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateAutoDeleteBranchInput,
   outputSchema: UpdateAutoDeleteBranchOutput,
-  errors: [UpdateAutoDeleteBranchUnauthorized, UpdateAutoDeleteBranchForbidden, UpdateAutoDeleteBranchNotfound, UpdateAutoDeleteBranchInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowSwitchPrimariesInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/switch-primaries`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/switch-primaries" }));
 export type WorkflowSwitchPrimariesInput = typeof WorkflowSwitchPrimariesInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowSwitchPrimariesOutput = Schema.Struct({
 });
 export type WorkflowSwitchPrimariesOutput = typeof WorkflowSwitchPrimariesOutput.Type;
 
-// Error Schemas
-export class WorkflowSwitchPrimariesUnauthorized extends Schema.TaggedError<WorkflowSwitchPrimariesUnauthorized>()(
-  "WorkflowSwitchPrimariesUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowSwitchPrimariesForbidden extends Schema.TaggedError<WorkflowSwitchPrimariesForbidden>()(
-  "WorkflowSwitchPrimariesForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowSwitchPrimariesNotfound extends Schema.TaggedError<WorkflowSwitchPrimariesNotfound>()(
-  "WorkflowSwitchPrimariesNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowSwitchPrimariesInternalservererror extends Schema.TaggedError<WorkflowSwitchPrimariesInternalservererror>()(
-  "WorkflowSwitchPrimariesInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Switch primary traffic
@@ -180,5 +131,4 @@ export class WorkflowSwitchPrimariesInternalservererror extends Schema.TaggedErr
 export const workflowSwitchPrimaries = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowSwitchPrimariesInput,
   outputSchema: WorkflowSwitchPrimariesOutput,
-  errors: [WorkflowSwitchPrimariesUnauthorized, WorkflowSwitchPrimariesForbidden, WorkflowSwitchPrimariesNotfound, WorkflowSwitchPrimariesInternalservererror],
 }));

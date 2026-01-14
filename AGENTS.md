@@ -29,11 +29,17 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 ```
 ├── src/
+│   ├── index.ts            # Main barrel file for src modules
 │   ├── client.ts           # API.make/makePaginated factory + shared error types
-│   ├── pagination.ts       # paginatePages/paginateItems stream utilities
-│   ├── errors.ts           # ConfigError (Schema.TaggedError)
+│   ├── category.ts         # Error categories for semantic error handling
 │   ├── credentials.ts      # PlanetScaleCredentials service + layer
-│   └── operations          # All Operations
+│   ├── errors.ts           # Global error types (NotFound, Unauthorized, etc.)
+│   ├── pagination.ts       # paginatePages/paginateItems stream utilities
+│   ├── retry.ts            # Retry policy configuration
+│   ├── sensitive.ts        # Sensitive data schemas (passwords, tokens)
+│   ├── traits.ts           # HTTP/API trait annotations
+│   └── operations/         # All Operations
+│       ├── index.ts            # Barrel file for all operations
 │       ├── getOrganization.ts  # getOrganization operation
 │       └── listDatabases.ts    # listDatabases effect
 ├── tests/
@@ -45,28 +51,57 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │   └── *.patch.json              # JSON Patch files for spec fixes
 ├── scripts/
 │   ├── setup.ts            # Fetches PlanetScale OpenAPI spec
-│   ├── generate-operations.ts  # Generates operations using Claude AI
+│   ├── generate-operations.ts  # Generates operations from OpenAPI spec
 │   └── write-tests.ts      # Auto-generates tests using opencode
-└── index.ts                # Barrel file re-exporting src modules
+└── index.ts                # Root barrel file re-exporting src
+```
+
+## Package Exports
+
+The package provides multiple entry points for tree-shaking and targeted imports:
+
+| Export Path                   | Description                                    |
+| ----------------------------- | ---------------------------------------------- |
+| `distilled-planetscale`       | Main entry - all exports                       |
+| `distilled-planetscale/Category` | Error categories and predicates             |
+| `distilled-planetscale/Client`   | API factory and error types                 |
+| `distilled-planetscale/Credentials` | Credentials service and layers           |
+| `distilled-planetscale/Errors`   | Base error types                            |
+| `distilled-planetscale/Operations` | All API operations                        |
+| `distilled-planetscale/Pagination` | Pagination utilities                      |
+| `distilled-planetscale/Retry`    | Retry policy configuration                  |
+| `distilled-planetscale/Sensitive` | Sensitive data schemas                     |
+| `distilled-planetscale/Traits`   | HTTP/API trait annotations                  |
+
+### Import Examples
+
+```typescript
+// Import everything from main entry
+import { getOrganization, Category, Retry } from "distilled-planetscale";
+
+// Import specific modules for tree-shaking
+import * as Category from "distilled-planetscale/Category";
+import * as Retry from "distilled-planetscale/Retry";
+import { SensitiveString } from "distilled-planetscale/Sensitive";
+
+// Import all operations
+import * as Operations from "distilled-planetscale/Operations";
 ```
 
 ## API Operation Pattern
 
-Operations are defined declaratively using `API.make`:
+Operations are defined declaratively using `API.make`. Errors are handled globally - operations do NOT define per-operation error classes.
 
 ```typescript
-import { Schema } from "effect";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "./client";
-import * as Category from "./category";
+import * as Schema from "effect/Schema";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetOrganizationInput = Schema.Struct({
-  organization: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}`,
-  [ApiPathParams]: ["organization"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}" }));
+export type GetOrganizationInput = typeof GetOrganizationInput.Type;
 
 // Output Schema
 export const GetOrganizationOutput = Schema.Struct({
@@ -74,39 +109,32 @@ export const GetOrganizationOutput = Schema.Struct({
   name: Schema.String,
   // ... other fields
 });
+export type GetOrganizationOutput = typeof GetOrganizationOutput.Type;
 
-// Error with ApiErrorCode annotation AND Category decorator
-export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationNotfound>()(
-  "GetOrganizationNotfound",
-  { organization: Schema.String, message: Schema.String },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-// Define the operation
-export const getOrganization = API.make(() => ({
+// Define the operation - NO errors array, errors are global
+export const getOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationInput,
   outputSchema: GetOrganizationOutput,
-  errors: [GetOrganizationNotfound],
 }));
 ```
 
-### Error Code to Category Mapping
+### Global Error Classes
 
-When generating operations, use the following mapping from API error codes to categories:
+All operations use the same global error classes defined in `src/errors.ts`:
 
-| Error Code              | Category          | Decorator                      |
-| ----------------------- | ----------------- | ------------------------------ |
-| `unauthorized`          | `AuthError`       | `Category.withAuthError`       |
-| `forbidden`             | `AuthError`       | `Category.withAuthError`       |
-| `not_found`             | `NotFoundError`   | `Category.withNotFoundError`   |
-| `conflict`              | `ConflictError`   | `Category.withConflictError`   |
-| `unprocessable_entity`  | `BadRequestError` | `Category.withBadRequestError` |
-| `bad_request`           | `BadRequestError` | `Category.withBadRequestError` |
-| `too_many_requests`     | `ThrottlingError` | `Category.withThrottlingError` |
-| `internal_server_error` | `ServerError`     | `Category.withServerError`     |
-| `service_unavailable`   | `ServerError`     | `Category.withServerError`     |
+| Error Class          | API Error Code          | Category          |
+| -------------------- | ----------------------- | ----------------- |
+| `Unauthorized`       | `unauthorized`          | `AuthError`       |
+| `Forbidden`          | `forbidden`             | `AuthError`       |
+| `NotFound`           | `not_found`             | `NotFoundError`   |
+| `Conflict`           | `conflict`              | `ConflictError`   |
+| `UnprocessableEntity`| `unprocessable_entity`  | `BadRequestError` |
+| `BadRequest`         | `bad_request`           | `BadRequestError` |
+| `TooManyRequests`    | `too_many_requests`     | `ThrottlingError` |
+| `InternalServerError`| `internal_server_error` | `ServerError`     |
+| `ServiceUnavailable` | `service_unavailable`   | `ServerError`     |
 
-This mapping is also documented in `specs/error-categories.patch.json`.
+The client automatically maps API error codes to these global error classes.
 
 ## Error Handling
 
@@ -136,23 +164,13 @@ Errors can be annotated with categories for semantic grouping and handling. Cate
 
 ### Adding Categories to Errors
 
-Use `withCategory` or convenience decorators with `.pipe()`:
+Global errors already have categories applied. If you need custom errors with categories, use `withCategory` or convenience decorators with `.pipe()`:
 
 ```typescript
 import { Schema } from "effect";
 import * as Category from "./category";
-import { ApiErrorCode } from "./client";
 
-export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationNotfound>()(
-  "GetOrganizationNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-// Multiple categories
+// Custom error with multiple categories
 export class RateLimitError extends Schema.TaggedError<RateLimitError>()("RateLimitError", {
   retryAfter: Schema.Number,
 }).pipe(Category.withCategory(Category.ThrottlingError, Category.ServerError)) {}
@@ -208,20 +226,20 @@ import { FetchHttpClient } from "@effect/platform";
 import { Effect, Layer } from "effect";
 import {
   getOrganization,
-  OrganizationNotFound,
-  PlanetScaleCredentials,
-  PlanetScaleCredentialsLive,
+  NotFound,
+  Credentials,
+  CredentialsLive,
 } from "distilled-planetscale";
 
-const MainLayer = Layer.merge(PlanetScaleCredentialsLive, FetchHttpClient.layer);
+const MainLayer = Layer.merge(CredentialsLive, FetchHttpClient.layer);
 
 const program = Effect.gen(function* () {
-  const { organization } = yield* PlanetScaleCredentials;
-  const org = yield* getOrganization({ name: organization });
+  const { organization } = yield* Credentials;
+  const org = yield* getOrganization({ organization });
   console.log(org);
 }).pipe(
-  Effect.catchTag("OrganizationNotFound", (e) =>
-    Effect.log(`Organization ${e.name} not found: ${e.message}`),
+  Effect.catchTag("NotFound", (e) =>
+    Effect.log(`Resource not found: ${e.message}`),
   ),
   Effect.provide(MainLayer),
 );
@@ -280,11 +298,10 @@ const ListDatabasesOutput = Schema.Struct({
   data: Schema.Array(DatabaseSchema),
 });
 
-// Create paginated operation
+// Create paginated operation - NO errors array, errors are global
 const listDatabases = API.makePaginated(() => ({
   inputSchema: ListDatabasesInput,
   outputSchema: ListDatabasesOutput,
-  errors: [ListDatabasesNotfound],
 }));
 
 // Usage:
@@ -383,10 +400,10 @@ Tests use the `withMainLayer` helper from `./setup` which automatically provides
 ```typescript
 import { Effect } from "effect";
 import { expect } from "vitest";
-import { PlanetScaleCredentials } from "../src/credentials";
+import { Credentials } from "../src/credentials";
+import { NotFound, Forbidden } from "../src/errors";
 import {
   operationName,
-  OperationNameNotfound,
   OperationNameInput,
   OperationNameOutput,
 } from "../src/operations/operationName";
@@ -407,10 +424,10 @@ withMainLayer("operationName", (it) => {
   // Success test (for read-only operations)
   it.effect("should fetch data successfully", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
+      const { organization } = yield* Credentials;
       const result = yield* operationName({ organization /* ... */ }).pipe(
         // Handle case where test resource doesn't exist
-        Effect.catchTag("OperationNameNotfound", () =>
+        Effect.catchTag("NotFound", () =>
           Effect.succeed({
             /* fallback shape */
           }),
@@ -421,11 +438,10 @@ withMainLayer("operationName", (it) => {
   );
 
   // Error handling tests
-  it.effect("should return OperationNameNotfound for non-existent resource", () =>
+  it.effect("should return NotFound for non-existent resource", () =>
     Effect.gen(function* () {
-      const { organization } = yield* PlanetScaleCredentials;
       const result = yield* operationName({
-        organization,
+        organization: "this-org-definitely-does-not-exist-12345",
         database: "this-database-definitely-does-not-exist-12345",
       }).pipe(
         Effect.matchEffect({
@@ -434,10 +450,12 @@ withMainLayer("operationName", (it) => {
         }),
       );
 
-      expect(result).toBeInstanceOf(OperationNameNotfound);
-      if (result instanceof OperationNameNotfound) {
-        expect(result._tag).toBe("OperationNameNotfound");
-        expect(result.organization).toBe(organization);
+      // API may return NotFound or Forbidden for non-existent resources
+      const isExpectedError = result instanceof NotFound || result instanceof Forbidden;
+      expect(isExpectedError).toBe(true);
+      if (result instanceof NotFound) {
+        expect(result._tag).toBe("NotFound");
+        expect(result.message).toBeDefined();
       }
     }),
   );
@@ -451,7 +469,7 @@ For operations that create resources, use `Effect.ensuring` to guarantee cleanup
 ```typescript
 it.effect("should create resource successfully", () =>
   Effect.gen(function* () {
-    const { organization } = yield* PlanetScaleCredentials;
+    const { organization } = yield* Credentials;
     const resourceName = `test-resource-${Date.now()}`;
 
     const result = yield* createResource({
@@ -464,7 +482,7 @@ it.effect("should create resource successfully", () =>
   }).pipe(
     Effect.ensuring(
       Effect.gen(function* () {
-        const { organization } = yield* PlanetScaleCredentials;
+        const { organization } = yield* Credentials;
         yield* deleteResource({
           organization,
           name: resourceName,
@@ -481,7 +499,7 @@ it.effect("should create resource successfully", () =>
 - **Use `Effect.catchTag`** to handle expected errors gracefully in success tests
 - **Use `Effect.matchEffect`** to capture errors for assertion in error tests
 - **Test both non-existent resources AND non-existent organizations** for not_found errors
-- **Verify error properties** like `_tag`, `organization`, `database`, etc.
+- **Verify error properties** like `_tag`, `message`, etc.
 - **Import `./setup`** to load environment variables from `.env`
 - **Use `withMainLayer`** wrapper to automatically provide layer to all tests
 

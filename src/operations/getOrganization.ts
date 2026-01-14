@@ -1,15 +1,11 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetOrganizationInput = Schema.Struct({
-  organization: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}`,
-  [ApiPathParams]: ["organization"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}" }));
 export type GetOrganizationInput = typeof GetOrganizationInput.Type;
 
 // Output Schema
@@ -37,43 +33,6 @@ export const GetOrganizationOutput = Schema.Struct({
 });
 export type GetOrganizationOutput = typeof GetOrganizationOutput.Type;
 
-// Error Schemas
-export class GetOrganizationUnauthorized extends Schema.TaggedError<GetOrganizationUnauthorized>()(
-  "GetOrganizationUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetOrganizationForbidden extends Schema.TaggedError<GetOrganizationForbidden>()(
-  "GetOrganizationForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationNotfound>()(
-  "GetOrganizationNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetOrganizationInternalservererror extends Schema.TaggedError<GetOrganizationInternalservererror>()(
-  "GetOrganizationInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get an organization
@@ -83,5 +42,4 @@ export class GetOrganizationInternalservererror extends Schema.TaggedError<GetOr
 export const getOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationInput,
   outputSchema: GetOrganizationOutput,
-  errors: [GetOrganizationUnauthorized, GetOrganizationForbidden, GetOrganizationNotfound, GetOrganizationInternalservererror],
 }));

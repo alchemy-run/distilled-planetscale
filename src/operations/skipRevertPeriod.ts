@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const SkipRevertPeriodInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/skip-revert`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/skip-revert" }));
 export type SkipRevertPeriodInput = typeof SkipRevertPeriodInput.Type;
 
 // Output Schema
@@ -148,51 +144,6 @@ export const SkipRevertPeriodOutput = Schema.Struct({
 });
 export type SkipRevertPeriodOutput = typeof SkipRevertPeriodOutput.Type;
 
-// Error Schemas
-export class SkipRevertPeriodUnauthorized extends Schema.TaggedError<SkipRevertPeriodUnauthorized>()(
-  "SkipRevertPeriodUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class SkipRevertPeriodForbidden extends Schema.TaggedError<SkipRevertPeriodForbidden>()(
-  "SkipRevertPeriodForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class SkipRevertPeriodNotfound extends Schema.TaggedError<SkipRevertPeriodNotfound>()(
-  "SkipRevertPeriodNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class SkipRevertPeriodInternalservererror extends Schema.TaggedError<SkipRevertPeriodInternalservererror>()(
-  "SkipRevertPeriodInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Skip revert period
@@ -206,5 +157,4 @@ export class SkipRevertPeriodInternalservererror extends Schema.TaggedError<Skip
 export const skipRevertPeriod = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: SkipRevertPeriodInput,
   outputSchema: SkipRevertPeriodOutput,
-  errors: [SkipRevertPeriodUnauthorized, SkipRevertPeriodForbidden, SkipRevertPeriodNotfound, SkipRevertPeriodInternalservererror],
 }));

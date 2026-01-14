@@ -5,31 +5,53 @@ import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as Category from "./category";
 import { Credentials } from "./credentials";
+import type { ApiError } from "./errors";
+import {
+  BadRequest,
+  Conflict,
+  ERROR_CODE_MAP,
+  Forbidden,
+  InternalServerError,
+  NotFound,
+  ServiceUnavailable,
+  TooManyRequests,
+  Unauthorized,
+  UnprocessableEntity,
+} from "./errors";
 import {
   type PaginatedResponse,
   type PaginatedTrait,
   DefaultPaginationTrait,
   getPath,
 } from "./pagination";
+import * as Traits from "./traits";
 
 // API Error Response Schema - parse just the code, keep the rest as unknown
 const ApiErrorResponse = Schema.Struct({
   code: Schema.String,
+  message: Schema.optional(Schema.String),
 });
 
-// Annotation symbols
-export const ApiErrorCode = Symbol.for("planetscale/ApiErrorCode");
+// Re-export traits for convenience (backwards compatibility)
+export const ApiErrorCode = Traits.apiErrorCodeSymbol;
+
+// Legacy symbols - deprecated, use traits instead
+/** @deprecated Use T.Http({ method, path }) instead */
 export const ApiMethod = Symbol.for("planetscale/ApiMethod");
+/** @deprecated Use T.Http({ method, path }) instead */
 export const ApiPath = Symbol.for("planetscale/ApiPath");
+/** @deprecated Use T.PathParam() on individual fields instead */
 export const ApiPathParams = Symbol.for("planetscale/ApiPathParams");
 
 // Type for HTTP methods
-export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type HttpMethod = Traits.HttpMethod;
 
 // Generic API Error - uncategorized fallback for unknown API error codes
 export class PlanetScaleApiError extends Schema.TaggedError<PlanetScaleApiError>()(
   "PlanetScaleApiError",
   {
+    code: Schema.optional(Schema.String),
+    message: Schema.optional(Schema.String),
     body: Schema.Unknown,
   },
 ).pipe(Category.withServerError) {}
@@ -43,106 +65,90 @@ export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseEr
   },
 ).pipe(Category.withParseError) {}
 
-// Helper to get the API error code from a TaggedError class
-const getErrorCode = (ErrorClass: { ast: Schema.Schema.Any["ast"] }): string | undefined => {
-  const ast = ErrorClass.ast;
-  // TaggedError creates a Transformation, the annotation is on the 'to' node
-  if (ast._tag === "Transformation") {
-    return ast.to.annotations[ApiErrorCode] as string | undefined;
-  }
-  return ast.annotations[ApiErrorCode] as string | undefined;
-};
-
-// Type for an annotated error class - must have an ast property and be constructable
-interface AnnotatedErrorClass {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  new (props: any): any;
-  ast: Schema.Schema.Any["ast"];
-}
-
-// Create error matcher from annotated error classes
-const createErrorMatcher = <E extends AnnotatedErrorClass>(
-  errors: readonly E[],
-  inputToProps: (input: unknown) => Record<string, unknown>,
-) => {
-  return (
-    input: unknown,
-    errorBody: unknown,
-  ): Effect.Effect<never, InstanceType<E> | PlanetScaleApiError> => {
+/**
+ * Match an API error response to the appropriate error class.
+ * Returns the typed error or falls back to PlanetScaleApiError.
+ */
+const matchApiError = (errorBody: unknown): Effect.Effect<never, ApiError | PlanetScaleApiError> => {
+  try {
     const parsed = Schema.decodeUnknownSync(ApiErrorResponse)(errorBody);
-    for (const ErrorClass of errors) {
-      const code = getErrorCode(ErrorClass);
-      if (code === parsed.code) {
-        return Effect.fail(
-          new ErrorClass({
-            ...inputToProps(input),
-            message: (errorBody as { message?: string }).message ?? "",
-          }) as InstanceType<E>,
-        );
-      }
+    const ErrorClass = ERROR_CODE_MAP[parsed.code as keyof typeof ERROR_CODE_MAP];
+    if (ErrorClass) {
+      return Effect.fail(new ErrorClass({ message: parsed.message ?? "" }));
     }
+    return Effect.fail(
+      new PlanetScaleApiError({
+        code: parsed.code,
+        message: parsed.message,
+        body: errorBody,
+      }),
+    );
+  } catch {
     return Effect.fail(new PlanetScaleApiError({ body: errorBody }));
-  };
+  }
 };
 
 // Operation configuration
-interface OperationConfig<
-  I extends Schema.Schema.Any,
-  O extends Schema.Schema.Any,
-  E extends AnnotatedErrorClass,
-> {
+interface OperationConfig<I extends Schema.Schema.Any, O extends Schema.Schema.Any> {
   inputSchema: I;
   outputSchema: O;
-  errors: readonly E[];
 }
 
 // Paginated operation configuration
-interface PaginatedOperationConfig<
-  I extends Schema.Schema.Any,
-  O extends Schema.Schema.Any,
-  E extends AnnotatedErrorClass,
-> extends OperationConfig<I, O, E> {
+interface PaginatedOperationConfig<I extends Schema.Schema.Any, O extends Schema.Schema.Any>
+  extends OperationConfig<I, O> {
   /** Pagination trait describing the input/output token fields */
   pagination?: PaginatedTrait;
 }
 
-// Helper to get annotation from schema AST
-const getAnnotation = <T>(schema: Schema.Schema.Any, key: symbol): T | undefined => {
+// Helper to get annotation from schema AST (legacy)
+const getAnnotationLegacy = <T>(schema: Schema.Schema.Any, key: symbol): T | undefined => {
   return schema.ast.annotations[key] as T | undefined;
 };
 
+// Common error types for all operations
+type CommonErrors =
+  | ApiError
+  | PlanetScaleApiError
+  | PlanetScaleParseError
+  | HttpClientError.HttpClientError
+  | HttpBody.HttpBodyError;
+
 // API namespace
 export const API = {
-  make: <I extends Schema.Schema.Any, O extends Schema.Schema.Any, E extends AnnotatedErrorClass>(
-    configFn: () => OperationConfig<I, O, E>,
+  make: <I extends Schema.Schema.Any, O extends Schema.Schema.Any>(
+    configFn: () => OperationConfig<I, O>,
   ) => {
     const config = configFn();
     type Input = Schema.Schema.Type<I>;
     type Output = Schema.Schema.Type<O>;
-    type Errors =
-      | InstanceType<E>
-      | PlanetScaleApiError
-      | PlanetScaleParseError
-      | HttpClientError.HttpClientError
-      | HttpBody.HttpBodyError;
     type Context = Credentials | HttpClient.HttpClient;
 
-    // Read method and path from input schema annotations
-    const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
-    const path = getAnnotation<(input: Input) => string>(config.inputSchema, ApiPath);
-    const pathParams = getAnnotation<readonly string[]>(config.inputSchema, ApiPathParams) ?? [];
+    // Read HTTP trait from input schema annotations (new style)
+    const httpTrait = Traits.getHttpTrait(config.inputSchema.ast);
+
+    // Fall back to legacy annotations if no Http trait
+    const legacyMethod = getAnnotationLegacy<HttpMethod>(config.inputSchema, ApiMethod);
+    const legacyPath = getAnnotationLegacy<(input: Input) => string>(config.inputSchema, ApiPath);
+    const legacyPathParams =
+      getAnnotationLegacy<readonly string[]>(config.inputSchema, ApiPathParams) ?? [];
+
+    // Determine method, path template, and path params
+    const method = httpTrait?.method ?? legacyMethod;
+    const pathTemplate = httpTrait?.path;
+    const pathParams = httpTrait ? Traits.getPathParams(config.inputSchema.ast) : legacyPathParams;
 
     if (!method) {
-      throw new Error("Input schema must have ApiMethod annotation");
+      throw new Error("Input schema must have Http trait or ApiMethod annotation");
     }
-    if (!path) {
-      throw new Error("Input schema must have ApiPath annotation");
+    if (!pathTemplate && !legacyPath) {
+      throw new Error("Input schema must have Http trait or ApiPath annotation");
     }
 
-    const matchApiError = createErrorMatcher(
-      config.errors,
-      (input) => input as Record<string, unknown>,
-    );
+    // Build path function - either from template or legacy function
+    const buildPathFn = pathTemplate
+      ? (input: Input) => Traits.buildPath(pathTemplate, input as Record<string, unknown>)
+      : legacyPath!;
 
     // Helper to extract query params (non-path params) for GET requests
     const getQueryParams = (input: Input): Record<string, string> | undefined => {
@@ -170,14 +176,14 @@ export const API = {
       return Object.keys(body).length > 0 ? body : undefined;
     };
 
-    return (input: Input): Effect.Effect<Output, Errors, Context> =>
+    return (input: Input): Effect.Effect<Output, CommonErrors, Context> =>
       Effect.gen(function* () {
         const { token, apiBaseUrl } = yield* Credentials;
         const client = yield* HttpClient.HttpClient;
 
         const queryParams = getQueryParams(input);
         const requestBody = getBodyParams(input);
-        let request = HttpClientRequest.make(method)(apiBaseUrl + path(input)).pipe(
+        let request = HttpClientRequest.make(method)(apiBaseUrl + buildPathFn(input)).pipe(
           HttpClientRequest.setHeader("Authorization", token),
           HttpClientRequest.setHeader("Content-Type", "application/json"),
         );
@@ -192,7 +198,7 @@ export const API = {
 
         if (response.status >= 400) {
           const errorBody = yield* response.json;
-          return yield* matchApiError(input, errorBody);
+          return yield* matchApiError(errorBody);
         }
 
         const responseBody = yield* response.json;
@@ -200,7 +206,7 @@ export const API = {
           Effect.catchTag("ParseError", (cause) =>
             Effect.fail(new PlanetScaleParseError({ body: responseBody, cause })),
           ),
-        ) as Effect.Effect<Output, Errors>;
+        ) as Effect.Effect<Output, CommonErrors>;
       });
   },
 
@@ -213,7 +219,6 @@ export const API = {
    * const listDatabases = API.makePaginated(() => ({
    *   inputSchema: ListDatabasesInput,
    *   outputSchema: ListDatabasesOutput,
-   *   errors: [ListDatabasesNotfound],
    * }));
    *
    * // Single page
@@ -226,12 +231,8 @@ export const API = {
    * const allDatabases = listDatabases.items({ organization: "my-org" });
    * ```
    */
-  makePaginated: <
-    I extends Schema.Schema.Any,
-    O extends Schema.Schema.Any,
-    E extends AnnotatedErrorClass,
-  >(
-    configFn: () => PaginatedOperationConfig<I, O, E>,
+  makePaginated: <I extends Schema.Schema.Any, O extends Schema.Schema.Any>(
+    configFn: () => PaginatedOperationConfig<I, O>,
   ) => {
     const config = configFn();
     const pagination = config.pagination ?? DefaultPaginationTrait;
@@ -240,21 +241,14 @@ export const API = {
     const baseFn = API.make(() => ({
       inputSchema: config.inputSchema,
       outputSchema: config.outputSchema,
-      errors: config.errors,
     }));
 
     type Input = Schema.Schema.Type<I>;
     type Output = Schema.Schema.Type<O>;
-    type Errors =
-      | InstanceType<E>
-      | PlanetScaleApiError
-      | PlanetScaleParseError
-      | HttpClientError.HttpClientError
-      | HttpBody.HttpBodyError;
     type Context = Credentials | HttpClient.HttpClient;
 
     // Stream all pages (full response objects)
-    const pagesFn = (input: Omit<Input, "page">): Stream.Stream<Output, Errors, Context> => {
+    const pagesFn = (input: Omit<Input, "page">): Stream.Stream<Output, CommonErrors, Context> => {
       type State = { page: number; done: boolean };
 
       const unfoldFn = (state: State) =>
@@ -292,7 +286,7 @@ export const API = {
       input: Omit<Input, "page">,
     ): Stream.Stream<
       Output extends PaginatedResponse<infer Item> ? Item : unknown,
-      Errors,
+      CommonErrors,
       Context
     > => {
       return pagesFn(input).pipe(
@@ -302,7 +296,7 @@ export const API = {
         }),
       ) as Stream.Stream<
         Output extends PaginatedResponse<infer Item> ? Item : unknown,
-        Errors,
+        CommonErrors,
         Context
       >;
     };
@@ -319,3 +313,16 @@ export const API = {
     return result;
   },
 };
+
+// Re-export error types for convenience
+export {
+  Unauthorized,
+  Forbidden,
+  NotFound,
+  Conflict,
+  UnprocessableEntity,
+  BadRequest,
+  TooManyRequests,
+  InternalServerError,
+  ServiceUnavailable,
+} from "./errors";

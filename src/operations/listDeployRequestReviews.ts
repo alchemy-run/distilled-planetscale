@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListDeployRequestReviewsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews" }));
 export type ListDeployRequestReviewsInput = typeof ListDeployRequestReviewsInput.Type;
 
 // Output Schema
@@ -37,51 +33,6 @@ export const ListDeployRequestReviewsOutput = Schema.Struct({
 });
 export type ListDeployRequestReviewsOutput = typeof ListDeployRequestReviewsOutput.Type;
 
-// Error Schemas
-export class ListDeployRequestReviewsUnauthorized extends Schema.TaggedError<ListDeployRequestReviewsUnauthorized>()(
-  "ListDeployRequestReviewsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListDeployRequestReviewsForbidden extends Schema.TaggedError<ListDeployRequestReviewsForbidden>()(
-  "ListDeployRequestReviewsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListDeployRequestReviewsNotfound extends Schema.TaggedError<ListDeployRequestReviewsNotfound>()(
-  "ListDeployRequestReviewsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListDeployRequestReviewsInternalservererror extends Schema.TaggedError<ListDeployRequestReviewsInternalservererror>()(
-  "ListDeployRequestReviewsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List deploy request reviews
@@ -93,5 +44,4 @@ export class ListDeployRequestReviewsInternalservererror extends Schema.TaggedEr
 export const listDeployRequestReviews = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployRequestReviewsInput,
   outputSchema: ListDeployRequestReviewsOutput,
-  errors: [ListDeployRequestReviewsUnauthorized, ListDeployRequestReviewsForbidden, ListDeployRequestReviewsNotfound, ListDeployRequestReviewsInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowSwitchReplicasInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/switch-replicas`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/switch-replicas" }));
 export type WorkflowSwitchReplicasInput = typeof WorkflowSwitchReplicasInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowSwitchReplicasOutput = Schema.Struct({
 });
 export type WorkflowSwitchReplicasOutput = typeof WorkflowSwitchReplicasOutput.Type;
 
-// Error Schemas
-export class WorkflowSwitchReplicasUnauthorized extends Schema.TaggedError<WorkflowSwitchReplicasUnauthorized>()(
-  "WorkflowSwitchReplicasUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowSwitchReplicasForbidden extends Schema.TaggedError<WorkflowSwitchReplicasForbidden>()(
-  "WorkflowSwitchReplicasForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowSwitchReplicasNotfound extends Schema.TaggedError<WorkflowSwitchReplicasNotfound>()(
-  "WorkflowSwitchReplicasNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowSwitchReplicasInternalservererror extends Schema.TaggedError<WorkflowSwitchReplicasInternalservererror>()(
-  "WorkflowSwitchReplicasInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Switch replica traffic
@@ -180,5 +131,4 @@ export class WorkflowSwitchReplicasInternalservererror extends Schema.TaggedErro
 export const workflowSwitchReplicas = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowSwitchReplicasInput,
   outputSchema: WorkflowSwitchReplicasOutput,
-  errors: [WorkflowSwitchReplicasUnauthorized, WorkflowSwitchReplicasForbidden, WorkflowSwitchReplicasNotfound, WorkflowSwitchReplicasInternalservererror],
 }));

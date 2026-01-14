@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetRoleInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}" }));
 export type GetRoleInput = typeof GetRoleInput.Type;
 
 // Output Schema
@@ -51,55 +47,6 @@ export const GetRoleOutput = Schema.Struct({
 });
 export type GetRoleOutput = typeof GetRoleOutput.Type;
 
-// Error Schemas
-export class GetRoleUnauthorized extends Schema.TaggedError<GetRoleUnauthorized>()(
-  "GetRoleUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetRoleForbidden extends Schema.TaggedError<GetRoleForbidden>()(
-  "GetRoleForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetRoleNotfound extends Schema.TaggedError<GetRoleNotfound>()(
-  "GetRoleNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetRoleInternalservererror extends Schema.TaggedError<GetRoleInternalservererror>()(
-  "GetRoleInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a role
@@ -112,5 +59,4 @@ export class GetRoleInternalservererror extends Schema.TaggedError<GetRoleIntern
 export const getRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetRoleInput,
   outputSchema: GetRoleOutput,
-  errors: [GetRoleUnauthorized, GetRoleForbidden, GetRoleNotfound, GetRoleInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowCutoverInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/cutover`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/cutover" }));
 export type WorkflowCutoverInput = typeof WorkflowCutoverInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowCutoverOutput = Schema.Struct({
 });
 export type WorkflowCutoverOutput = typeof WorkflowCutoverOutput.Type;
 
-// Error Schemas
-export class WorkflowCutoverUnauthorized extends Schema.TaggedError<WorkflowCutoverUnauthorized>()(
-  "WorkflowCutoverUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowCutoverForbidden extends Schema.TaggedError<WorkflowCutoverForbidden>()(
-  "WorkflowCutoverForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowCutoverNotfound extends Schema.TaggedError<WorkflowCutoverNotfound>()(
-  "WorkflowCutoverNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowCutoverInternalservererror extends Schema.TaggedError<WorkflowCutoverInternalservererror>()(
-  "WorkflowCutoverInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Cutover traffic
@@ -180,5 +131,4 @@ export class WorkflowCutoverInternalservererror extends Schema.TaggedError<Workf
 export const workflowCutover = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowCutoverInput,
   outputSchema: WorkflowCutoverOutput,
-  errors: [WorkflowCutoverUnauthorized, WorkflowCutoverForbidden, WorkflowCutoverNotfound, WorkflowCutoverInternalservererror],
 }));

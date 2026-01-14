@@ -1,18 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const GetPasswordInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}" }));
 export type GetPasswordInput = typeof GetPasswordInput.Type;
 
 // Output Schema
@@ -48,7 +45,7 @@ export const GetPasswordOutput = Schema.Struct({
     current_default: Schema.Boolean,
   }),
   username: Schema.String,
-  plain_text: Schema.NullOr(Schema.String),
+  plain_text: SensitiveNullableString,
   replica: Schema.Boolean,
   renewable: Schema.Boolean,
   database_branch: Schema.Struct({
@@ -60,55 +57,6 @@ export const GetPasswordOutput = Schema.Struct({
   }),
 });
 export type GetPasswordOutput = typeof GetPasswordOutput.Type;
-
-// Error Schemas
-export class GetPasswordUnauthorized extends Schema.TaggedError<GetPasswordUnauthorized>()(
-  "GetPasswordUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetPasswordForbidden extends Schema.TaggedError<GetPasswordForbidden>()(
-  "GetPasswordForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetPasswordNotfound extends Schema.TaggedError<GetPasswordNotfound>()(
-  "GetPasswordNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetPasswordInternalservererror extends Schema.TaggedError<GetPasswordInternalservererror>()(
-  "GetPasswordInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -122,5 +70,4 @@ export class GetPasswordInternalservererror extends Schema.TaggedError<GetPasswo
 export const getPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetPasswordInput,
   outputSchema: GetPasswordOutput,
-  errors: [GetPasswordUnauthorized, GetPasswordForbidden, GetPasswordNotfound, GetPasswordInternalservererror],
 }));

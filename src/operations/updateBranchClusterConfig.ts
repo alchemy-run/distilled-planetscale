@@ -1,68 +1,19 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateBranchClusterConfigInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   cluster_size: Schema.String,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/cluster`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/cluster" }));
 export type UpdateBranchClusterConfigInput = typeof UpdateBranchClusterConfigInput.Type;
 
 // Output Schema
 export const UpdateBranchClusterConfigOutput = Schema.Void;
 export type UpdateBranchClusterConfigOutput = typeof UpdateBranchClusterConfigOutput.Type;
-
-// Error Schemas
-export class UpdateBranchClusterConfigUnauthorized extends Schema.TaggedError<UpdateBranchClusterConfigUnauthorized>()(
-  "UpdateBranchClusterConfigUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBranchClusterConfigForbidden extends Schema.TaggedError<UpdateBranchClusterConfigForbidden>()(
-  "UpdateBranchClusterConfigForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBranchClusterConfigNotfound extends Schema.TaggedError<UpdateBranchClusterConfigNotfound>()(
-  "UpdateBranchClusterConfigNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateBranchClusterConfigInternalservererror extends Schema.TaggedError<UpdateBranchClusterConfigInternalservererror>()(
-  "UpdateBranchClusterConfigInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -76,5 +27,4 @@ export class UpdateBranchClusterConfigInternalservererror extends Schema.TaggedE
 export const updateBranchClusterConfig = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBranchClusterConfigInput,
   outputSchema: UpdateBranchClusterConfigOutput,
-  errors: [UpdateBranchClusterConfigUnauthorized, UpdateBranchClusterConfigForbidden, UpdateBranchClusterConfigNotfound, UpdateBranchClusterConfigInternalservererror],
 }));

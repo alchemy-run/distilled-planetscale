@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateRoleInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}" }));
 export type UpdateRoleInput = typeof UpdateRoleInput.Type;
 
 // Output Schema
@@ -52,55 +48,6 @@ export const UpdateRoleOutput = Schema.Struct({
 });
 export type UpdateRoleOutput = typeof UpdateRoleOutput.Type;
 
-// Error Schemas
-export class UpdateRoleUnauthorized extends Schema.TaggedError<UpdateRoleUnauthorized>()(
-  "UpdateRoleUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateRoleForbidden extends Schema.TaggedError<UpdateRoleForbidden>()(
-  "UpdateRoleForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateRoleNotfound extends Schema.TaggedError<UpdateRoleNotfound>()(
-  "UpdateRoleNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateRoleInternalservererror extends Schema.TaggedError<UpdateRoleInternalservererror>()(
-  "UpdateRoleInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update role name
@@ -114,5 +61,4 @@ export class UpdateRoleInternalservererror extends Schema.TaggedError<UpdateRole
 export const updateRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateRoleInput,
   outputSchema: UpdateRoleOutput,
-  errors: [UpdateRoleUnauthorized, UpdateRoleForbidden, UpdateRoleNotfound, UpdateRoleInternalservererror],
 }));

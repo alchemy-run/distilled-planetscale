@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const LintBranchSchemaInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/schema/lint`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/schema/lint" }));
 export type LintBranchSchemaInput = typeof LintBranchSchemaInput.Type;
 
 // Output Schema
@@ -45,51 +41,6 @@ export const LintBranchSchemaOutput = Schema.Struct({
 });
 export type LintBranchSchemaOutput = typeof LintBranchSchemaOutput.Type;
 
-// Error Schemas
-export class LintBranchSchemaUnauthorized extends Schema.TaggedError<LintBranchSchemaUnauthorized>()(
-  "LintBranchSchemaUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class LintBranchSchemaForbidden extends Schema.TaggedError<LintBranchSchemaForbidden>()(
-  "LintBranchSchemaForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class LintBranchSchemaNotfound extends Schema.TaggedError<LintBranchSchemaNotfound>()(
-  "LintBranchSchemaNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class LintBranchSchemaInternalservererror extends Schema.TaggedError<LintBranchSchemaInternalservererror>()(
-  "LintBranchSchemaInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Lint a branch schema
@@ -103,5 +54,4 @@ export class LintBranchSchemaInternalservererror extends Schema.TaggedError<Lint
 export const lintBranchSchema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: LintBranchSchemaInput,
   outputSchema: LintBranchSchemaOutput,
-  errors: [LintBranchSchemaUnauthorized, LintBranchSchemaForbidden, LintBranchSchemaNotfound, LintBranchSchemaInternalservererror],
 }));

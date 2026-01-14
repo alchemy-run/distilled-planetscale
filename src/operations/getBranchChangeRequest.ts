@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetBranchChangeRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/changes/{id}" }));
 export type GetBranchChangeRequestInput = typeof GetBranchChangeRequestInput.Type;
 
 // Output Schema
@@ -56,55 +52,6 @@ export const GetBranchChangeRequestOutput = Schema.Struct({
 });
 export type GetBranchChangeRequestOutput = typeof GetBranchChangeRequestOutput.Type;
 
-// Error Schemas
-export class GetBranchChangeRequestUnauthorized extends Schema.TaggedError<GetBranchChangeRequestUnauthorized>()(
-  "GetBranchChangeRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetBranchChangeRequestForbidden extends Schema.TaggedError<GetBranchChangeRequestForbidden>()(
-  "GetBranchChangeRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetBranchChangeRequestNotfound extends Schema.TaggedError<GetBranchChangeRequestNotfound>()(
-  "GetBranchChangeRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetBranchChangeRequestInternalservererror extends Schema.TaggedError<GetBranchChangeRequestInternalservererror>()(
-  "GetBranchChangeRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a branch change request
@@ -117,5 +64,4 @@ export class GetBranchChangeRequestInternalservererror extends Schema.TaggedErro
 export const getBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBranchChangeRequestInput,
   outputSchema: GetBranchChangeRequestOutput,
-  errors: [GetBranchChangeRequestUnauthorized, GetBranchChangeRequestForbidden, GetBranchChangeRequestNotfound, GetBranchChangeRequestInternalservererror],
 }));

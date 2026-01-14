@@ -1,21 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CreateDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String,
   into_branch: Schema.String,
   notes: Schema.optional(Schema.String),
   auto_cutover: Schema.optional(Schema.Boolean),
   auto_delete_branch: Schema.optional(Schema.Boolean),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests" }));
 export type CreateDeployRequestInput = typeof CreateDeployRequestInput.Type;
 
 // Output Schema
@@ -152,47 +148,6 @@ export const CreateDeployRequestOutput = Schema.Struct({
 });
 export type CreateDeployRequestOutput = typeof CreateDeployRequestOutput.Type;
 
-// Error Schemas
-export class CreateDeployRequestUnauthorized extends Schema.TaggedError<CreateDeployRequestUnauthorized>()(
-  "CreateDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateDeployRequestForbidden extends Schema.TaggedError<CreateDeployRequestForbidden>()(
-  "CreateDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateDeployRequestNotfound extends Schema.TaggedError<CreateDeployRequestNotfound>()(
-  "CreateDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateDeployRequestInternalservererror extends Schema.TaggedError<CreateDeployRequestInternalservererror>()(
-  "CreateDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a deploy request
@@ -208,5 +163,4 @@ export class CreateDeployRequestInternalservererror extends Schema.TaggedError<C
 export const createDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDeployRequestInput,
   outputSchema: CreateDeployRequestOutput,
-  errors: [CreateDeployRequestUnauthorized, CreateDeployRequestForbidden, CreateDeployRequestNotfound, CreateDeployRequestInternalservererror],
 }));

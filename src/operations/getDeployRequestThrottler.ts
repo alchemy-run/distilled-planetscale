@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetDeployRequestThrottlerInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/throttler`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/throttler" }));
 export type GetDeployRequestThrottlerInput = typeof GetDeployRequestThrottlerInput.Type;
 
 // Output Schema
@@ -31,51 +27,6 @@ export const GetDeployRequestThrottlerOutput = Schema.Struct({
 });
 export type GetDeployRequestThrottlerOutput = typeof GetDeployRequestThrottlerOutput.Type;
 
-// Error Schemas
-export class GetDeployRequestThrottlerUnauthorized extends Schema.TaggedError<GetDeployRequestThrottlerUnauthorized>()(
-  "GetDeployRequestThrottlerUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetDeployRequestThrottlerForbidden extends Schema.TaggedError<GetDeployRequestThrottlerForbidden>()(
-  "GetDeployRequestThrottlerForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetDeployRequestThrottlerNotfound extends Schema.TaggedError<GetDeployRequestThrottlerNotfound>()(
-  "GetDeployRequestThrottlerNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetDeployRequestThrottlerInternalservererror extends Schema.TaggedError<GetDeployRequestThrottlerInternalservererror>()(
-  "GetDeployRequestThrottlerInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get deploy request throttler configurations
@@ -87,5 +38,4 @@ export class GetDeployRequestThrottlerInternalservererror extends Schema.TaggedE
 export const getDeployRequestThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeployRequestThrottlerInput,
   outputSchema: GetDeployRequestThrottlerOutput,
-  errors: [GetDeployRequestThrottlerUnauthorized, GetDeployRequestThrottlerForbidden, GetDeployRequestThrottlerNotfound, GetDeployRequestThrottlerInternalservererror],
 }));

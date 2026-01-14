@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetWorkflowInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/workflows/{number}" }));
 export type GetWorkflowInput = typeof GetWorkflowInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const GetWorkflowOutput = Schema.Struct({
 });
 export type GetWorkflowOutput = typeof GetWorkflowOutput.Type;
 
-// Error Schemas
-export class GetWorkflowUnauthorized extends Schema.TaggedError<GetWorkflowUnauthorized>()(
-  "GetWorkflowUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetWorkflowForbidden extends Schema.TaggedError<GetWorkflowForbidden>()(
-  "GetWorkflowForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetWorkflowNotfound extends Schema.TaggedError<GetWorkflowNotfound>()(
-  "GetWorkflowNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetWorkflowInternalservererror extends Schema.TaggedError<GetWorkflowInternalservererror>()(
-  "GetWorkflowInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a workflow
@@ -180,5 +131,4 @@ export class GetWorkflowInternalservererror extends Schema.TaggedError<GetWorkfl
 export const getWorkflow = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetWorkflowInput,
   outputSchema: GetWorkflowOutput,
-  errors: [GetWorkflowUnauthorized, GetWorkflowForbidden, GetWorkflowNotfound, GetWorkflowInternalservererror],
 }));

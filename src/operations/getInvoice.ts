@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetInvoiceInput = Schema.Struct({
-  organization: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/invoices/${input.id}`,
-  [ApiPathParams]: ["organization", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/invoices/{id}" }));
 export type GetInvoiceInput = typeof GetInvoiceInput.Type;
 
 // Output Schema
@@ -22,47 +18,6 @@ export const GetInvoiceOutput = Schema.Struct({
 });
 export type GetInvoiceOutput = typeof GetInvoiceOutput.Type;
 
-// Error Schemas
-export class GetInvoiceUnauthorized extends Schema.TaggedError<GetInvoiceUnauthorized>()(
-  "GetInvoiceUnauthorized",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetInvoiceForbidden extends Schema.TaggedError<GetInvoiceForbidden>()(
-  "GetInvoiceForbidden",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetInvoiceNotfound extends Schema.TaggedError<GetInvoiceNotfound>()(
-  "GetInvoiceNotfound",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetInvoiceInternalservererror extends Schema.TaggedError<GetInvoiceInternalservererror>()(
-  "GetInvoiceInternalservererror",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get an invoice
@@ -73,5 +28,4 @@ export class GetInvoiceInternalservererror extends Schema.TaggedError<GetInvoice
 export const getInvoice = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetInvoiceInput,
   outputSchema: GetInvoiceOutput,
-  errors: [GetInvoiceUnauthorized, GetInvoiceForbidden, GetInvoiceNotfound, GetInvoiceInternalservererror],
 }));

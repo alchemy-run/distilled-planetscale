@@ -1,16 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const GetServiceTokenInput = Schema.Struct({
-  organization: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/service-tokens/${input.id}`,
-  [ApiPathParams]: ["organization", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/service-tokens/{id}" }));
 export type GetServiceTokenInput = typeof GetServiceTokenInput.Type;
 
 // Output Schema
@@ -18,8 +15,8 @@ export const GetServiceTokenOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   display_name: Schema.String,
-  token: Schema.String,
-  plain_text_refresh_token: Schema.String,
+  token: SensitiveString,
+  plain_text_refresh_token: SensitiveString,
   avatar_url: Schema.String,
   created_at: Schema.String,
   updated_at: Schema.String,
@@ -94,47 +91,6 @@ export const GetServiceTokenOutput = Schema.Struct({
 });
 export type GetServiceTokenOutput = typeof GetServiceTokenOutput.Type;
 
-// Error Schemas
-export class GetServiceTokenUnauthorized extends Schema.TaggedError<GetServiceTokenUnauthorized>()(
-  "GetServiceTokenUnauthorized",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetServiceTokenForbidden extends Schema.TaggedError<GetServiceTokenForbidden>()(
-  "GetServiceTokenForbidden",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetServiceTokenNotfound extends Schema.TaggedError<GetServiceTokenNotfound>()(
-  "GetServiceTokenNotfound",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetServiceTokenInternalservererror extends Schema.TaggedError<GetServiceTokenInternalservererror>()(
-  "GetServiceTokenInternalservererror",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get a service token
@@ -147,5 +103,4 @@ export class GetServiceTokenInternalservererror extends Schema.TaggedError<GetSe
 export const getServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetServiceTokenInput,
   outputSchema: GetServiceTokenOutput,
-  errors: [GetServiceTokenUnauthorized, GetServiceTokenForbidden, GetServiceTokenNotfound, GetServiceTokenInternalservererror],
 }));

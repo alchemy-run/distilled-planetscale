@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListKeyspacesInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces" }));
 export type ListKeyspacesInput = typeof ListKeyspacesInput.Type;
 
 // Output Schema
@@ -53,51 +49,6 @@ export const ListKeyspacesOutput = Schema.Struct({
 });
 export type ListKeyspacesOutput = typeof ListKeyspacesOutput.Type;
 
-// Error Schemas
-export class ListKeyspacesUnauthorized extends Schema.TaggedError<ListKeyspacesUnauthorized>()(
-  "ListKeyspacesUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListKeyspacesForbidden extends Schema.TaggedError<ListKeyspacesForbidden>()(
-  "ListKeyspacesForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListKeyspacesNotfound extends Schema.TaggedError<ListKeyspacesNotfound>()(
-  "ListKeyspacesNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListKeyspacesInternalservererror extends Schema.TaggedError<ListKeyspacesInternalservererror>()(
-  "ListKeyspacesInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get keyspaces
@@ -111,5 +62,4 @@ export class ListKeyspacesInternalservererror extends Schema.TaggedError<ListKey
 export const listKeyspaces = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListKeyspacesInput,
   outputSchema: ListKeyspacesOutput,
-  errors: [ListKeyspacesUnauthorized, ListKeyspacesForbidden, ListKeyspacesNotfound, ListKeyspacesInternalservererror],
 }));

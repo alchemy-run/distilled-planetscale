@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DemoteBranchInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/demote`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/demote" }));
 export type DemoteBranchInput = typeof DemoteBranchInput.Type;
 
 // Output Schema
@@ -71,51 +67,6 @@ export const DemoteBranchOutput = Schema.Struct({
 });
 export type DemoteBranchOutput = typeof DemoteBranchOutput.Type;
 
-// Error Schemas
-export class DemoteBranchUnauthorized extends Schema.TaggedError<DemoteBranchUnauthorized>()(
-  "DemoteBranchUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DemoteBranchForbidden extends Schema.TaggedError<DemoteBranchForbidden>()(
-  "DemoteBranchForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DemoteBranchNotfound extends Schema.TaggedError<DemoteBranchNotfound>()(
-  "DemoteBranchNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DemoteBranchInternalservererror extends Schema.TaggedError<DemoteBranchInternalservererror>()(
-  "DemoteBranchInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Demote a branch
@@ -129,5 +80,4 @@ export class DemoteBranchInternalservererror extends Schema.TaggedError<DemoteBr
 export const demoteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DemoteBranchInput,
   outputSchema: DemoteBranchOutput,
-  errors: [DemoteBranchUnauthorized, DemoteBranchForbidden, DemoteBranchNotfound, DemoteBranchInternalservererror],
 }));

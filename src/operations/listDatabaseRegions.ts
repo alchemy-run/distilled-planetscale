@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListDatabaseRegionsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/regions`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/regions" }));
 export type ListDatabaseRegionsInput = typeof ListDatabaseRegionsInput.Type;
 
 // Output Schema
@@ -35,47 +31,6 @@ export const ListDatabaseRegionsOutput = Schema.Struct({
 });
 export type ListDatabaseRegionsOutput = typeof ListDatabaseRegionsOutput.Type;
 
-// Error Schemas
-export class ListDatabaseRegionsUnauthorized extends Schema.TaggedError<ListDatabaseRegionsUnauthorized>()(
-  "ListDatabaseRegionsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListDatabaseRegionsForbidden extends Schema.TaggedError<ListDatabaseRegionsForbidden>()(
-  "ListDatabaseRegionsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListDatabaseRegionsNotfound extends Schema.TaggedError<ListDatabaseRegionsNotfound>()(
-  "ListDatabaseRegionsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListDatabaseRegionsInternalservererror extends Schema.TaggedError<ListDatabaseRegionsInternalservererror>()(
-  "ListDatabaseRegionsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List database regions
@@ -88,5 +43,4 @@ export class ListDatabaseRegionsInternalservererror extends Schema.TaggedError<L
 export const listDatabaseRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDatabaseRegionsInput,
   outputSchema: ListDatabaseRegionsOutput,
-  errors: [ListDatabaseRegionsUnauthorized, ListDatabaseRegionsForbidden, ListDatabaseRegionsNotfound, ListDatabaseRegionsInternalservererror],
 }));

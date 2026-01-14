@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetDeployQueueInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-queue`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-queue" }));
 export type GetDeployQueueInput = typeof GetDeployQueueInput.Type;
 
 // Output Schema
@@ -117,47 +113,6 @@ export const GetDeployQueueOutput = Schema.Struct({
 });
 export type GetDeployQueueOutput = typeof GetDeployQueueOutput.Type;
 
-// Error Schemas
-export class GetDeployQueueUnauthorized extends Schema.TaggedError<GetDeployQueueUnauthorized>()(
-  "GetDeployQueueUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetDeployQueueForbidden extends Schema.TaggedError<GetDeployQueueForbidden>()(
-  "GetDeployQueueForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetDeployQueueNotfound extends Schema.TaggedError<GetDeployQueueNotfound>()(
-  "GetDeployQueueNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetDeployQueueInternalservererror extends Schema.TaggedError<GetDeployQueueInternalservererror>()(
-  "GetDeployQueueInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get the deploy queue
@@ -170,5 +125,4 @@ export class GetDeployQueueInternalservererror extends Schema.TaggedError<GetDep
 export const getDeployQueue = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeployQueueInput,
   outputSchema: GetDeployQueueOutput,
-  errors: [GetDeployQueueUnauthorized, GetDeployQueueForbidden, GetDeployQueueNotfound, GetDeployQueueInternalservererror],
 }));

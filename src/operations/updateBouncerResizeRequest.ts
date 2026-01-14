@@ -1,21 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateBouncerResizeRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  bouncer: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  bouncer: Schema.String.pipe(T.PathParam()),
   bouncer_size: Schema.optional(Schema.String),
   replicas_per_cell: Schema.optional(Schema.Number),
   parameters: Schema.optional(Schema.Unknown),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
-  [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}/resizes" }));
 export type UpdateBouncerResizeRequestInput = typeof UpdateBouncerResizeRequestInput.Type;
 
 // Output Schema
@@ -59,55 +55,6 @@ export const UpdateBouncerResizeRequestOutput = Schema.Struct({
 });
 export type UpdateBouncerResizeRequestOutput = typeof UpdateBouncerResizeRequestOutput.Type;
 
-// Error Schemas
-export class UpdateBouncerResizeRequestUnauthorized extends Schema.TaggedError<UpdateBouncerResizeRequestUnauthorized>()(
-  "UpdateBouncerResizeRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    bouncer: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBouncerResizeRequestForbidden extends Schema.TaggedError<UpdateBouncerResizeRequestForbidden>()(
-  "UpdateBouncerResizeRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    bouncer: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBouncerResizeRequestNotfound extends Schema.TaggedError<UpdateBouncerResizeRequestNotfound>()(
-  "UpdateBouncerResizeRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    bouncer: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateBouncerResizeRequestInternalservererror extends Schema.TaggedError<UpdateBouncerResizeRequestInternalservererror>()(
-  "UpdateBouncerResizeRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    bouncer: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Upsert a bouncer resize request
@@ -123,5 +70,4 @@ export class UpdateBouncerResizeRequestInternalservererror extends Schema.Tagged
 export const updateBouncerResizeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBouncerResizeRequestInput,
   outputSchema: UpdateBouncerResizeRequestOutput,
-  errors: [UpdateBouncerResizeRequestUnauthorized, UpdateBouncerResizeRequestForbidden, UpdateBouncerResizeRequestNotfound, UpdateBouncerResizeRequestInternalservererror],
 }));

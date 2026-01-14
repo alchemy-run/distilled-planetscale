@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const RenewRoleInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/renew`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/renew" }));
 export type RenewRoleInput = typeof RenewRoleInput.Type;
 
 // Output Schema
@@ -51,55 +47,6 @@ export const RenewRoleOutput = Schema.Struct({
 });
 export type RenewRoleOutput = typeof RenewRoleOutput.Type;
 
-// Error Schemas
-export class RenewRoleUnauthorized extends Schema.TaggedError<RenewRoleUnauthorized>()(
-  "RenewRoleUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class RenewRoleForbidden extends Schema.TaggedError<RenewRoleForbidden>()(
-  "RenewRoleForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class RenewRoleNotfound extends Schema.TaggedError<RenewRoleNotfound>()(
-  "RenewRoleNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class RenewRoleInternalservererror extends Schema.TaggedError<RenewRoleInternalservererror>()(
-  "RenewRoleInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Renew role expiration
@@ -112,5 +59,4 @@ export class RenewRoleInternalservererror extends Schema.TaggedError<RenewRoleIn
 export const renewRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: RenewRoleInput,
   outputSchema: RenewRoleOutput,
-  errors: [RenewRoleUnauthorized, RenewRoleForbidden, RenewRoleNotfound, RenewRoleInternalservererror],
 }));

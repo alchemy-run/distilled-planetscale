@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CancelDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/cancel`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/cancel" }));
 export type CancelDeployRequestInput = typeof CancelDeployRequestInput.Type;
 
 // Output Schema
@@ -148,51 +144,6 @@ export const CancelDeployRequestOutput = Schema.Struct({
 });
 export type CancelDeployRequestOutput = typeof CancelDeployRequestOutput.Type;
 
-// Error Schemas
-export class CancelDeployRequestUnauthorized extends Schema.TaggedError<CancelDeployRequestUnauthorized>()(
-  "CancelDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CancelDeployRequestForbidden extends Schema.TaggedError<CancelDeployRequestForbidden>()(
-  "CancelDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CancelDeployRequestNotfound extends Schema.TaggedError<CancelDeployRequestNotfound>()(
-  "CancelDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CancelDeployRequestInternalservererror extends Schema.TaggedError<CancelDeployRequestInternalservererror>()(
-  "CancelDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Cancel a queued deploy request
@@ -204,5 +155,4 @@ export class CancelDeployRequestInternalservererror extends Schema.TaggedError<C
 export const cancelDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CancelDeployRequestInput,
   outputSchema: CancelDeployRequestOutput,
-  errors: [CancelDeployRequestUnauthorized, CancelDeployRequestForbidden, CancelDeployRequestNotfound, CancelDeployRequestInternalservererror],
 }));

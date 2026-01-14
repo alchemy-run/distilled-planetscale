@@ -1,20 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const UpdatePasswordInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
   cidrs: Schema.optional(Schema.Array(Schema.String)),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}" }));
 export type UpdatePasswordInput = typeof UpdatePasswordInput.Type;
 
 // Output Schema
@@ -50,7 +47,7 @@ export const UpdatePasswordOutput = Schema.Struct({
     current_default: Schema.Boolean,
   }),
   username: Schema.String,
-  plain_text: Schema.NullOr(Schema.String),
+  plain_text: SensitiveNullableString,
   replica: Schema.Boolean,
   renewable: Schema.Boolean,
   database_branch: Schema.Struct({
@@ -62,55 +59,6 @@ export const UpdatePasswordOutput = Schema.Struct({
   }),
 });
 export type UpdatePasswordOutput = typeof UpdatePasswordOutput.Type;
-
-// Error Schemas
-export class UpdatePasswordUnauthorized extends Schema.TaggedError<UpdatePasswordUnauthorized>()(
-  "UpdatePasswordUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdatePasswordForbidden extends Schema.TaggedError<UpdatePasswordForbidden>()(
-  "UpdatePasswordForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdatePasswordNotfound extends Schema.TaggedError<UpdatePasswordNotfound>()(
-  "UpdatePasswordNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdatePasswordInternalservererror extends Schema.TaggedError<UpdatePasswordInternalservererror>()(
-  "UpdatePasswordInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -126,5 +74,4 @@ export class UpdatePasswordInternalservererror extends Schema.TaggedError<Update
 export const updatePassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdatePasswordInput,
   outputSchema: UpdatePasswordOutput,
-  errors: [UpdatePasswordUnauthorized, UpdatePasswordForbidden, UpdatePasswordNotfound, UpdatePasswordInternalservererror],
 }));

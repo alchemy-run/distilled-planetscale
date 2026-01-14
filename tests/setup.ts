@@ -1,17 +1,14 @@
 import { FetchHttpClient } from "@effect/platform";
 import { layer } from "@effect/vitest";
-import { Layer } from "effect";
 import { config } from "dotenv";
+import { Layer } from "effect";
 import { CredentialsFromEnv } from "../src/credentials";
 
+// Load environment variables from .env file
 config();
 
+// Main layer providing credentials and HTTP client for all tests
 const MainLayer = Layer.merge(CredentialsFromEnv, FetchHttpClient.layer);
 
+// Export withMainLayer helper for tests
 export const withMainLayer = layer(MainLayer);
-
-/**
- * Test database name - tests that need a database should use this
- * Set PLANETSCALE_TEST_DATABASE env var, or defaults to "database"
- */
-export const TEST_DATABASE = process.env.PLANETSCALE_TEST_DATABASE || "database";

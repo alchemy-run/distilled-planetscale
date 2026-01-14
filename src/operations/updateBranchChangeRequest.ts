@@ -1,20 +1,16 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateBranchChangeRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   cluster_size: Schema.optional(Schema.String),
   replicas: Schema.optional(Schema.Number),
   parameters: Schema.optional(Schema.Unknown),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/changes" }));
 export type UpdateBranchChangeRequestInput = typeof UpdateBranchChangeRequestInput.Type;
 
 // Output Schema
@@ -58,51 +54,6 @@ export const UpdateBranchChangeRequestOutput = Schema.Struct({
 });
 export type UpdateBranchChangeRequestOutput = typeof UpdateBranchChangeRequestOutput.Type;
 
-// Error Schemas
-export class UpdateBranchChangeRequestUnauthorized extends Schema.TaggedError<UpdateBranchChangeRequestUnauthorized>()(
-  "UpdateBranchChangeRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBranchChangeRequestForbidden extends Schema.TaggedError<UpdateBranchChangeRequestForbidden>()(
-  "UpdateBranchChangeRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBranchChangeRequestNotfound extends Schema.TaggedError<UpdateBranchChangeRequestNotfound>()(
-  "UpdateBranchChangeRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateBranchChangeRequestInternalservererror extends Schema.TaggedError<UpdateBranchChangeRequestInternalservererror>()(
-  "UpdateBranchChangeRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Upsert a change request
@@ -117,5 +68,4 @@ export class UpdateBranchChangeRequestInternalservererror extends Schema.TaggedE
 export const updateBranchChangeRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBranchChangeRequestInput,
   outputSchema: UpdateBranchChangeRequestOutput,
-  errors: [UpdateBranchChangeRequestUnauthorized, UpdateBranchChangeRequestForbidden, UpdateBranchChangeRequestNotfound, UpdateBranchChangeRequestInternalservererror],
 }));

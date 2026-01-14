@@ -1,23 +1,20 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const CreatePasswordInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
   role: Schema.optional(Schema.Literal("reader", "writer", "admin", "readwriter")),
   replica: Schema.optional(Schema.Boolean),
   ttl: Schema.optional(Schema.Number),
   cidrs: Schema.optional(Schema.Array(Schema.String)),
   direct_vtgate: Schema.optional(Schema.Boolean),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords" }));
 export type CreatePasswordInput = typeof CreatePasswordInput.Type;
 
 // Output Schema
@@ -53,7 +50,7 @@ export const CreatePasswordOutput = Schema.Struct({
     current_default: Schema.Boolean,
   }),
   username: Schema.String,
-  plain_text: Schema.NullOr(Schema.String),
+  plain_text: SensitiveNullableString,
   replica: Schema.Boolean,
   renewable: Schema.Boolean,
   database_branch: Schema.Struct({
@@ -65,62 +62,6 @@ export const CreatePasswordOutput = Schema.Struct({
   }),
 });
 export type CreatePasswordOutput = typeof CreatePasswordOutput.Type;
-
-// Error Schemas
-export class CreatePasswordUnauthorized extends Schema.TaggedError<CreatePasswordUnauthorized>()(
-  "CreatePasswordUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreatePasswordForbidden extends Schema.TaggedError<CreatePasswordForbidden>()(
-  "CreatePasswordForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreatePasswordNotfound extends Schema.TaggedError<CreatePasswordNotfound>()(
-  "CreatePasswordNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreatePasswordUnprocessableentity extends Schema.TaggedError<CreatePasswordUnprocessableentity>()(
-  "CreatePasswordUnprocessableentity",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class CreatePasswordInternalservererror extends Schema.TaggedError<CreatePasswordInternalservererror>()(
-  "CreatePasswordInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -139,5 +80,4 @@ export class CreatePasswordInternalservererror extends Schema.TaggedError<Create
 export const createPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreatePasswordInput,
   outputSchema: CreatePasswordOutput,
-  errors: [CreatePasswordUnauthorized, CreatePasswordForbidden, CreatePasswordNotfound, CreatePasswordUnprocessableentity, CreatePasswordInternalservererror],
 }));

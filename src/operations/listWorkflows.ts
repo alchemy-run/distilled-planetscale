@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListWorkflowsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   between: Schema.optional(Schema.String),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/workflows" }));
 export type ListWorkflowsInput = typeof ListWorkflowsInput.Type;
 
 // Output Schema
@@ -133,47 +129,6 @@ export const ListWorkflowsOutput = Schema.Struct({
 });
 export type ListWorkflowsOutput = typeof ListWorkflowsOutput.Type;
 
-// Error Schemas
-export class ListWorkflowsUnauthorized extends Schema.TaggedError<ListWorkflowsUnauthorized>()(
-  "ListWorkflowsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListWorkflowsForbidden extends Schema.TaggedError<ListWorkflowsForbidden>()(
-  "ListWorkflowsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListWorkflowsNotfound extends Schema.TaggedError<ListWorkflowsNotfound>()(
-  "ListWorkflowsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListWorkflowsInternalservererror extends Schema.TaggedError<ListWorkflowsInternalservererror>()(
-  "ListWorkflowsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List workflows
@@ -187,5 +142,4 @@ export class ListWorkflowsInternalservererror extends Schema.TaggedError<ListWor
 export const listWorkflows = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListWorkflowsInput,
   outputSchema: ListWorkflowsOutput,
-  errors: [ListWorkflowsUnauthorized, ListWorkflowsForbidden, ListWorkflowsNotfound, ListWorkflowsInternalservererror],
 }));

@@ -1,11 +1,11 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateDatabaseSettingsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   new_name: Schema.optional(Schema.String),
   automatic_migrations: Schema.optional(Schema.Boolean),
   migration_framework: Schema.optional(Schema.String),
@@ -17,11 +17,7 @@ export const UpdateDatabaseSettingsInput = Schema.Struct({
   insights_raw_queries: Schema.optional(Schema.Boolean),
   production_branch_web_console: Schema.optional(Schema.Boolean),
   default_branch: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}" }));
 export type UpdateDatabaseSettingsInput = typeof UpdateDatabaseSettingsInput.Type;
 
 // Output Schema
@@ -87,47 +83,6 @@ export const UpdateDatabaseSettingsOutput = Schema.Struct({
 });
 export type UpdateDatabaseSettingsOutput = typeof UpdateDatabaseSettingsOutput.Type;
 
-// Error Schemas
-export class UpdateDatabaseSettingsUnauthorized extends Schema.TaggedError<UpdateDatabaseSettingsUnauthorized>()(
-  "UpdateDatabaseSettingsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateDatabaseSettingsForbidden extends Schema.TaggedError<UpdateDatabaseSettingsForbidden>()(
-  "UpdateDatabaseSettingsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateDatabaseSettingsNotfound extends Schema.TaggedError<UpdateDatabaseSettingsNotfound>()(
-  "UpdateDatabaseSettingsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateDatabaseSettingsInternalservererror extends Schema.TaggedError<UpdateDatabaseSettingsInternalservererror>()(
-  "UpdateDatabaseSettingsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update database settings
@@ -149,5 +104,4 @@ export class UpdateDatabaseSettingsInternalservererror extends Schema.TaggedErro
 export const updateDatabaseSettings = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabaseSettingsInput,
   outputSchema: UpdateDatabaseSettingsOutput,
-  errors: [UpdateDatabaseSettingsUnauthorized, UpdateDatabaseSettingsForbidden, UpdateDatabaseSettingsNotfound, UpdateDatabaseSettingsInternalservererror],
 }));

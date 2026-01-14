@@ -85,21 +85,30 @@ export const writeTestForOperation = (operationName: string) =>
 
 IMPORTANT:
 - Follow the test patterns in AGENTS.md
+- This project uses GLOBAL error classes (NotFound, Forbidden, Unauthorized, etc.) from src/errors.ts
+- Do NOT import per-operation error classes - they don't exist
+- Import global errors like: import { NotFound, Forbidden } from "../src/errors";
 - Make sure to clean up any resources created during the test using Effect.ensuring
 - Use unique names with timestamps for any resources created
 - Test both success cases and error handling
 - After writing the test, run it to verify it works
+- DO NOT run the test automatically
+- BE SURE TO CLEAN UP ALL RESOURCES CREATED DURING THE TEST
 
-SCHEMA PATCHING:
-If tests fail with errors like "Expected string, actual 1" on error schema fields (e.g., number, id),
-this means there's a type mismatch between input schemas and error schemas. The client passes input
-properties directly to error constructors.
+ERROR HANDLING PATTERN:
+\`\`\`typescript
+import { NotFound, Forbidden } from "../src/errors";
 
-To fix: Change the error schema field from Schema.String to Schema.NumberFromString.
-After patching, create a specs/patch-<operationName>.md file documenting the discrepancy.
-See specs/patch-cancelDeployRequest.md for an example.
+// For error tests, check for global error types:
+const isExpectedError = result instanceof NotFound || result instanceof Forbidden;
+expect(isExpectedError).toBe(true);
+if (result instanceof NotFound) {
+  expect(result._tag).toBe("NotFound");
+  expect(result.message).toBeDefined();
+}
+\`\`\`
 
-Look at existing tests in the tests/ directory for examples.`;
+Look at existing tests in the tests/ directory for examples (especially getOrganization.test.ts and listDatabases.test.ts).`;
 
     const child = spawn("opencode", ["run", "-m", "anthropic/claude-opus-4-5", prompt], {
       stdio: ["inherit", "inherit", "inherit"],

@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListDatabasesInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   q: Schema.optional(Schema.String),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/databases`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases" }));
 export type ListDatabasesInput = typeof ListDatabasesInput.Type;
 
 // Output Schema
@@ -85,43 +81,6 @@ export const ListDatabasesOutput = Schema.Struct({
 });
 export type ListDatabasesOutput = typeof ListDatabasesOutput.Type;
 
-// Error Schemas
-export class ListDatabasesUnauthorized extends Schema.TaggedError<ListDatabasesUnauthorized>()(
-  "ListDatabasesUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListDatabasesForbidden extends Schema.TaggedError<ListDatabasesForbidden>()(
-  "ListDatabasesForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListDatabasesNotfound extends Schema.TaggedError<ListDatabasesNotfound>()(
-  "ListDatabasesNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListDatabasesInternalservererror extends Schema.TaggedError<ListDatabasesInternalservererror>()(
-  "ListDatabasesInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List databases
@@ -134,5 +93,4 @@ export class ListDatabasesInternalservererror extends Schema.TaggedError<ListDat
 export const listDatabases = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDatabasesInput,
   outputSchema: ListDatabasesOutput,
-  errors: [ListDatabasesUnauthorized, ListDatabasesForbidden, ListDatabasesNotfound, ListDatabasesInternalservererror],
 }));

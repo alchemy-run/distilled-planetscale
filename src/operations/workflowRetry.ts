@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowRetryInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/retry`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/retry" }));
 export type WorkflowRetryInput = typeof WorkflowRetryInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowRetryOutput = Schema.Struct({
 });
 export type WorkflowRetryOutput = typeof WorkflowRetryOutput.Type;
 
-// Error Schemas
-export class WorkflowRetryUnauthorized extends Schema.TaggedError<WorkflowRetryUnauthorized>()(
-  "WorkflowRetryUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowRetryForbidden extends Schema.TaggedError<WorkflowRetryForbidden>()(
-  "WorkflowRetryForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowRetryNotfound extends Schema.TaggedError<WorkflowRetryNotfound>()(
-  "WorkflowRetryNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowRetryInternalservererror extends Schema.TaggedError<WorkflowRetryInternalservererror>()(
-  "WorkflowRetryInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Retry a failed workflow
@@ -180,5 +131,4 @@ export class WorkflowRetryInternalservererror extends Schema.TaggedError<Workflo
 export const workflowRetry = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowRetryInput,
   outputSchema: WorkflowRetryOutput,
-  errors: [WorkflowRetryUnauthorized, WorkflowRetryForbidden, WorkflowRetryNotfound, WorkflowRetryInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListRegionsForOrganizationInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/regions`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/regions" }));
 export type ListRegionsForOrganizationInput = typeof ListRegionsForOrganizationInput.Type;
 
 // Output Schema
@@ -34,43 +30,6 @@ export const ListRegionsForOrganizationOutput = Schema.Struct({
 });
 export type ListRegionsForOrganizationOutput = typeof ListRegionsForOrganizationOutput.Type;
 
-// Error Schemas
-export class ListRegionsForOrganizationUnauthorized extends Schema.TaggedError<ListRegionsForOrganizationUnauthorized>()(
-  "ListRegionsForOrganizationUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListRegionsForOrganizationForbidden extends Schema.TaggedError<ListRegionsForOrganizationForbidden>()(
-  "ListRegionsForOrganizationForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListRegionsForOrganizationNotfound extends Schema.TaggedError<ListRegionsForOrganizationNotfound>()(
-  "ListRegionsForOrganizationNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListRegionsForOrganizationInternalservererror extends Schema.TaggedError<ListRegionsForOrganizationInternalservererror>()(
-  "ListRegionsForOrganizationInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List regions for an organization
@@ -82,5 +41,4 @@ export class ListRegionsForOrganizationInternalservererror extends Schema.Tagged
 export const listRegionsForOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListRegionsForOrganizationInput,
   outputSchema: ListRegionsForOrganizationOutput,
-  errors: [ListRegionsForOrganizationUnauthorized, ListRegionsForOrganizationForbidden, ListRegionsForOrganizationNotfound, ListRegionsForOrganizationInternalservererror],
 }));

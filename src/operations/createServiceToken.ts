@@ -1,16 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const CreateServiceTokenInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/service-tokens`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/service-tokens" }));
 export type CreateServiceTokenInput = typeof CreateServiceTokenInput.Type;
 
 // Output Schema
@@ -18,8 +15,8 @@ export const CreateServiceTokenOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   display_name: Schema.String,
-  token: Schema.String,
-  plain_text_refresh_token: Schema.String,
+  token: SensitiveString,
+  plain_text_refresh_token: SensitiveString,
   avatar_url: Schema.String,
   created_at: Schema.String,
   updated_at: Schema.String,
@@ -94,43 +91,6 @@ export const CreateServiceTokenOutput = Schema.Struct({
 });
 export type CreateServiceTokenOutput = typeof CreateServiceTokenOutput.Type;
 
-// Error Schemas
-export class CreateServiceTokenUnauthorized extends Schema.TaggedError<CreateServiceTokenUnauthorized>()(
-  "CreateServiceTokenUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateServiceTokenForbidden extends Schema.TaggedError<CreateServiceTokenForbidden>()(
-  "CreateServiceTokenForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateServiceTokenNotfound extends Schema.TaggedError<CreateServiceTokenNotfound>()(
-  "CreateServiceTokenNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateServiceTokenInternalservererror extends Schema.TaggedError<CreateServiceTokenInternalservererror>()(
-  "CreateServiceTokenInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a service token
@@ -143,5 +103,4 @@ export class CreateServiceTokenInternalservererror extends Schema.TaggedError<Cr
 export const createServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateServiceTokenInput,
   outputSchema: CreateServiceTokenOutput,
-  errors: [CreateServiceTokenUnauthorized, CreateServiceTokenForbidden, CreateServiceTokenNotfound, CreateServiceTokenInternalservererror],
 }));

@@ -1,15 +1,11 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListAuditLogsInput = Schema.Struct({
-  organization: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/audit-log`,
-  [ApiPathParams]: ["organization"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/audit-log" }));
 export type ListAuditLogsInput = typeof ListAuditLogsInput.Type;
 
 // Output Schema
@@ -40,43 +36,6 @@ export const ListAuditLogsOutput = Schema.Struct({
 });
 export type ListAuditLogsOutput = typeof ListAuditLogsOutput.Type;
 
-// Error Schemas
-export class ListAuditLogsUnauthorized extends Schema.TaggedError<ListAuditLogsUnauthorized>()(
-  "ListAuditLogsUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListAuditLogsForbidden extends Schema.TaggedError<ListAuditLogsForbidden>()(
-  "ListAuditLogsForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListAuditLogsNotfound extends Schema.TaggedError<ListAuditLogsNotfound>()(
-  "ListAuditLogsNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListAuditLogsInternalservererror extends Schema.TaggedError<ListAuditLogsInternalservererror>()(
-  "ListAuditLogsInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List audit logs
@@ -86,5 +45,4 @@ export class ListAuditLogsInternalservererror extends Schema.TaggedError<ListAud
 export const listAuditLogs = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListAuditLogsInput,
   outputSchema: ListAuditLogsOutput,
-  errors: [ListAuditLogsUnauthorized, ListAuditLogsForbidden, ListAuditLogsNotfound, ListAuditLogsInternalservererror],
 }));

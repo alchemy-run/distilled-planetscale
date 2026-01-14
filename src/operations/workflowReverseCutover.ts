@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowReverseCutoverInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/reverse-cutover`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/reverse-cutover" }));
 export type WorkflowReverseCutoverInput = typeof WorkflowReverseCutoverInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowReverseCutoverOutput = Schema.Struct({
 });
 export type WorkflowReverseCutoverOutput = typeof WorkflowReverseCutoverOutput.Type;
 
-// Error Schemas
-export class WorkflowReverseCutoverUnauthorized extends Schema.TaggedError<WorkflowReverseCutoverUnauthorized>()(
-  "WorkflowReverseCutoverUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowReverseCutoverForbidden extends Schema.TaggedError<WorkflowReverseCutoverForbidden>()(
-  "WorkflowReverseCutoverForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowReverseCutoverNotfound extends Schema.TaggedError<WorkflowReverseCutoverNotfound>()(
-  "WorkflowReverseCutoverNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowReverseCutoverInternalservererror extends Schema.TaggedError<WorkflowReverseCutoverInternalservererror>()(
-  "WorkflowReverseCutoverInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Reverse traffic cutover
@@ -180,5 +131,4 @@ export class WorkflowReverseCutoverInternalservererror extends Schema.TaggedErro
 export const workflowReverseCutover = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowReverseCutoverInput,
   outputSchema: WorkflowReverseCutoverOutput,
-  errors: [WorkflowReverseCutoverUnauthorized, WorkflowReverseCutoverForbidden, WorkflowReverseCutoverNotfound, WorkflowReverseCutoverInternalservererror],
 }));

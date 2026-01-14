@@ -1,72 +1,19 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteBackupInput = Schema.Struct({
-  id: Schema.String,
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { id: string; organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups/${input.id}`,
-  [ApiPathParams]: ["id", "organization", "database", "branch"] as const,
-});
+  id: Schema.String.pipe(T.PathParam()),
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/backups/{id}" }));
 export type DeleteBackupInput = typeof DeleteBackupInput.Type;
 
 // Output Schema
 export const DeleteBackupOutput = Schema.Void;
 export type DeleteBackupOutput = typeof DeleteBackupOutput.Type;
-
-// Error Schemas
-export class DeleteBackupUnauthorized extends Schema.TaggedError<DeleteBackupUnauthorized>()(
-  "DeleteBackupUnauthorized",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteBackupForbidden extends Schema.TaggedError<DeleteBackupForbidden>()(
-  "DeleteBackupForbidden",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteBackupNotfound extends Schema.TaggedError<DeleteBackupNotfound>()(
-  "DeleteBackupNotfound",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteBackupInternalservererror extends Schema.TaggedError<DeleteBackupInternalservererror>()(
-  "DeleteBackupInternalservererror",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -80,5 +27,4 @@ export class DeleteBackupInternalservererror extends Schema.TaggedError<DeleteBa
 export const deleteBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteBackupInput,
   outputSchema: DeleteBackupOutput,
-  errors: [DeleteBackupUnauthorized, DeleteBackupForbidden, DeleteBackupNotfound, DeleteBackupInternalservererror],
 }));

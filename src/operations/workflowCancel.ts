@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowCancelInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/workflows/{number}" }));
 export type WorkflowCancelInput = typeof WorkflowCancelInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowCancelOutput = Schema.Struct({
 });
 export type WorkflowCancelOutput = typeof WorkflowCancelOutput.Type;
 
-// Error Schemas
-export class WorkflowCancelUnauthorized extends Schema.TaggedError<WorkflowCancelUnauthorized>()(
-  "WorkflowCancelUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowCancelForbidden extends Schema.TaggedError<WorkflowCancelForbidden>()(
-  "WorkflowCancelForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowCancelNotfound extends Schema.TaggedError<WorkflowCancelNotfound>()(
-  "WorkflowCancelNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowCancelInternalservererror extends Schema.TaggedError<WorkflowCancelInternalservererror>()(
-  "WorkflowCancelInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Cancel a workflow
@@ -180,5 +131,4 @@ export class WorkflowCancelInternalservererror extends Schema.TaggedError<Workfl
 export const workflowCancel = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowCancelInput,
   outputSchema: WorkflowCancelOutput,
-  errors: [WorkflowCancelUnauthorized, WorkflowCancelForbidden, WorkflowCancelNotfound, WorkflowCancelInternalservererror],
 }));

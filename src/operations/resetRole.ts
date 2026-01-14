@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ResetRoleInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reset`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/reset" }));
 export type ResetRoleInput = typeof ResetRoleInput.Type;
 
 // Output Schema
@@ -51,55 +47,6 @@ export const ResetRoleOutput = Schema.Struct({
 });
 export type ResetRoleOutput = typeof ResetRoleOutput.Type;
 
-// Error Schemas
-export class ResetRoleUnauthorized extends Schema.TaggedError<ResetRoleUnauthorized>()(
-  "ResetRoleUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ResetRoleForbidden extends Schema.TaggedError<ResetRoleForbidden>()(
-  "ResetRoleForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ResetRoleNotfound extends Schema.TaggedError<ResetRoleNotfound>()(
-  "ResetRoleNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ResetRoleInternalservererror extends Schema.TaggedError<ResetRoleInternalservererror>()(
-  "ResetRoleInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Reset a role's password
@@ -112,5 +59,4 @@ export class ResetRoleInternalservererror extends Schema.TaggedError<ResetRoleIn
 export const resetRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ResetRoleInput,
   outputSchema: ResetRoleOutput,
-  errors: [ResetRoleUnauthorized, ResetRoleForbidden, ResetRoleNotfound, ResetRoleInternalservererror],
 }));

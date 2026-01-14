@@ -1,21 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CreateKeyspaceInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   name: Schema.String,
   cluster_size: Schema.String,
   extra_replicas: Schema.optional(Schema.Number),
   shards: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces" }));
 export type CreateKeyspaceInput = typeof CreateKeyspaceInput.Type;
 
 // Output Schema
@@ -48,51 +44,6 @@ export const CreateKeyspaceOutput = Schema.Struct({
 });
 export type CreateKeyspaceOutput = typeof CreateKeyspaceOutput.Type;
 
-// Error Schemas
-export class CreateKeyspaceUnauthorized extends Schema.TaggedError<CreateKeyspaceUnauthorized>()(
-  "CreateKeyspaceUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateKeyspaceForbidden extends Schema.TaggedError<CreateKeyspaceForbidden>()(
-  "CreateKeyspaceForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateKeyspaceNotfound extends Schema.TaggedError<CreateKeyspaceNotfound>()(
-  "CreateKeyspaceNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateKeyspaceInternalservererror extends Schema.TaggedError<CreateKeyspaceInternalservererror>()(
-  "CreateKeyspaceInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a keyspace
@@ -108,5 +59,4 @@ export class CreateKeyspaceInternalservererror extends Schema.TaggedError<Create
 export const createKeyspace = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateKeyspaceInput,
   outputSchema: CreateKeyspaceOutput,
-  errors: [CreateKeyspaceUnauthorized, CreateKeyspaceForbidden, CreateKeyspaceNotfound, CreateKeyspaceInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListGeneratedQueryPatternsReportsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns" }));
 export type ListGeneratedQueryPatternsReportsInput = typeof ListGeneratedQueryPatternsReportsInput.Type;
 
 // Output Schema
@@ -36,51 +32,6 @@ export const ListGeneratedQueryPatternsReportsOutput = Schema.Struct({
 });
 export type ListGeneratedQueryPatternsReportsOutput = typeof ListGeneratedQueryPatternsReportsOutput.Type;
 
-// Error Schemas
-export class ListGeneratedQueryPatternsReportsUnauthorized extends Schema.TaggedError<ListGeneratedQueryPatternsReportsUnauthorized>()(
-  "ListGeneratedQueryPatternsReportsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListGeneratedQueryPatternsReportsForbidden extends Schema.TaggedError<ListGeneratedQueryPatternsReportsForbidden>()(
-  "ListGeneratedQueryPatternsReportsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListGeneratedQueryPatternsReportsNotfound extends Schema.TaggedError<ListGeneratedQueryPatternsReportsNotfound>()(
-  "ListGeneratedQueryPatternsReportsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListGeneratedQueryPatternsReportsInternalservererror extends Schema.TaggedError<ListGeneratedQueryPatternsReportsInternalservererror>()(
-  "ListGeneratedQueryPatternsReportsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List generated query patterns reports
@@ -92,5 +43,4 @@ export class ListGeneratedQueryPatternsReportsInternalservererror extends Schema
 export const listGeneratedQueryPatternsReports = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListGeneratedQueryPatternsReportsInput,
   outputSchema: ListGeneratedQueryPatternsReportsOutput,
-  errors: [ListGeneratedQueryPatternsReportsUnauthorized, ListGeneratedQueryPatternsReportsForbidden, ListGeneratedQueryPatternsReportsNotfound, ListGeneratedQueryPatternsReportsInternalservererror],
 }));

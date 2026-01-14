@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListParametersInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/parameters`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/parameters" }));
 export type ListParametersInput = typeof ListParametersInput.Type;
 
 // Output Schema
@@ -44,51 +40,6 @@ export const ListParametersOutput = Schema.Array(Schema.Struct({
 }));
 export type ListParametersOutput = typeof ListParametersOutput.Type;
 
-// Error Schemas
-export class ListParametersUnauthorized extends Schema.TaggedError<ListParametersUnauthorized>()(
-  "ListParametersUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListParametersForbidden extends Schema.TaggedError<ListParametersForbidden>()(
-  "ListParametersForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListParametersNotfound extends Schema.TaggedError<ListParametersNotfound>()(
-  "ListParametersNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListParametersInternalservererror extends Schema.TaggedError<ListParametersInternalservererror>()(
-  "ListParametersInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List cluster parameters
@@ -102,5 +53,4 @@ export class ListParametersInternalservererror extends Schema.TaggedError<ListPa
 export const listParameters = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListParametersInput,
   outputSchema: ListParametersOutput,
-  errors: [ListParametersUnauthorized, ListParametersForbidden, ListParametersNotfound, ListParametersInternalservererror],
 }));

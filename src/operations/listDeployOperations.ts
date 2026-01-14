@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListDeployOperationsInput = Schema.Struct({
-  number: Schema.Number,
-  organization: Schema.String,
-  database: Schema.String,
+  number: Schema.Number.pipe(T.PathParam()),
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { number: string; organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/operations`,
-  [ApiPathParams]: ["number", "organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/operations" }));
 export type ListDeployOperationsInput = typeof ListDeployOperationsInput.Type;
 
 // Output Schema
@@ -47,51 +43,6 @@ export const ListDeployOperationsOutput = Schema.Struct({
 });
 export type ListDeployOperationsOutput = typeof ListDeployOperationsOutput.Type;
 
-// Error Schemas
-export class ListDeployOperationsUnauthorized extends Schema.TaggedError<ListDeployOperationsUnauthorized>()(
-  "ListDeployOperationsUnauthorized",
-  {
-    number: Schema.NumberFromString,
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListDeployOperationsForbidden extends Schema.TaggedError<ListDeployOperationsForbidden>()(
-  "ListDeployOperationsForbidden",
-  {
-    number: Schema.NumberFromString,
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListDeployOperationsNotfound extends Schema.TaggedError<ListDeployOperationsNotfound>()(
-  "ListDeployOperationsNotfound",
-  {
-    number: Schema.NumberFromString,
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListDeployOperationsInternalservererror extends Schema.TaggedError<ListDeployOperationsInternalservererror>()(
-  "ListDeployOperationsInternalservererror",
-  {
-    number: Schema.NumberFromString,
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List deploy operations
@@ -107,5 +58,4 @@ export class ListDeployOperationsInternalservererror extends Schema.TaggedError<
 export const listDeployOperations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployOperationsInput,
   outputSchema: ListDeployOperationsOutput,
-  errors: [ListDeployOperationsUnauthorized, ListDeployOperationsForbidden, ListDeployOperationsNotfound, ListDeployOperationsInternalservererror],
 }));

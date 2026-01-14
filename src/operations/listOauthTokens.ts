@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListOauthTokensInput = Schema.Struct({
-  organization: Schema.String,
-  application_id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  application_id: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; application_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens`,
-  [ApiPathParams]: ["organization", "application_id"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/oauth-applications/{application_id}/tokens" }));
 export type ListOauthTokensInput = typeof ListOauthTokensInput.Type;
 
 // Output Schema
@@ -103,47 +99,6 @@ export const ListOauthTokensOutput = Schema.Struct({
 });
 export type ListOauthTokensOutput = typeof ListOauthTokensOutput.Type;
 
-// Error Schemas
-export class ListOauthTokensUnauthorized extends Schema.TaggedError<ListOauthTokensUnauthorized>()(
-  "ListOauthTokensUnauthorized",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListOauthTokensForbidden extends Schema.TaggedError<ListOauthTokensForbidden>()(
-  "ListOauthTokensForbidden",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListOauthTokensNotfound extends Schema.TaggedError<ListOauthTokensNotfound>()(
-  "ListOauthTokensNotfound",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListOauthTokensInternalservererror extends Schema.TaggedError<ListOauthTokensInternalservererror>()(
-  "ListOauthTokensInternalservererror",
-  {
-    organization: Schema.String,
-    application_id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List OAuth tokens
@@ -158,5 +113,4 @@ export class ListOauthTokensInternalservererror extends Schema.TaggedError<ListO
 export const listOauthTokens = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOauthTokensInput,
   outputSchema: ListOauthTokensOutput,
-  errors: [ListOauthTokensUnauthorized, ListOauthTokensForbidden, ListOauthTokensNotfound, ListOauthTokensInternalservererror],
 }));

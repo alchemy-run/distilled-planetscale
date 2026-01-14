@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListOrganizationMembersInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   q: Schema.optional(Schema.String),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/members`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/members" }));
 export type ListOrganizationMembersInput = typeof ListOrganizationMembersInput.Type;
 
 // Output Schema
@@ -52,43 +48,6 @@ export const ListOrganizationMembersOutput = Schema.Struct({
 });
 export type ListOrganizationMembersOutput = typeof ListOrganizationMembersOutput.Type;
 
-// Error Schemas
-export class ListOrganizationMembersUnauthorized extends Schema.TaggedError<ListOrganizationMembersUnauthorized>()(
-  "ListOrganizationMembersUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListOrganizationMembersForbidden extends Schema.TaggedError<ListOrganizationMembersForbidden>()(
-  "ListOrganizationMembersForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListOrganizationMembersNotfound extends Schema.TaggedError<ListOrganizationMembersNotfound>()(
-  "ListOrganizationMembersNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListOrganizationMembersInternalservererror extends Schema.TaggedError<ListOrganizationMembersInternalservererror>()(
-  "ListOrganizationMembersInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List organization members
@@ -101,5 +60,4 @@ export class ListOrganizationMembersInternalservererror extends Schema.TaggedErr
 export const listOrganizationMembers = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationMembersInput,
   outputSchema: ListOrganizationMembersOutput,
-  errors: [ListOrganizationMembersUnauthorized, ListOrganizationMembersForbidden, ListOrganizationMembersNotfound, ListOrganizationMembersInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateOrganizationMembershipInput = Schema.Struct({
-  organization: Schema.String,
-  id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
   role: Schema.String,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/members/${input.id}`,
-  [ApiPathParams]: ["organization", "id"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/members/{id}" }));
 export type UpdateOrganizationMembershipInput = typeof UpdateOrganizationMembershipInput.Type;
 
 // Output Schema
@@ -44,47 +40,6 @@ export const UpdateOrganizationMembershipOutput = Schema.Struct({
 });
 export type UpdateOrganizationMembershipOutput = typeof UpdateOrganizationMembershipOutput.Type;
 
-// Error Schemas
-export class UpdateOrganizationMembershipUnauthorized extends Schema.TaggedError<UpdateOrganizationMembershipUnauthorized>()(
-  "UpdateOrganizationMembershipUnauthorized",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateOrganizationMembershipForbidden extends Schema.TaggedError<UpdateOrganizationMembershipForbidden>()(
-  "UpdateOrganizationMembershipForbidden",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateOrganizationMembershipNotfound extends Schema.TaggedError<UpdateOrganizationMembershipNotfound>()(
-  "UpdateOrganizationMembershipNotfound",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateOrganizationMembershipInternalservererror extends Schema.TaggedError<UpdateOrganizationMembershipInternalservererror>()(
-  "UpdateOrganizationMembershipInternalservererror",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update organization member role
@@ -96,5 +51,4 @@ export class UpdateOrganizationMembershipInternalservererror extends Schema.Tagg
 export const updateOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationMembershipInput,
   outputSchema: UpdateOrganizationMembershipOutput,
-  errors: [UpdateOrganizationMembershipUnauthorized, UpdateOrganizationMembershipForbidden, UpdateOrganizationMembershipNotfound, UpdateOrganizationMembershipInternalservererror],
 }));

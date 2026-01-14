@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetQueryPatternsReportStatusInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}`,
-  [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns/{id}" }));
 export type GetQueryPatternsReportStatusInput = typeof GetQueryPatternsReportStatusInput.Type;
 
 // Output Schema
@@ -31,55 +27,6 @@ export const GetQueryPatternsReportStatusOutput = Schema.Struct({
 });
 export type GetQueryPatternsReportStatusOutput = typeof GetQueryPatternsReportStatusOutput.Type;
 
-// Error Schemas
-export class GetQueryPatternsReportStatusUnauthorized extends Schema.TaggedError<GetQueryPatternsReportStatusUnauthorized>()(
-  "GetQueryPatternsReportStatusUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetQueryPatternsReportStatusForbidden extends Schema.TaggedError<GetQueryPatternsReportStatusForbidden>()(
-  "GetQueryPatternsReportStatusForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetQueryPatternsReportStatusNotfound extends Schema.TaggedError<GetQueryPatternsReportStatusNotfound>()(
-  "GetQueryPatternsReportStatusNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetQueryPatternsReportStatusInternalservererror extends Schema.TaggedError<GetQueryPatternsReportStatusInternalservererror>()(
-  "GetQueryPatternsReportStatusInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Show the status of a query patterns report
@@ -92,5 +39,4 @@ export class GetQueryPatternsReportStatusInternalservererror extends Schema.Tagg
 export const getQueryPatternsReportStatus = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetQueryPatternsReportStatusInput,
   outputSchema: GetQueryPatternsReportStatusOutput,
-  errors: [GetQueryPatternsReportStatusUnauthorized, GetQueryPatternsReportStatusForbidden, GetQueryPatternsReportStatusNotfound, GetQueryPatternsReportStatusInternalservererror],
 }));

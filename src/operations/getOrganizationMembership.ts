@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const GetOrganizationMembershipInput = Schema.Struct({
-  organization: Schema.String,
-  id: Schema.String,
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/members/${input.id}`,
-  [ApiPathParams]: ["organization", "id"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/members/{id}" }));
 export type GetOrganizationMembershipInput = typeof GetOrganizationMembershipInput.Type;
 
 // Output Schema
@@ -43,47 +39,6 @@ export const GetOrganizationMembershipOutput = Schema.Struct({
 });
 export type GetOrganizationMembershipOutput = typeof GetOrganizationMembershipOutput.Type;
 
-// Error Schemas
-export class GetOrganizationMembershipUnauthorized extends Schema.TaggedError<GetOrganizationMembershipUnauthorized>()(
-  "GetOrganizationMembershipUnauthorized",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class GetOrganizationMembershipForbidden extends Schema.TaggedError<GetOrganizationMembershipForbidden>()(
-  "GetOrganizationMembershipForbidden",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class GetOrganizationMembershipNotfound extends Schema.TaggedError<GetOrganizationMembershipNotfound>()(
-  "GetOrganizationMembershipNotfound",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class GetOrganizationMembershipInternalservererror extends Schema.TaggedError<GetOrganizationMembershipInternalservererror>()(
-  "GetOrganizationMembershipInternalservererror",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get an organization member
@@ -94,5 +49,4 @@ export class GetOrganizationMembershipInternalservererror extends Schema.TaggedE
 export const getOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationMembershipInput,
   outputSchema: GetOrganizationMembershipOutput,
-  errors: [GetOrganizationMembershipUnauthorized, GetOrganizationMembershipForbidden, GetOrganizationMembershipNotfound, GetOrganizationMembershipInternalservererror],
 }));

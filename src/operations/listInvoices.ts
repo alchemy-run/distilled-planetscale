@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListInvoicesInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/invoices`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/invoices" }));
 export type ListInvoicesInput = typeof ListInvoicesInput.Type;
 
 // Output Schema
@@ -30,43 +26,6 @@ export const ListInvoicesOutput = Schema.Struct({
 });
 export type ListInvoicesOutput = typeof ListInvoicesOutput.Type;
 
-// Error Schemas
-export class ListInvoicesUnauthorized extends Schema.TaggedError<ListInvoicesUnauthorized>()(
-  "ListInvoicesUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListInvoicesForbidden extends Schema.TaggedError<ListInvoicesForbidden>()(
-  "ListInvoicesForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListInvoicesNotfound extends Schema.TaggedError<ListInvoicesNotfound>()(
-  "ListInvoicesNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListInvoicesInternalservererror extends Schema.TaggedError<ListInvoicesInternalservererror>()(
-  "ListInvoicesInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get invoices
@@ -80,5 +39,4 @@ export class ListInvoicesInternalservererror extends Schema.TaggedError<ListInvo
 export const listInvoices = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListInvoicesInput,
   outputSchema: ListInvoicesOutput,
-  errors: [ListInvoicesUnauthorized, ListInvoicesForbidden, ListInvoicesNotfound, ListInvoicesInternalservererror],
 }));

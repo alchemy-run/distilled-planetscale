@@ -1,11 +1,11 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CreateWorkflowInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
   name: Schema.String,
   source_keyspace: Schema.String,
   target_keyspace: Schema.String,
@@ -13,11 +13,7 @@ export const CreateWorkflowInput = Schema.Struct({
   defer_secondary_keys: Schema.optional(Schema.Boolean),
   on_ddl: Schema.optional(Schema.Literal("IGNORE", "STOP", "EXEC", "EXEC_IGNORE")),
   tables: Schema.Array(Schema.String),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/workflows" }));
 export type CreateWorkflowInput = typeof CreateWorkflowInput.Type;
 
 // Output Schema
@@ -130,47 +126,6 @@ export const CreateWorkflowOutput = Schema.Struct({
 });
 export type CreateWorkflowOutput = typeof CreateWorkflowOutput.Type;
 
-// Error Schemas
-export class CreateWorkflowUnauthorized extends Schema.TaggedError<CreateWorkflowUnauthorized>()(
-  "CreateWorkflowUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateWorkflowForbidden extends Schema.TaggedError<CreateWorkflowForbidden>()(
-  "CreateWorkflowForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateWorkflowNotfound extends Schema.TaggedError<CreateWorkflowNotfound>()(
-  "CreateWorkflowNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateWorkflowInternalservererror extends Schema.TaggedError<CreateWorkflowInternalservererror>()(
-  "CreateWorkflowInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a workflow
@@ -188,5 +143,4 @@ export class CreateWorkflowInternalservererror extends Schema.TaggedError<Create
 export const createWorkflow = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateWorkflowInput,
   outputSchema: CreateWorkflowOutput,
-  errors: [CreateWorkflowUnauthorized, CreateWorkflowForbidden, CreateWorkflowNotfound, CreateWorkflowInternalservererror],
 }));

@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListBranchBouncerResizeRequestsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncer-resizes`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncer-resizes" }));
 export type ListBranchBouncerResizeRequestsInput = typeof ListBranchBouncerResizeRequestsInput.Type;
 
 // Output Schema
@@ -64,51 +60,6 @@ export const ListBranchBouncerResizeRequestsOutput = Schema.Struct({
 });
 export type ListBranchBouncerResizeRequestsOutput = typeof ListBranchBouncerResizeRequestsOutput.Type;
 
-// Error Schemas
-export class ListBranchBouncerResizeRequestsUnauthorized extends Schema.TaggedError<ListBranchBouncerResizeRequestsUnauthorized>()(
-  "ListBranchBouncerResizeRequestsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListBranchBouncerResizeRequestsForbidden extends Schema.TaggedError<ListBranchBouncerResizeRequestsForbidden>()(
-  "ListBranchBouncerResizeRequestsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListBranchBouncerResizeRequestsNotfound extends Schema.TaggedError<ListBranchBouncerResizeRequestsNotfound>()(
-  "ListBranchBouncerResizeRequestsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListBranchBouncerResizeRequestsInternalservererror extends Schema.TaggedError<ListBranchBouncerResizeRequestsInternalservererror>()(
-  "ListBranchBouncerResizeRequestsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Get bouncer resize requests
@@ -122,5 +73,4 @@ export class ListBranchBouncerResizeRequestsInternalservererror extends Schema.T
 export const listBranchBouncerResizeRequests = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBranchBouncerResizeRequestsInput,
   outputSchema: ListBranchBouncerResizeRequestsOutput,
-  errors: [ListBranchBouncerResizeRequestsUnauthorized, ListBranchBouncerResizeRequestsForbidden, ListBranchBouncerResizeRequestsNotfound, ListBranchBouncerResizeRequestsInternalservererror],
 }));

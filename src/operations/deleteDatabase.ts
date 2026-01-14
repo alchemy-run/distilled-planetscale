@@ -1,62 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const DeleteDatabaseInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-}).annotations({
-  [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}`,
-  [ApiPathParams]: ["organization", "database"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}" }));
 export type DeleteDatabaseInput = typeof DeleteDatabaseInput.Type;
 
 // Output Schema
 export const DeleteDatabaseOutput = Schema.Void;
 export type DeleteDatabaseOutput = typeof DeleteDatabaseOutput.Type;
-
-// Error Schemas
-export class DeleteDatabaseUnauthorized extends Schema.TaggedError<DeleteDatabaseUnauthorized>()(
-  "DeleteDatabaseUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteDatabaseForbidden extends Schema.TaggedError<DeleteDatabaseForbidden>()(
-  "DeleteDatabaseForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class DeleteDatabaseNotfound extends Schema.TaggedError<DeleteDatabaseNotfound>()(
-  "DeleteDatabaseNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class DeleteDatabaseInternalservererror extends Schema.TaggedError<DeleteDatabaseInternalservererror>()(
-  "DeleteDatabaseInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -68,5 +23,4 @@ export class DeleteDatabaseInternalservererror extends Schema.TaggedError<Delete
 export const deleteDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteDatabaseInput,
   outputSchema: DeleteDatabaseOutput,
-  errors: [DeleteDatabaseUnauthorized, DeleteDatabaseForbidden, DeleteDatabaseNotfound, DeleteDatabaseInternalservererror],
 }));

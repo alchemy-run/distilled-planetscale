@@ -1,22 +1,19 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
+import { SensitiveString, SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const CreateOauthTokenInput = Schema.Struct({
-  organization: Schema.String,
-  id: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  id: Schema.String.pipe(T.PathParam()),
   client_id: Schema.String,
   client_secret: Schema.String,
   grant_type: Schema.Literal("authorization_code", "refresh_token"),
   code: Schema.optional(Schema.String),
   redirect_uri: Schema.optional(Schema.String),
   refresh_token: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/oauth-applications/${input.id}/token`,
-  [ApiPathParams]: ["organization", "id"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/oauth-applications/{id}/token" }));
 export type CreateOauthTokenInput = typeof CreateOauthTokenInput.Type;
 
 // Output Schema
@@ -24,8 +21,8 @@ export const CreateOauthTokenOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   display_name: Schema.String,
-  token: Schema.String,
-  plain_text_refresh_token: Schema.String,
+  token: SensitiveString,
+  plain_text_refresh_token: SensitiveString,
   avatar_url: Schema.String,
   created_at: Schema.String,
   updated_at: Schema.String,
@@ -100,47 +97,6 @@ export const CreateOauthTokenOutput = Schema.Struct({
 });
 export type CreateOauthTokenOutput = typeof CreateOauthTokenOutput.Type;
 
-// Error Schemas
-export class CreateOauthTokenForbidden extends Schema.TaggedError<CreateOauthTokenForbidden>()(
-  "CreateOauthTokenForbidden",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateOauthTokenNotfound extends Schema.TaggedError<CreateOauthTokenNotfound>()(
-  "CreateOauthTokenNotfound",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateOauthTokenUnprocessableentity extends Schema.TaggedError<CreateOauthTokenUnprocessableentity>()(
-  "CreateOauthTokenUnprocessableentity",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unprocessable_entity" },
-).pipe(Category.withBadRequestError) {}
-
-export class CreateOauthTokenInternalservererror extends Schema.TaggedError<CreateOauthTokenInternalservererror>()(
-  "CreateOauthTokenInternalservererror",
-  {
-    organization: Schema.String,
-    id: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create or renew an OAuth token
@@ -159,5 +115,4 @@ export class CreateOauthTokenInternalservererror extends Schema.TaggedError<Crea
 export const createOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateOauthTokenInput,
   outputSchema: CreateOauthTokenOutput,
-  errors: [CreateOauthTokenForbidden, CreateOauthTokenNotfound, CreateOauthTokenUnprocessableentity, CreateOauthTokenInternalservererror],
 }));

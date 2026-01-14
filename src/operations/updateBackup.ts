@@ -1,19 +1,15 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const UpdateBackupInput = Schema.Struct({
-  id: Schema.String,
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  id: Schema.String.pipe(T.PathParam()),
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   protected: Schema.optional(Schema.Boolean),
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { id: string; organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups/${input.id}`,
-  [ApiPathParams]: ["id", "organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/backups/{id}" }));
 export type UpdateBackupInput = typeof UpdateBackupInput.Type;
 
 // Output Schema
@@ -79,55 +75,6 @@ export const UpdateBackupOutput = Schema.Struct({
 });
 export type UpdateBackupOutput = typeof UpdateBackupOutput.Type;
 
-// Error Schemas
-export class UpdateBackupUnauthorized extends Schema.TaggedError<UpdateBackupUnauthorized>()(
-  "UpdateBackupUnauthorized",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBackupForbidden extends Schema.TaggedError<UpdateBackupForbidden>()(
-  "UpdateBackupForbidden",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class UpdateBackupNotfound extends Schema.TaggedError<UpdateBackupNotfound>()(
-  "UpdateBackupNotfound",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class UpdateBackupInternalservererror extends Schema.TaggedError<UpdateBackupInternalservererror>()(
-  "UpdateBackupInternalservererror",
-  {
-    id: Schema.String,
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Update a backup
@@ -141,5 +88,4 @@ export class UpdateBackupInternalservererror extends Schema.TaggedError<UpdateBa
 export const updateBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateBackupInput,
   outputSchema: UpdateBackupOutput,
-  errors: [UpdateBackupUnauthorized, UpdateBackupForbidden, UpdateBackupNotfound, UpdateBackupInternalservererror],
 }));

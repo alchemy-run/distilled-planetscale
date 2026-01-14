@@ -66,6 +66,7 @@ interface SchemaObject {
   description?: string;
   default?: unknown;
   "x-nullable"?: boolean;
+  "x-sensitive"?: boolean;
 }
 
 // ============================================================================
@@ -116,11 +117,16 @@ function getSchemaFromResponse(
 // Effect Schema Generation
 // ============================================================================
 
+interface SchemaGenerationContext {
+  usesSensitive: boolean;
+}
+
 function openApiTypeToEffectSchema(
   prop: SchemaObject,
   spec: OpenAPISpec,
   indent: string = "",
   seenRefs: Set<string> = new Set(),
+  ctx?: SchemaGenerationContext,
 ): string {
   // Handle $ref
   if (prop.$ref) {
@@ -128,7 +134,7 @@ function openApiTypeToEffectSchema(
       return "Schema.Unknown"; // Prevent infinite recursion
     }
     const resolved = resolveRef(spec, prop.$ref);
-    return openApiTypeToEffectSchema(resolved, spec, indent, new Set([...seenRefs, prop.$ref]));
+    return openApiTypeToEffectSchema(resolved, spec, indent, new Set([...seenRefs, prop.$ref]), ctx);
   }
 
   // Handle enum
@@ -142,6 +148,13 @@ function openApiTypeToEffectSchema(
   let baseSchema: string;
   switch (prop.type) {
     case "string":
+      // Check for sensitive annotation
+      if (prop["x-sensitive"]) {
+        if (ctx) ctx.usesSensitive = true;
+        baseSchema = prop["x-nullable"] ? "SensitiveNullableString" : "SensitiveString";
+        // Return early since SensitiveNullableString already handles null
+        return baseSchema;
+      }
       baseSchema = "Schema.String";
       break;
     case "integer":
@@ -153,7 +166,7 @@ function openApiTypeToEffectSchema(
       break;
     case "array":
       if (prop.items) {
-        const itemSchema = openApiTypeToEffectSchema(prop.items, spec, indent, seenRefs);
+        const itemSchema = openApiTypeToEffectSchema(prop.items, spec, indent, seenRefs, ctx);
         baseSchema = `Schema.Array(${itemSchema})`;
       } else {
         baseSchema = "Schema.Array(Schema.Unknown)";
@@ -161,14 +174,14 @@ function openApiTypeToEffectSchema(
       break;
     case "object":
       if (prop.properties) {
-        baseSchema = generateStructSchema(prop, spec, indent, seenRefs);
+        baseSchema = generateStructSchema(prop, spec, indent, seenRefs, ctx);
       } else {
         baseSchema = "Schema.Unknown";
       }
       break;
     default:
       if (prop.properties) {
-        baseSchema = generateStructSchema(prop, spec, indent, seenRefs);
+        baseSchema = generateStructSchema(prop, spec, indent, seenRefs, ctx);
       } else {
         baseSchema = "Schema.Unknown";
       }
@@ -184,6 +197,7 @@ function generateStructSchema(
   spec: OpenAPISpec,
   indent: string = "",
   seenRefs: Set<string> = new Set(),
+  ctx?: SchemaGenerationContext,
 ): string {
   if (!schema.properties) return "Schema.Unknown";
 
@@ -191,7 +205,7 @@ function generateStructSchema(
   const lines: string[] = [];
 
   for (const [key, value] of Object.entries(schema.properties)) {
-    const fieldSchema = openApiTypeToEffectSchema(value, spec, indent + "  ", seenRefs);
+    const fieldSchema = openApiTypeToEffectSchema(value, spec, indent + "  ", seenRefs, ctx);
     const isOptional = !required.has(key);
     if (isOptional) {
       lines.push(`${indent}  ${key}: Schema.optional(${fieldSchema}),`);
@@ -322,8 +336,6 @@ function generateInputSchema(
 ): {
   inputSchemaCode: string;
   inputSchemaName: string;
-  pathParamInfos: PathParamInfo[];
-  inputType: string;
 } {
   const inputSchemaName = `${toPascalCase(operationId)}Input`;
   const pathParams = parameters.filter((p) => p.in === "path");
@@ -332,14 +344,14 @@ function generateInputSchema(
 
   const fields: string[] = [];
 
-  // Path parameters (always required)
+  // Path parameters (always required) - with T.PathParam() trait
   for (const param of pathParams) {
-    const schema = param.enum
+    const baseSchema = param.enum
       ? `Schema.Literal(${param.enum.map((v) => `"${v}"`).join(", ")})`
       : param.type === "integer"
         ? "Schema.Number"
         : "Schema.String";
-    fields.push(`  ${param.name}: ${schema},`);
+    fields.push(`  ${param.name}: ${baseSchema}.pipe(T.PathParam()),`);
   }
 
   // Query parameters
@@ -374,147 +386,57 @@ function generateInputSchema(
     }
   }
 
-  // Build path param info for error schemas
-  const pathParamInfos: PathParamInfo[] = pathParams.map((p) => ({
-    name: p.name,
-    type: p.type || "string",
-  }));
-  const pathParamNames = pathParamInfos.map((p) => p.name);
-  const inputTypeFields = pathParamNames.map((n) => `${n}: string`).join("; ");
-  const inputType = inputTypeFields ? `{ ${inputTypeFields} }` : "Record<string, never>";
-
-  // Build path template function
-  const pathFn = pathParamNames.length
-    ? `(input: ${inputType}) => \`${pathTemplate.replace(/{(\w+)}/g, "${input.$1}")}\``
-    : `() => "${pathTemplate}"`;
-
-  // Build path params array for body extraction
-  const pathParamsArray = pathParamNames.length
-    ? `[${pathParamNames.map((n) => `"${n}"`).join(", ")}] as const`
-    : "[] as const";
+  // Build HTTP trait path template (use {param} syntax)
+  const httpPath = pathTemplate;
 
   const inputSchemaCode = `export const ${inputSchemaName} = Schema.Struct({
 ${fields.join("\n")}
-}).annotations({
-  [ApiMethod]: "${method.toUpperCase()}",
-  [ApiPath]: ${pathFn},
-  [ApiPathParams]: ${pathParamsArray},
-});
+}).pipe(T.Http({ method: "${method.toUpperCase()}", path: "${httpPath}" }));
 export type ${inputSchemaName} = typeof ${inputSchemaName}.Type;`;
 
-  return { inputSchemaCode, inputSchemaName, pathParamInfos, inputType };
+  return { inputSchemaCode, inputSchemaName };
 }
 
 function generateOutputSchema(
   operationId: string,
   responseSchema: SchemaObject | null,
   spec: OpenAPISpec,
-): { outputSchemaCode: string; outputSchemaName: string } {
+): { outputSchemaCode: string; outputSchemaName: string; usesSensitive: boolean } {
   const outputSchemaName = toPascalCase(operationId) + "Output";
+  const ctx: SchemaGenerationContext = { usesSensitive: false };
 
   if (!responseSchema) {
     return {
       outputSchemaCode: `export const ${outputSchemaName} = Schema.Void;
 export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
       outputSchemaName,
+      usesSensitive: false,
     };
   }
 
   // Handle array responses
   if (responseSchema.type === "array" && responseSchema.items) {
-    const itemSchema = openApiTypeToEffectSchema(responseSchema.items, spec, "");
+    const itemSchema = openApiTypeToEffectSchema(responseSchema.items, spec, "", new Set(), ctx);
     return {
       outputSchemaCode: `export const ${outputSchemaName} = Schema.Array(${itemSchema});
 export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
       outputSchemaName,
+      usesSensitive: ctx.usesSensitive,
     };
   }
 
   // Handle object responses
-  const schemaCode = openApiTypeToEffectSchema(responseSchema, spec, "");
+  const schemaCode = openApiTypeToEffectSchema(responseSchema, spec, "", new Set(), ctx);
   return {
     outputSchemaCode: `export const ${outputSchemaName} = ${schemaCode};
 export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
     outputSchemaName,
+    usesSensitive: ctx.usesSensitive,
   };
 }
 
-interface PathParamInfo {
-  name: string;
-  type: string;
-}
-
-function generateErrorClasses(
-  operationId: string,
-  responses: Record<string, Response>,
-  pathParamInfos: PathParamInfo[],
-  spec: OpenAPISpec,
-): { errorCode: string; errorNames: string[]; usesCategory: boolean } {
-  const className = toPascalCase(operationId);
-  const errorNames: string[] = [];
-  const errorClasses: string[] = [];
-  let usesCategory = false;
-
-  // Get error categories from spec (populated by patch)
-  const errorCategories = spec["x-error-categories"] || {};
-
-  // Use spec's status-to-code mapping if available, otherwise fall back to defaults
-  const statusToCode: Record<string, string> = spec["x-http-status-to-error-code"] || {
-    "401": "unauthorized",
-    "403": "forbidden",
-    "404": "not_found",
-    "409": "conflict",
-    "422": "unprocessable_entity",
-  };
-
-  for (const [status, _response] of Object.entries(responses)) {
-    const code = statusToCode[status];
-    if (!code) continue;
-
-    const errorName = `${className}${toPascalCase(code.replace(/_/g, " ").replace(/ /g, ""))}`;
-    errorNames.push(errorName);
-
-    // Use NumberFromString for integer params so error constructors accept
-    // both the numeric input value and potential string API responses
-    const paramFields = pathParamInfos
-      .map((p) => {
-        const schema = p.type === "integer" ? "Schema.NumberFromString" : "Schema.String";
-        return `    ${p.name}: ${schema},`;
-      })
-      .join("\n");
-
-    // Look up the category decorator for this error code
-    const categoryInfo = errorCategories[code];
-    const categoryDecorator = categoryInfo?.decorator;
-
-    if (categoryDecorator) {
-      usesCategory = true;
-      errorClasses.push(`export class ${errorName} extends Schema.TaggedError<${errorName}>()(
-  "${errorName}",
-  {
-${paramFields}
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "${code}" },
-).pipe(Category.${categoryDecorator}) {}`);
-    } else {
-      errorClasses.push(`export class ${errorName} extends Schema.TaggedError<${errorName}>()(
-  "${errorName}",
-  {
-${paramFields}
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "${code}" },
-) {}`);
-    }
-  }
-
-  return {
-    errorCode: errorClasses.join("\n\n"),
-    errorNames,
-    usesCategory,
-  };
-}
+// Error classes are now global - see src/errors.ts
+// No per-operation error generation needed
 
 function generateOperation(
   spec: OpenAPISpec,
@@ -530,7 +452,7 @@ function generateOperation(
   const jsDoc = generateJsDoc(operation.summary, operation.description, parameters);
 
   // Generate input schema
-  const { inputSchemaCode, inputSchemaName, pathParamInfos } = generateInputSchema(
+  const { inputSchemaCode, inputSchemaName } = generateInputSchema(
     operationId,
     method,
     pathTemplate,
@@ -544,44 +466,32 @@ function generateOperation(
   const responseSchema = getSchemaFromResponse(spec, successResponse);
 
   // Generate output schema
-  const { outputSchemaCode, outputSchemaName } = generateOutputSchema(
+  const { outputSchemaCode, outputSchemaName, usesSensitive } = generateOutputSchema(
     operationId,
     responseSchema,
     spec,
   );
 
-  // Generate error classes
-  const { errorCode, errorNames, usesCategory } = generateErrorClasses(
-    operationId,
-    operation.responses,
-    pathParamInfos,
-    spec,
-  );
-
-  // Generate the operation function
-  const errorsArray = errorNames.length > 0 ? `[${errorNames.join(", ")}]` : "[]";
-
+  // Generate the operation function (errors are handled globally by the client)
   const operationCodeWithJsDoc = jsDoc
     ? `${jsDoc}
 export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ${inputSchemaName},
   outputSchema: ${outputSchemaName},
-  errors: ${errorsArray},
 }));`
     : `export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ${inputSchemaName},
   outputSchema: ${outputSchemaName},
-  errors: ${errorsArray},
 }));`;
 
   // Combine all code
-  const baseImports = `import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";`;
+  let imports = `import * as Schema from "effect/Schema";
+import { API } from "../client";
+import * as T from "../traits";`;
 
-  const imports = usesCategory
-    ? `${baseImports}
-import * as Category from "../category";`
-    : baseImports;
+  if (usesSensitive) {
+    imports += `\nimport { SensitiveString, SensitiveNullableString } from "../sensitive";`;
+  }
 
   const code = [
     imports,
@@ -592,9 +502,6 @@ import * as Category from "../category";`
     "// Output Schema",
     outputSchemaCode,
     "",
-    errorNames.length > 0 ? "// Error Schemas" : "",
-    errorCode,
-    "",
     "// The operation",
     operationCodeWithJsDoc,
     "",
@@ -602,7 +509,7 @@ import * as Category from "../category";`
     .filter((line) => line !== undefined)
     .join("\n");
 
-  const exports = [inputSchemaName, outputSchemaName, ...errorNames, functionName];
+  const exports = [inputSchemaName, outputSchemaName, functionName];
 
   return {
     fileName: `${functionName}.ts`,
@@ -620,7 +527,6 @@ async function main() {
   const specsDir = path.join(process.cwd(), "specs");
   const specPath = path.join(specsDir, "openapi.json");
   const operationsDir = path.join(process.cwd(), "src/operations");
-  const indexPath = path.join(process.cwd(), "index.ts");
 
   // Read the OpenAPI spec
   console.log("Reading OpenAPI spec...");
@@ -675,20 +581,13 @@ async function main() {
     console.log(`Written: ${op.fileName}`);
   }
 
-  // Update index.ts
-  console.log("\nUpdating index.ts...");
-  const baseExports = [
-    'export * from "./src/errors";',
-    'export * from "./src/credentials";',
-    'export * from "./src/client";',
-  ];
-
-  const operationExports = operations.map(
-    (op) => `export * from "./src/operations/${op.functionName}";`,
-  );
-
-  const indexContent = [...baseExports, ...operationExports].join("\n") + "\n";
-  fs.writeFileSync(indexPath, indexContent);
+  // Write operations barrel file (src/operations/index.ts)
+  console.log("\nWriting operations barrel file...");
+  const operationsBarrelPath = path.join(operationsDir, "index.ts");
+  const operationsBarrelContent =
+    operations.map((op) => `export * from "./${op.functionName}";`).join("\n") + "\n";
+  fs.writeFileSync(operationsBarrelPath, operationsBarrelContent);
+  console.log(`Written: src/operations/index.ts`);
 
   console.log(`\nGenerated ${operations.length} operations.`);
   console.log("Done!");

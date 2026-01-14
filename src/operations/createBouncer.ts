@@ -1,21 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CreateBouncerInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
   target: Schema.optional(Schema.String),
   bouncer_size: Schema.optional(Schema.String),
   replicas_per_cell: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers" }));
 export type CreateBouncerInput = typeof CreateBouncerInput.Type;
 
 // Output Schema
@@ -74,51 +70,6 @@ export const CreateBouncerOutput = Schema.Struct({
 });
 export type CreateBouncerOutput = typeof CreateBouncerOutput.Type;
 
-// Error Schemas
-export class CreateBouncerUnauthorized extends Schema.TaggedError<CreateBouncerUnauthorized>()(
-  "CreateBouncerUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateBouncerForbidden extends Schema.TaggedError<CreateBouncerForbidden>()(
-  "CreateBouncerForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateBouncerNotfound extends Schema.TaggedError<CreateBouncerNotfound>()(
-  "CreateBouncerNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateBouncerInternalservererror extends Schema.TaggedError<CreateBouncerInternalservererror>()(
-  "CreateBouncerInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a bouncer
@@ -134,5 +85,4 @@ export class CreateBouncerInternalservererror extends Schema.TaggedError<CreateB
 export const createBouncer = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateBouncerInput,
   outputSchema: CreateBouncerOutput,
-  errors: [CreateBouncerUnauthorized, CreateBouncerForbidden, CreateBouncerNotfound, CreateBouncerInternalservererror],
 }));

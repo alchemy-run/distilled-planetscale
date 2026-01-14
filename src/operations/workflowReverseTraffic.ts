@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const WorkflowReverseTrafficInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/reverse-traffic`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/reverse-traffic" }));
 export type WorkflowReverseTrafficInput = typeof WorkflowReverseTrafficInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const WorkflowReverseTrafficOutput = Schema.Struct({
 });
 export type WorkflowReverseTrafficOutput = typeof WorkflowReverseTrafficOutput.Type;
 
-// Error Schemas
-export class WorkflowReverseTrafficUnauthorized extends Schema.TaggedError<WorkflowReverseTrafficUnauthorized>()(
-  "WorkflowReverseTrafficUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowReverseTrafficForbidden extends Schema.TaggedError<WorkflowReverseTrafficForbidden>()(
-  "WorkflowReverseTrafficForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class WorkflowReverseTrafficNotfound extends Schema.TaggedError<WorkflowReverseTrafficNotfound>()(
-  "WorkflowReverseTrafficNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class WorkflowReverseTrafficInternalservererror extends Schema.TaggedError<WorkflowReverseTrafficInternalservererror>()(
-  "WorkflowReverseTrafficInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Reverse traffic
@@ -180,5 +131,4 @@ export class WorkflowReverseTrafficInternalservererror extends Schema.TaggedErro
 export const workflowReverseTraffic = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowReverseTrafficInput,
   outputSchema: WorkflowReverseTrafficOutput,
-  errors: [WorkflowReverseTrafficUnauthorized, WorkflowReverseTrafficForbidden, WorkflowReverseTrafficNotfound, WorkflowReverseTrafficInternalservererror],
 }));

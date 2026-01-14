@@ -1,18 +1,14 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListClusterSizeSkusInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   engine: Schema.optional(Schema.Literal("mysql", "postgresql")),
   rates: Schema.optional(Schema.Boolean),
   region: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/cluster-size-skus`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/cluster-size-skus" }));
 export type ListClusterSizeSkusInput = typeof ListClusterSizeSkusInput.Type;
 
 // Output Schema
@@ -36,43 +32,6 @@ export const ListClusterSizeSkusOutput = Schema.Array(Schema.Struct({
 }));
 export type ListClusterSizeSkusOutput = typeof ListClusterSizeSkusOutput.Type;
 
-// Error Schemas
-export class ListClusterSizeSkusUnauthorized extends Schema.TaggedError<ListClusterSizeSkusUnauthorized>()(
-  "ListClusterSizeSkusUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListClusterSizeSkusForbidden extends Schema.TaggedError<ListClusterSizeSkusForbidden>()(
-  "ListClusterSizeSkusForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListClusterSizeSkusNotfound extends Schema.TaggedError<ListClusterSizeSkusNotfound>()(
-  "ListClusterSizeSkusNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListClusterSizeSkusInternalservererror extends Schema.TaggedError<ListClusterSizeSkusInternalservererror>()(
-  "ListClusterSizeSkusInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List available cluster sizes
@@ -87,5 +46,4 @@ export class ListClusterSizeSkusInternalservererror extends Schema.TaggedError<L
 export const listClusterSizeSkus = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListClusterSizeSkusInput,
   outputSchema: ListClusterSizeSkusOutput,
-  errors: [ListClusterSizeSkusUnauthorized, ListClusterSizeSkusForbidden, ListClusterSizeSkusNotfound, ListClusterSizeSkusInternalservererror],
 }));

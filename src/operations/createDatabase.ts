@@ -1,21 +1,17 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CreateDatabaseInput = Schema.Struct({
-  organization: Schema.String,
+  organization: Schema.String.pipe(T.PathParam()),
   name: Schema.String,
   region: Schema.optional(Schema.String),
   cluster_size: Schema.String,
   replicas: Schema.optional(Schema.Number),
   kind: Schema.optional(Schema.Literal("mysql", "postgresql")),
   major_version: Schema.optional(Schema.String),
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/databases`,
-  [ApiPathParams]: ["organization"] as const,
-});
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases" }));
 export type CreateDatabaseInput = typeof CreateDatabaseInput.Type;
 
 // Output Schema
@@ -81,43 +77,6 @@ export const CreateDatabaseOutput = Schema.Struct({
 });
 export type CreateDatabaseOutput = typeof CreateDatabaseOutput.Type;
 
-// Error Schemas
-export class CreateDatabaseUnauthorized extends Schema.TaggedError<CreateDatabaseUnauthorized>()(
-  "CreateDatabaseUnauthorized",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CreateDatabaseForbidden extends Schema.TaggedError<CreateDatabaseForbidden>()(
-  "CreateDatabaseForbidden",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CreateDatabaseNotfound extends Schema.TaggedError<CreateDatabaseNotfound>()(
-  "CreateDatabaseNotfound",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CreateDatabaseInternalservererror extends Schema.TaggedError<CreateDatabaseInternalservererror>()(
-  "CreateDatabaseInternalservererror",
-  {
-    organization: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Create a database
@@ -133,5 +92,4 @@ export class CreateDatabaseInternalservererror extends Schema.TaggedError<Create
 export const createDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDatabaseInput,
   outputSchema: CreateDatabaseOutput,
-  errors: [CreateDatabaseUnauthorized, CreateDatabaseForbidden, CreateDatabaseNotfound, CreateDatabaseInternalservererror],
 }));

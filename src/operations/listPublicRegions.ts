@@ -1,16 +1,12 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const ListPublicRegionsInput = Schema.Struct({
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).annotations({
-  [ApiMethod]: "GET",
-  [ApiPath]: () => "/regions",
-  [ApiPathParams]: [] as const,
-});
+}).pipe(T.Http({ method: "GET", path: "/regions" }));
 export type ListPublicRegionsInput = typeof ListPublicRegionsInput.Type;
 
 // Output Schema
@@ -32,43 +28,6 @@ export const ListPublicRegionsOutput = Schema.Struct({
 });
 export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
 
-// Error Schemas
-export class ListPublicRegionsUnauthorized extends Schema.TaggedError<ListPublicRegionsUnauthorized>()(
-  "ListPublicRegionsUnauthorized",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class ListPublicRegionsForbidden extends Schema.TaggedError<ListPublicRegionsForbidden>()(
-  "ListPublicRegionsForbidden",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class ListPublicRegionsNotfound extends Schema.TaggedError<ListPublicRegionsNotfound>()(
-  "ListPublicRegionsNotfound",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class ListPublicRegionsInternalservererror extends Schema.TaggedError<ListPublicRegionsInternalservererror>()(
-  "ListPublicRegionsInternalservererror",
-  {
-
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * List public regions
@@ -81,5 +40,4 @@ export class ListPublicRegionsInternalservererror extends Schema.TaggedError<Lis
 export const listPublicRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListPublicRegionsInput,
   outputSchema: ListPublicRegionsOutput,
-  errors: [ListPublicRegionsUnauthorized, ListPublicRegionsForbidden, ListPublicRegionsNotfound, ListPublicRegionsInternalservererror],
 }));

@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const EnableSafeMigrationsInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  branch: Schema.String,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/safe-migrations`,
-  [ApiPathParams]: ["organization", "database", "branch"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  branch: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/safe-migrations" }));
 export type EnableSafeMigrationsInput = typeof EnableSafeMigrationsInput.Type;
 
 // Output Schema
@@ -71,51 +67,6 @@ export const EnableSafeMigrationsOutput = Schema.Struct({
 });
 export type EnableSafeMigrationsOutput = typeof EnableSafeMigrationsOutput.Type;
 
-// Error Schemas
-export class EnableSafeMigrationsUnauthorized extends Schema.TaggedError<EnableSafeMigrationsUnauthorized>()(
-  "EnableSafeMigrationsUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class EnableSafeMigrationsForbidden extends Schema.TaggedError<EnableSafeMigrationsForbidden>()(
-  "EnableSafeMigrationsForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class EnableSafeMigrationsNotfound extends Schema.TaggedError<EnableSafeMigrationsNotfound>()(
-  "EnableSafeMigrationsNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class EnableSafeMigrationsInternalservererror extends Schema.TaggedError<EnableSafeMigrationsInternalservererror>()(
-  "EnableSafeMigrationsInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    branch: Schema.String,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Enable safe migrations for a branch
@@ -127,5 +78,4 @@ export class EnableSafeMigrationsInternalservererror extends Schema.TaggedError<
 export const enableSafeMigrations = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: EnableSafeMigrationsInput,
   outputSchema: EnableSafeMigrationsOutput,
-  errors: [EnableSafeMigrationsUnauthorized, EnableSafeMigrationsForbidden, EnableSafeMigrationsNotfound, EnableSafeMigrationsInternalservererror],
 }));

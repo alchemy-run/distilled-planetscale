@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const VerifyWorkflowInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/verify-data`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/workflows/{number}/verify-data" }));
 export type VerifyWorkflowInput = typeof VerifyWorkflowInput.Type;
 
 // Output Schema
@@ -124,51 +120,6 @@ export const VerifyWorkflowOutput = Schema.Struct({
 });
 export type VerifyWorkflowOutput = typeof VerifyWorkflowOutput.Type;
 
-// Error Schemas
-export class VerifyWorkflowUnauthorized extends Schema.TaggedError<VerifyWorkflowUnauthorized>()(
-  "VerifyWorkflowUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class VerifyWorkflowForbidden extends Schema.TaggedError<VerifyWorkflowForbidden>()(
-  "VerifyWorkflowForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class VerifyWorkflowNotfound extends Schema.TaggedError<VerifyWorkflowNotfound>()(
-  "VerifyWorkflowNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class VerifyWorkflowInternalservererror extends Schema.TaggedError<VerifyWorkflowInternalservererror>()(
-  "VerifyWorkflowInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Verify workflow data
@@ -180,5 +131,4 @@ export class VerifyWorkflowInternalservererror extends Schema.TaggedError<Verify
 export const verifyWorkflow = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: VerifyWorkflowInput,
   outputSchema: VerifyWorkflowOutput,
-  errors: [VerifyWorkflowUnauthorized, VerifyWorkflowForbidden, VerifyWorkflowNotfound, VerifyWorkflowInternalservererror],
 }));

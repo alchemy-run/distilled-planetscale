@@ -1,17 +1,13 @@
 import * as Schema from "effect/Schema";
-import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
-import * as Category from "../category";
+import { API } from "../client";
+import * as T from "../traits";
 
 // Input Schema
 export const CompleteGatedDeployRequestInput = Schema.Struct({
-  organization: Schema.String,
-  database: Schema.String,
-  number: Schema.Number,
-}).annotations({
-  [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/apply-deploy`,
-  [ApiPathParams]: ["organization", "database", "number"] as const,
-});
+  organization: Schema.String.pipe(T.PathParam()),
+  database: Schema.String.pipe(T.PathParam()),
+  number: Schema.Number.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/apply-deploy" }));
 export type CompleteGatedDeployRequestInput = typeof CompleteGatedDeployRequestInput.Type;
 
 // Output Schema
@@ -148,51 +144,6 @@ export const CompleteGatedDeployRequestOutput = Schema.Struct({
 });
 export type CompleteGatedDeployRequestOutput = typeof CompleteGatedDeployRequestOutput.Type;
 
-// Error Schemas
-export class CompleteGatedDeployRequestUnauthorized extends Schema.TaggedError<CompleteGatedDeployRequestUnauthorized>()(
-  "CompleteGatedDeployRequestUnauthorized",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "unauthorized" },
-).pipe(Category.withAuthError) {}
-
-export class CompleteGatedDeployRequestForbidden extends Schema.TaggedError<CompleteGatedDeployRequestForbidden>()(
-  "CompleteGatedDeployRequestForbidden",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "forbidden" },
-).pipe(Category.withAuthError) {}
-
-export class CompleteGatedDeployRequestNotfound extends Schema.TaggedError<CompleteGatedDeployRequestNotfound>()(
-  "CompleteGatedDeployRequestNotfound",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "not_found" },
-).pipe(Category.withNotFoundError) {}
-
-export class CompleteGatedDeployRequestInternalservererror extends Schema.TaggedError<CompleteGatedDeployRequestInternalservererror>()(
-  "CompleteGatedDeployRequestInternalservererror",
-  {
-    organization: Schema.String,
-    database: Schema.String,
-    number: Schema.NumberFromString,
-    message: Schema.String,
-  },
-  { [ApiErrorCode]: "internal_server_error" },
-).pipe(Category.withServerError) {}
-
 // The operation
 /**
  * Complete a gated deploy request
@@ -204,5 +155,4 @@ export class CompleteGatedDeployRequestInternalservererror extends Schema.Tagged
 export const completeGatedDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CompleteGatedDeployRequestInput,
   outputSchema: CompleteGatedDeployRequestOutput,
-  errors: [CompleteGatedDeployRequestUnauthorized, CompleteGatedDeployRequestForbidden, CompleteGatedDeployRequestNotfound, CompleteGatedDeployRequestInternalservererror],
 }));
