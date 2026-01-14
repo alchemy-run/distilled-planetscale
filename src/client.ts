@@ -1,8 +1,16 @@
 import { HttpBody, HttpClient, HttpClientError, HttpClientRequest } from "@effect/platform";
-import { Effect, Option, Schema, Stream } from "effect";
+import * as Effect from "effect/Effect";
+import * as Option from "effect/Option";
+import * as Schema from "effect/Schema";
+import * as Stream from "effect/Stream";
 import * as Category from "./category";
 import { PlanetScaleCredentials } from "./credentials";
-import { type PaginatedResponse, type PaginatedTrait, DefaultPaginationTrait, getPath } from "./pagination";
+import {
+  type PaginatedResponse,
+  type PaginatedTrait,
+  DefaultPaginationTrait,
+  getPath,
+} from "./pagination";
 
 // API Error Response Schema - parse just the code, keep the rest as unknown
 const ApiErrorResponse = Schema.Struct({
@@ -119,7 +127,7 @@ export const API = {
       | HttpBody.HttpBodyError;
     type Context = PlanetScaleCredentials | HttpClient.HttpClient;
 
-// Read method and path from input schema annotations
+    // Read method and path from input schema annotations
     const method = getAnnotation<HttpMethod>(config.inputSchema, ApiMethod);
     const path = getAnnotation<(input: Input) => string>(config.inputSchema, ApiPath);
     const pathParams = getAnnotation<readonly string[]>(config.inputSchema, ApiPathParams) ?? [];
@@ -280,7 +288,9 @@ export const API = {
     };
 
     // Stream individual items from the paginated field
-    const itemsFn = (input: Omit<Input, "page">): Stream.Stream<
+    const itemsFn = (
+      input: Omit<Input, "page">,
+    ): Stream.Stream<
       Output extends PaginatedResponse<infer Item> ? Item : unknown,
       Errors,
       Context
