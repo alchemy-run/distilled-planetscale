@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeleteServiceTokenInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const DeleteServiceTokenInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; id: string }) =>
-    `/organizations/${input.organization}/service-tokens/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/service-tokens/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type DeleteServiceTokenInput = typeof DeleteServiceTokenInput.Type;
@@ -26,7 +26,7 @@ export class DeleteServiceTokenUnauthorized extends Schema.TaggedError<DeleteSer
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteServiceTokenForbidden extends Schema.TaggedError<DeleteServiceTokenForbidden>()(
   "DeleteServiceTokenForbidden",
@@ -36,7 +36,7 @@ export class DeleteServiceTokenForbidden extends Schema.TaggedError<DeleteServic
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteServiceTokenNotfound extends Schema.TaggedError<DeleteServiceTokenNotfound>()(
   "DeleteServiceTokenNotfound",
@@ -46,7 +46,17 @@ export class DeleteServiceTokenNotfound extends Schema.TaggedError<DeleteService
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class DeleteServiceTokenInternalservererror extends Schema.TaggedError<DeleteServiceTokenInternalservererror>()(
+  "DeleteServiceTokenInternalservererror",
+  {
+    organization: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -60,5 +70,5 @@ export class DeleteServiceTokenNotfound extends Schema.TaggedError<DeleteService
 export const deleteServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteServiceTokenInput,
   outputSchema: DeleteServiceTokenOutput,
-  errors: [DeleteServiceTokenUnauthorized, DeleteServiceTokenForbidden, DeleteServiceTokenNotfound],
+  errors: [DeleteServiceTokenUnauthorized, DeleteServiceTokenForbidden, DeleteServiceTokenNotfound, DeleteServiceTokenInternalservererror],
 }));

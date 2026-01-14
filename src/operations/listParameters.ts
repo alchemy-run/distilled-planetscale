@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListParametersInput = Schema.Struct({
@@ -8,53 +9,39 @@ export const ListParametersInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/parameters`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/parameters`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type ListParametersInput = typeof ListParametersInput.Type;
 
 // Output Schema
-export const ListParametersOutput = Schema.Array(
-  Schema.Struct({
+export const ListParametersOutput = Schema.Array(Schema.Struct({
+  id: Schema.String,
+  name: Schema.String,
+  display_name: Schema.String,
+  namespace: Schema.Literal("patroni", "pgconf", "pgbouncer"),
+  category: Schema.String,
+  description: Schema.String,
+  extension: Schema.Boolean,
+  internal: Schema.Boolean,
+  parameter_type: Schema.Literal("array", "boolean", "bytes", "float", "integer", "internal", "seconds", "select", "string", "time"),
+  default_value: Schema.String,
+  value: Schema.String,
+  required: Schema.Boolean,
+  created_at: Schema.String,
+  updated_at: Schema.String,
+  restart: Schema.Boolean,
+  max: Schema.Number,
+  min: Schema.Number,
+  step: Schema.Number,
+  url: Schema.String,
+  options: Schema.Array(Schema.String),
+  actor: Schema.Struct({
     id: Schema.String,
-    name: Schema.String,
     display_name: Schema.String,
-    namespace: Schema.Literal("patroni", "pgconf", "pgbouncer"),
-    category: Schema.String,
-    description: Schema.String,
-    extension: Schema.Boolean,
-    internal: Schema.Boolean,
-    parameter_type: Schema.Literal(
-      "array",
-      "boolean",
-      "bytes",
-      "float",
-      "integer",
-      "internal",
-      "seconds",
-      "select",
-      "string",
-      "time",
-    ),
-    default_value: Schema.String,
-    value: Schema.String,
-    required: Schema.Boolean,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    restart: Schema.Boolean,
-    max: Schema.Number,
-    min: Schema.Number,
-    step: Schema.Number,
-    url: Schema.String,
-    options: Schema.Array(Schema.String),
-    actor: Schema.Struct({
-      id: Schema.String,
-      display_name: Schema.String,
-      avatar_url: Schema.String,
-    }),
+    avatar_url: Schema.String,
   }),
-);
+}));
 export type ListParametersOutput = typeof ListParametersOutput.Type;
 
 // Error Schemas
@@ -67,7 +54,7 @@ export class ListParametersUnauthorized extends Schema.TaggedError<ListParameter
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListParametersForbidden extends Schema.TaggedError<ListParametersForbidden>()(
   "ListParametersForbidden",
@@ -78,7 +65,7 @@ export class ListParametersForbidden extends Schema.TaggedError<ListParametersFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListParametersNotfound extends Schema.TaggedError<ListParametersNotfound>()(
   "ListParametersNotfound",
@@ -89,7 +76,18 @@ export class ListParametersNotfound extends Schema.TaggedError<ListParametersNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListParametersInternalservererror extends Schema.TaggedError<ListParametersInternalservererror>()(
+  "ListParametersInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -104,5 +102,5 @@ export class ListParametersNotfound extends Schema.TaggedError<ListParametersNot
 export const listParameters = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListParametersInput,
   outputSchema: ListParametersOutput,
-  errors: [ListParametersUnauthorized, ListParametersForbidden, ListParametersNotfound],
+  errors: [ListParametersUnauthorized, ListParametersForbidden, ListParametersNotfound, ListParametersInternalservererror],
 }));

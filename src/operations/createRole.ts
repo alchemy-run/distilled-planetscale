@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateRoleInput = Schema.Struct({
@@ -8,29 +9,10 @@ export const CreateRoleInput = Schema.Struct({
   branch: Schema.String,
   name: Schema.optional(Schema.String),
   ttl: Schema.optional(Schema.Number),
-  inherited_roles: Schema.optional(
-    Schema.Array(
-      Schema.Literal(
-        "pscale_managed",
-        "pg_checkpoint",
-        "pg_create_subscription",
-        "pg_maintain",
-        "pg_monitor",
-        "pg_read_all_data",
-        "pg_read_all_settings",
-        "pg_read_all_stats",
-        "pg_signal_backend",
-        "pg_stat_scan_tables",
-        "pg_use_reserved_connections",
-        "pg_write_all_data",
-        "postgres",
-      ),
-    ),
-  ),
+  inherited_roles: Schema.optional(Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres"))),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateRoleInput = typeof CreateRoleInput.Type;
@@ -55,23 +37,7 @@ export const CreateRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(
-    Schema.Literal(
-      "pscale_managed",
-      "pg_checkpoint",
-      "pg_create_subscription",
-      "pg_maintain",
-      "pg_monitor",
-      "pg_read_all_data",
-      "pg_read_all_settings",
-      "pg_read_all_stats",
-      "pg_signal_backend",
-      "pg_stat_scan_tables",
-      "pg_use_reserved_connections",
-      "pg_write_all_data",
-      "postgres",
-    ),
-  ),
+  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,
@@ -97,7 +63,7 @@ export class CreateRoleUnauthorized extends Schema.TaggedError<CreateRoleUnautho
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateRoleForbidden extends Schema.TaggedError<CreateRoleForbidden>()(
   "CreateRoleForbidden",
@@ -108,7 +74,7 @@ export class CreateRoleForbidden extends Schema.TaggedError<CreateRoleForbidden>
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateRoleNotfound extends Schema.TaggedError<CreateRoleNotfound>()(
   "CreateRoleNotfound",
@@ -119,7 +85,18 @@ export class CreateRoleNotfound extends Schema.TaggedError<CreateRoleNotfound>()
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateRoleInternalservererror extends Schema.TaggedError<CreateRoleInternalservererror>()(
+  "CreateRoleInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -135,5 +112,5 @@ export class CreateRoleNotfound extends Schema.TaggedError<CreateRoleNotfound>()
 export const createRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateRoleInput,
   outputSchema: CreateRoleOutput,
-  errors: [CreateRoleUnauthorized, CreateRoleForbidden, CreateRoleNotfound],
+  errors: [CreateRoleUnauthorized, CreateRoleForbidden, CreateRoleNotfound, CreateRoleInternalservererror],
 }));

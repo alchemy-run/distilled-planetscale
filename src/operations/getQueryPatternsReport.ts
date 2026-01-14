@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetQueryPatternsReportInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const GetQueryPatternsReportInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}/download`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}/download`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type GetQueryPatternsReportInput = typeof GetQueryPatternsReportInput.Type;
@@ -30,7 +30,7 @@ export class GetQueryPatternsReportUnauthorized extends Schema.TaggedError<GetQu
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetQueryPatternsReportForbidden extends Schema.TaggedError<GetQueryPatternsReportForbidden>()(
   "GetQueryPatternsReportForbidden",
@@ -42,7 +42,7 @@ export class GetQueryPatternsReportForbidden extends Schema.TaggedError<GetQuery
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetQueryPatternsReportNotfound extends Schema.TaggedError<GetQueryPatternsReportNotfound>()(
   "GetQueryPatternsReportNotfound",
@@ -54,7 +54,19 @@ export class GetQueryPatternsReportNotfound extends Schema.TaggedError<GetQueryP
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetQueryPatternsReportInternalservererror extends Schema.TaggedError<GetQueryPatternsReportInternalservererror>()(
+  "GetQueryPatternsReportInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -68,9 +80,5 @@ export class GetQueryPatternsReportNotfound extends Schema.TaggedError<GetQueryP
 export const getQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetQueryPatternsReportInput,
   outputSchema: GetQueryPatternsReportOutput,
-  errors: [
-    GetQueryPatternsReportUnauthorized,
-    GetQueryPatternsReportForbidden,
-    GetQueryPatternsReportNotfound,
-  ],
+  errors: [GetQueryPatternsReportUnauthorized, GetQueryPatternsReportForbidden, GetQueryPatternsReportNotfound, GetQueryPatternsReportInternalservererror],
 }));

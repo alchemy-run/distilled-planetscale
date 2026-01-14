@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeleteOauthTokenInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const DeleteOauthTokenInput = Schema.Struct({
   token_id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) =>
-    `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
+  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
   [ApiPathParams]: ["organization", "application_id", "token_id"] as const,
 });
 export type DeleteOauthTokenInput = typeof DeleteOauthTokenInput.Type;
@@ -28,7 +28,7 @@ export class DeleteOauthTokenUnauthorized extends Schema.TaggedError<DeleteOauth
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteOauthTokenForbidden extends Schema.TaggedError<DeleteOauthTokenForbidden>()(
   "DeleteOauthTokenForbidden",
@@ -39,7 +39,7 @@ export class DeleteOauthTokenForbidden extends Schema.TaggedError<DeleteOauthTok
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteOauthTokenNotfound extends Schema.TaggedError<DeleteOauthTokenNotfound>()(
   "DeleteOauthTokenNotfound",
@@ -50,7 +50,18 @@ export class DeleteOauthTokenNotfound extends Schema.TaggedError<DeleteOauthToke
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class DeleteOauthTokenInternalservererror extends Schema.TaggedError<DeleteOauthTokenInternalservererror>()(
+  "DeleteOauthTokenInternalservererror",
+  {
+    organization: Schema.String,
+    application_id: Schema.String,
+    token_id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -63,5 +74,5 @@ export class DeleteOauthTokenNotfound extends Schema.TaggedError<DeleteOauthToke
 export const deleteOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteOauthTokenInput,
   outputSchema: DeleteOauthTokenOutput,
-  errors: [DeleteOauthTokenUnauthorized, DeleteOauthTokenForbidden, DeleteOauthTokenNotfound],
+  errors: [DeleteOauthTokenUnauthorized, DeleteOauthTokenForbidden, DeleteOauthTokenNotfound, DeleteOauthTokenInternalservererror],
 }));

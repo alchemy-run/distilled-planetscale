@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeleteDatabaseInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const DeleteDatabaseInput = Schema.Struct({
   database: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type DeleteDatabaseInput = typeof DeleteDatabaseInput.Type;
@@ -26,7 +26,7 @@ export class DeleteDatabaseUnauthorized extends Schema.TaggedError<DeleteDatabas
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteDatabaseForbidden extends Schema.TaggedError<DeleteDatabaseForbidden>()(
   "DeleteDatabaseForbidden",
@@ -36,7 +36,7 @@ export class DeleteDatabaseForbidden extends Schema.TaggedError<DeleteDatabaseFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteDatabaseNotfound extends Schema.TaggedError<DeleteDatabaseNotfound>()(
   "DeleteDatabaseNotfound",
@@ -46,7 +46,17 @@ export class DeleteDatabaseNotfound extends Schema.TaggedError<DeleteDatabaseNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class DeleteDatabaseInternalservererror extends Schema.TaggedError<DeleteDatabaseInternalservererror>()(
+  "DeleteDatabaseInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -58,5 +68,5 @@ export class DeleteDatabaseNotfound extends Schema.TaggedError<DeleteDatabaseNot
 export const deleteDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteDatabaseInput,
   outputSchema: DeleteDatabaseOutput,
-  errors: [DeleteDatabaseUnauthorized, DeleteDatabaseForbidden, DeleteDatabaseNotfound],
+  errors: [DeleteDatabaseUnauthorized, DeleteDatabaseForbidden, DeleteDatabaseNotfound, DeleteDatabaseInternalservererror],
 }));

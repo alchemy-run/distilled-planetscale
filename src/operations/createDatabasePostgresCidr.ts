@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateDatabasePostgresCidrInput = Schema.Struct({
@@ -10,8 +11,7 @@ export const CreateDatabasePostgresCidrInput = Schema.Struct({
   cidrs: Schema.Array(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/cidrs`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateDatabasePostgresCidrInput = typeof CreateDatabasePostgresCidrInput.Type;
@@ -42,7 +42,7 @@ export class CreateDatabasePostgresCidrUnauthorized extends Schema.TaggedError<C
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateDatabasePostgresCidrForbidden extends Schema.TaggedError<CreateDatabasePostgresCidrForbidden>()(
   "CreateDatabasePostgresCidrForbidden",
@@ -52,7 +52,7 @@ export class CreateDatabasePostgresCidrForbidden extends Schema.TaggedError<Crea
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateDatabasePostgresCidrNotfound extends Schema.TaggedError<CreateDatabasePostgresCidrNotfound>()(
   "CreateDatabasePostgresCidrNotfound",
@@ -62,7 +62,7 @@ export class CreateDatabasePostgresCidrNotfound extends Schema.TaggedError<Creat
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 export class CreateDatabasePostgresCidrUnprocessableentity extends Schema.TaggedError<CreateDatabasePostgresCidrUnprocessableentity>()(
   "CreateDatabasePostgresCidrUnprocessableentity",
@@ -72,7 +72,17 @@ export class CreateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
     message: Schema.String,
   },
   { [ApiErrorCode]: "unprocessable_entity" },
-) {}
+).pipe(Category.withBadRequestError) {}
+
+export class CreateDatabasePostgresCidrInternalservererror extends Schema.TaggedError<CreateDatabasePostgresCidrInternalservererror>()(
+  "CreateDatabasePostgresCidrInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -87,10 +97,5 @@ export class CreateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 export const createDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDatabasePostgresCidrInput,
   outputSchema: CreateDatabasePostgresCidrOutput,
-  errors: [
-    CreateDatabasePostgresCidrUnauthorized,
-    CreateDatabasePostgresCidrForbidden,
-    CreateDatabasePostgresCidrNotfound,
-    CreateDatabasePostgresCidrUnprocessableentity,
-  ],
+  errors: [CreateDatabasePostgresCidrUnauthorized, CreateDatabasePostgresCidrForbidden, CreateDatabasePostgresCidrNotfound, CreateDatabasePostgresCidrUnprocessableentity, CreateDatabasePostgresCidrInternalservererror],
 }));

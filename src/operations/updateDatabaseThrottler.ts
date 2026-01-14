@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateDatabaseThrottlerInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const UpdateDatabaseThrottlerInput = Schema.Struct({
   configurations: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/throttler`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/throttler`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type UpdateDatabaseThrottlerInput = typeof UpdateDatabaseThrottlerInput.Type;
@@ -25,12 +25,10 @@ export const UpdateDatabaseThrottlerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  configurations: Schema.Array(
-    Schema.Struct({
-      keyspace_name: Schema.String,
-      ratio: Schema.Number,
-    }),
-  ),
+  configurations: Schema.Array(Schema.Struct({
+    keyspace_name: Schema.String,
+    ratio: Schema.Number,
+  })),
 });
 export type UpdateDatabaseThrottlerOutput = typeof UpdateDatabaseThrottlerOutput.Type;
 
@@ -43,7 +41,7 @@ export class UpdateDatabaseThrottlerUnauthorized extends Schema.TaggedError<Upda
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateDatabaseThrottlerForbidden extends Schema.TaggedError<UpdateDatabaseThrottlerForbidden>()(
   "UpdateDatabaseThrottlerForbidden",
@@ -53,7 +51,7 @@ export class UpdateDatabaseThrottlerForbidden extends Schema.TaggedError<UpdateD
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateDatabaseThrottlerNotfound extends Schema.TaggedError<UpdateDatabaseThrottlerNotfound>()(
   "UpdateDatabaseThrottlerNotfound",
@@ -63,7 +61,17 @@ export class UpdateDatabaseThrottlerNotfound extends Schema.TaggedError<UpdateDa
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class UpdateDatabaseThrottlerInternalservererror extends Schema.TaggedError<UpdateDatabaseThrottlerInternalservererror>()(
+  "UpdateDatabaseThrottlerInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -77,9 +85,5 @@ export class UpdateDatabaseThrottlerNotfound extends Schema.TaggedError<UpdateDa
 export const updateDatabaseThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabaseThrottlerInput,
   outputSchema: UpdateDatabaseThrottlerOutput,
-  errors: [
-    UpdateDatabaseThrottlerUnauthorized,
-    UpdateDatabaseThrottlerForbidden,
-    UpdateDatabaseThrottlerNotfound,
-  ],
+  errors: [UpdateDatabaseThrottlerUnauthorized, UpdateDatabaseThrottlerForbidden, UpdateDatabaseThrottlerNotfound, UpdateDatabaseThrottlerInternalservererror],
 }));

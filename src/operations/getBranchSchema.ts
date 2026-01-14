@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetBranchSchemaInput = Schema.Struct({
@@ -10,21 +11,18 @@ export const GetBranchSchemaInput = Schema.Struct({
   namespace: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/schema`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/schema`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type GetBranchSchemaInput = typeof GetBranchSchemaInput.Type;
 
 // Output Schema
 export const GetBranchSchemaOutput = Schema.Struct({
-  data: Schema.Array(
-    Schema.Struct({
-      name: Schema.String,
-      html: Schema.String,
-      raw: Schema.String,
-    }),
-  ),
+  data: Schema.Array(Schema.Struct({
+    name: Schema.String,
+    html: Schema.String,
+    raw: Schema.String,
+  })),
 });
 export type GetBranchSchemaOutput = typeof GetBranchSchemaOutput.Type;
 
@@ -38,7 +36,7 @@ export class GetBranchSchemaUnauthorized extends Schema.TaggedError<GetBranchSch
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetBranchSchemaForbidden extends Schema.TaggedError<GetBranchSchemaForbidden>()(
   "GetBranchSchemaForbidden",
@@ -49,7 +47,7 @@ export class GetBranchSchemaForbidden extends Schema.TaggedError<GetBranchSchema
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetBranchSchemaNotfound extends Schema.TaggedError<GetBranchSchemaNotfound>()(
   "GetBranchSchemaNotfound",
@@ -60,7 +58,18 @@ export class GetBranchSchemaNotfound extends Schema.TaggedError<GetBranchSchemaN
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetBranchSchemaInternalservererror extends Schema.TaggedError<GetBranchSchemaInternalservererror>()(
+  "GetBranchSchemaInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -75,5 +84,5 @@ export class GetBranchSchemaNotfound extends Schema.TaggedError<GetBranchSchemaN
 export const getBranchSchema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetBranchSchemaInput,
   outputSchema: GetBranchSchemaOutput,
-  errors: [GetBranchSchemaUnauthorized, GetBranchSchemaForbidden, GetBranchSchemaNotfound],
+  errors: [GetBranchSchemaUnauthorized, GetBranchSchemaForbidden, GetBranchSchemaNotfound, GetBranchSchemaInternalservererror],
 }));

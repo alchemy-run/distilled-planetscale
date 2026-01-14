@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListServiceTokensInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const ListServiceTokensInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) =>
-    `/organizations/${input.organization}/service-tokens`,
+  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/service-tokens`,
   [ApiPathParams]: ["organization"] as const,
 });
 export type ListServiceTokensInput = typeof ListServiceTokensInput.Type;
@@ -21,104 +21,84 @@ export const ListServiceTokensOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    display_name: Schema.String,
+    token: Schema.String,
+    plain_text_refresh_token: Schema.String,
+    avatar_url: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    expires_at: Schema.String,
+    last_used_at: Schema.String,
+    actor_id: Schema.String,
+    actor_display_name: Schema.String,
+    actor_type: Schema.String,
+    service_token_accesses: Schema.Array(Schema.Struct({
       id: Schema.String,
-      name: Schema.String,
-      display_name: Schema.String,
-      token: Schema.String,
-      plain_text_refresh_token: Schema.String,
-      avatar_url: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      expires_at: Schema.String,
-      last_used_at: Schema.String,
-      actor_id: Schema.String,
-      actor_display_name: Schema.String,
-      actor_type: Schema.String,
-      service_token_accesses: Schema.Array(
-        Schema.Struct({
+      access: Schema.String,
+      description: Schema.String,
+      resource_name: Schema.String,
+      resource_id: Schema.String,
+      resource_type: Schema.String,
+      resource: Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      }),
+    })),
+    oauth_accesses_by_resource: Schema.Struct({
+      database: Schema.Struct({
+        databases: Schema.Array(Schema.Struct({
+          name: Schema.String,
           id: Schema.String,
-          access: Schema.String,
+          organization: Schema.String,
+          url: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
           description: Schema.String,
-          resource_name: Schema.String,
-          resource_id: Schema.String,
-          resource_type: Schema.String,
-          resource: Schema.Struct({
-            id: Schema.String,
-            name: Schema.String,
-            created_at: Schema.String,
-            updated_at: Schema.String,
-            deleted_at: Schema.String,
-          }),
-        }),
-      ),
-      oauth_accesses_by_resource: Schema.Struct({
-        database: Schema.Struct({
-          databases: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              id: Schema.String,
-              organization: Schema.String,
-              url: Schema.String,
-            }),
-          ),
-          accesses: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              description: Schema.String,
-            }),
-          ),
-        }),
-        organization: Schema.Struct({
-          organizations: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              id: Schema.String,
-              url: Schema.String,
-            }),
-          ),
-          accesses: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              description: Schema.String,
-            }),
-          ),
-        }),
-        branch: Schema.Struct({
-          branches: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              id: Schema.String,
-              database: Schema.String,
-              organization: Schema.String,
-              url: Schema.String,
-            }),
-          ),
-          accesses: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              description: Schema.String,
-            }),
-          ),
-        }),
-        user: Schema.Struct({
-          users: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              id: Schema.String,
-            }),
-          ),
-          accesses: Schema.Array(
-            Schema.Struct({
-              name: Schema.String,
-              description: Schema.String,
-            }),
-          ),
-        }),
+        })),
+      }),
+      organization: Schema.Struct({
+        organizations: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          url: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
+      }),
+      branch: Schema.Struct({
+        branches: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+          database: Schema.String,
+          organization: Schema.String,
+          url: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
+      }),
+      user: Schema.Struct({
+        users: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          id: Schema.String,
+        })),
+        accesses: Schema.Array(Schema.Struct({
+          name: Schema.String,
+          description: Schema.String,
+        })),
       }),
     }),
-  ),
+  })),
 });
 export type ListServiceTokensOutput = typeof ListServiceTokensOutput.Type;
 
@@ -130,7 +110,7 @@ export class ListServiceTokensUnauthorized extends Schema.TaggedError<ListServic
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListServiceTokensForbidden extends Schema.TaggedError<ListServiceTokensForbidden>()(
   "ListServiceTokensForbidden",
@@ -139,7 +119,7 @@ export class ListServiceTokensForbidden extends Schema.TaggedError<ListServiceTo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListServiceTokensNotfound extends Schema.TaggedError<ListServiceTokensNotfound>()(
   "ListServiceTokensNotfound",
@@ -148,7 +128,16 @@ export class ListServiceTokensNotfound extends Schema.TaggedError<ListServiceTok
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListServiceTokensInternalservererror extends Schema.TaggedError<ListServiceTokensInternalservererror>()(
+  "ListServiceTokensInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -163,5 +152,5 @@ export class ListServiceTokensNotfound extends Schema.TaggedError<ListServiceTok
 export const listServiceTokens = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListServiceTokensInput,
   outputSchema: ListServiceTokensOutput,
-  errors: [ListServiceTokensUnauthorized, ListServiceTokensForbidden, ListServiceTokensNotfound],
+  errors: [ListServiceTokensUnauthorized, ListServiceTokensForbidden, ListServiceTokensNotfound, ListServiceTokensInternalservererror],
 }));

@@ -1,8 +1,5 @@
 export * from "./src/errors";
 export * from "./src/credentials";
-export * as Credentials from "./src/credentials";
-export * from "./src/category";
-export * as Category from "./src/category";
 export * from "./src/client";
 export * from "./src/operations/listOrganizations";
 export * from "./src/operations/getOrganization";

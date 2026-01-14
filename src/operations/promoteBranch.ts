@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const PromoteBranchInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const PromoteBranchInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/promote`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/promote`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type PromoteBranchInput = typeof PromoteBranchInput.Type;
@@ -45,15 +45,13 @@ export const PromoteBranchOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  restored_from_branch: Schema.NullOr(
-    Schema.Struct({
-      id: Schema.String,
-      name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
-    }),
-  ),
+  restored_from_branch: Schema.NullOr(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  })),
   private_edge_connectivity: Schema.Boolean,
   has_replicas: Schema.Boolean,
   has_read_only_replicas: Schema.Boolean,
@@ -83,7 +81,7 @@ export class PromoteBranchUnauthorized extends Schema.TaggedError<PromoteBranchU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class PromoteBranchForbidden extends Schema.TaggedError<PromoteBranchForbidden>()(
   "PromoteBranchForbidden",
@@ -94,7 +92,7 @@ export class PromoteBranchForbidden extends Schema.TaggedError<PromoteBranchForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class PromoteBranchNotfound extends Schema.TaggedError<PromoteBranchNotfound>()(
   "PromoteBranchNotfound",
@@ -105,7 +103,18 @@ export class PromoteBranchNotfound extends Schema.TaggedError<PromoteBranchNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class PromoteBranchInternalservererror extends Schema.TaggedError<PromoteBranchInternalservererror>()(
+  "PromoteBranchInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -120,5 +129,5 @@ export class PromoteBranchNotfound extends Schema.TaggedError<PromoteBranchNotfo
 export const promoteBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: PromoteBranchInput,
   outputSchema: PromoteBranchOutput,
-  errors: [PromoteBranchUnauthorized, PromoteBranchForbidden, PromoteBranchNotfound],
+  errors: [PromoteBranchUnauthorized, PromoteBranchForbidden, PromoteBranchNotfound, PromoteBranchInternalservererror],
 }));

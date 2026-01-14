@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateBranchInput = Schema.Struct({
@@ -15,8 +16,7 @@ export const CreateBranchInput = Schema.Struct({
   major_version: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/branches`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateBranchInput = typeof CreateBranchInput.Type;
@@ -52,15 +52,13 @@ export const CreateBranchOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  restored_from_branch: Schema.NullOr(
-    Schema.Struct({
-      id: Schema.String,
-      name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
-    }),
-  ),
+  restored_from_branch: Schema.NullOr(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  })),
   private_edge_connectivity: Schema.Boolean,
   has_replicas: Schema.Boolean,
   has_read_only_replicas: Schema.Boolean,
@@ -89,7 +87,7 @@ export class CreateBranchUnauthorized extends Schema.TaggedError<CreateBranchUna
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateBranchForbidden extends Schema.TaggedError<CreateBranchForbidden>()(
   "CreateBranchForbidden",
@@ -99,7 +97,7 @@ export class CreateBranchForbidden extends Schema.TaggedError<CreateBranchForbid
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateBranchNotfound extends Schema.TaggedError<CreateBranchNotfound>()(
   "CreateBranchNotfound",
@@ -109,7 +107,17 @@ export class CreateBranchNotfound extends Schema.TaggedError<CreateBranchNotfoun
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateBranchInternalservererror extends Schema.TaggedError<CreateBranchInternalservererror>()(
+  "CreateBranchInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -129,5 +137,5 @@ export class CreateBranchNotfound extends Schema.TaggedError<CreateBranchNotfoun
 export const createBranch = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateBranchInput,
   outputSchema: CreateBranchOutput,
-  errors: [CreateBranchUnauthorized, CreateBranchForbidden, CreateBranchNotfound],
+  errors: [CreateBranchUnauthorized, CreateBranchForbidden, CreateBranchNotfound, CreateBranchInternalservererror],
 }));

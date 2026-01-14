@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateKeyspaceVschemaInput = Schema.Struct({
@@ -10,13 +11,7 @@ export const UpdateKeyspaceVschemaInput = Schema.Struct({
   vschema: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: {
-    organization: string;
-    database: string;
-    branch: string;
-    keyspace: string;
-  }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
   [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type UpdateKeyspaceVschemaInput = typeof UpdateKeyspaceVschemaInput.Type;
@@ -38,7 +33,7 @@ export class UpdateKeyspaceVschemaUnauthorized extends Schema.TaggedError<Update
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateKeyspaceVschemaForbidden extends Schema.TaggedError<UpdateKeyspaceVschemaForbidden>()(
   "UpdateKeyspaceVschemaForbidden",
@@ -50,7 +45,7 @@ export class UpdateKeyspaceVschemaForbidden extends Schema.TaggedError<UpdateKey
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateKeyspaceVschemaNotfound extends Schema.TaggedError<UpdateKeyspaceVschemaNotfound>()(
   "UpdateKeyspaceVschemaNotfound",
@@ -62,7 +57,7 @@ export class UpdateKeyspaceVschemaNotfound extends Schema.TaggedError<UpdateKeys
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 export class UpdateKeyspaceVschemaUnprocessableentity extends Schema.TaggedError<UpdateKeyspaceVschemaUnprocessableentity>()(
   "UpdateKeyspaceVschemaUnprocessableentity",
@@ -74,7 +69,19 @@ export class UpdateKeyspaceVschemaUnprocessableentity extends Schema.TaggedError
     message: Schema.String,
   },
   { [ApiErrorCode]: "unprocessable_entity" },
-) {}
+).pipe(Category.withBadRequestError) {}
+
+export class UpdateKeyspaceVschemaInternalservererror extends Schema.TaggedError<UpdateKeyspaceVschemaInternalservererror>()(
+  "UpdateKeyspaceVschemaInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    keyspace: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -89,10 +96,5 @@ export class UpdateKeyspaceVschemaUnprocessableentity extends Schema.TaggedError
 export const updateKeyspaceVschema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateKeyspaceVschemaInput,
   outputSchema: UpdateKeyspaceVschemaOutput,
-  errors: [
-    UpdateKeyspaceVschemaUnauthorized,
-    UpdateKeyspaceVschemaForbidden,
-    UpdateKeyspaceVschemaNotfound,
-    UpdateKeyspaceVschemaUnprocessableentity,
-  ],
+  errors: [UpdateKeyspaceVschemaUnauthorized, UpdateKeyspaceVschemaForbidden, UpdateKeyspaceVschemaNotfound, UpdateKeyspaceVschemaUnprocessableentity, UpdateKeyspaceVschemaInternalservererror],
 }));

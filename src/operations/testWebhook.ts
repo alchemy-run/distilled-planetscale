@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const TestWebhookInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const TestWebhookInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}/test`,
+  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks/${input.id}/test`,
   [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type TestWebhookInput = typeof TestWebhookInput.Type;
@@ -28,7 +28,7 @@ export class TestWebhookUnauthorized extends Schema.TaggedError<TestWebhookUnaut
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class TestWebhookForbidden extends Schema.TaggedError<TestWebhookForbidden>()(
   "TestWebhookForbidden",
@@ -39,7 +39,7 @@ export class TestWebhookForbidden extends Schema.TaggedError<TestWebhookForbidde
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class TestWebhookNotfound extends Schema.TaggedError<TestWebhookNotfound>()(
   "TestWebhookNotfound",
@@ -50,7 +50,18 @@ export class TestWebhookNotfound extends Schema.TaggedError<TestWebhookNotfound>
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class TestWebhookInternalservererror extends Schema.TaggedError<TestWebhookInternalservererror>()(
+  "TestWebhookInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -65,5 +76,5 @@ export class TestWebhookNotfound extends Schema.TaggedError<TestWebhookNotfound>
 export const testWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: TestWebhookInput,
   outputSchema: TestWebhookOutput,
-  errors: [TestWebhookUnauthorized, TestWebhookForbidden, TestWebhookNotfound],
+  errors: [TestWebhookUnauthorized, TestWebhookForbidden, TestWebhookNotfound, TestWebhookInternalservererror],
 }));

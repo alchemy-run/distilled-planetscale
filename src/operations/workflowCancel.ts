@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const WorkflowCancelInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const WorkflowCancelInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type WorkflowCancelInput = typeof WorkflowCancelInput.Type;
@@ -19,27 +19,7 @@ export const WorkflowCancelOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal(
-    "pending",
-    "copying",
-    "running",
-    "stopped",
-    "verifying_data",
-    "verified_data",
-    "switching_replicas",
-    "switched_replicas",
-    "switching_primaries",
-    "switched_primaries",
-    "reversing_traffic",
-    "reversing_traffic_for_cancel",
-    "cutting_over",
-    "cutover",
-    "reversed_cutover",
-    "completed",
-    "cancelling",
-    "cancelled",
-    "error",
-  ),
+  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,
@@ -154,7 +134,7 @@ export class WorkflowCancelUnauthorized extends Schema.TaggedError<WorkflowCance
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class WorkflowCancelForbidden extends Schema.TaggedError<WorkflowCancelForbidden>()(
   "WorkflowCancelForbidden",
@@ -165,7 +145,7 @@ export class WorkflowCancelForbidden extends Schema.TaggedError<WorkflowCancelFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class WorkflowCancelNotfound extends Schema.TaggedError<WorkflowCancelNotfound>()(
   "WorkflowCancelNotfound",
@@ -176,7 +156,18 @@ export class WorkflowCancelNotfound extends Schema.TaggedError<WorkflowCancelNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class WorkflowCancelInternalservererror extends Schema.TaggedError<WorkflowCancelInternalservererror>()(
+  "WorkflowCancelInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    number: Schema.NumberFromString,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -189,5 +180,5 @@ export class WorkflowCancelNotfound extends Schema.TaggedError<WorkflowCancelNot
 export const workflowCancel = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowCancelInput,
   outputSchema: WorkflowCancelOutput,
-  errors: [WorkflowCancelUnauthorized, WorkflowCancelForbidden, WorkflowCancelNotfound],
+  errors: [WorkflowCancelUnauthorized, WorkflowCancelForbidden, WorkflowCancelNotfound, WorkflowCancelInternalservererror],
 }));

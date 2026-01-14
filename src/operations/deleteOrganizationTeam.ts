@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeleteOrganizationTeamInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const DeleteOrganizationTeamInput = Schema.Struct({
   team: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; team: string }) =>
-    `/organizations/${input.organization}/teams/${input.team}`,
+  [ApiPath]: (input: { organization: string; team: string }) => `/organizations/${input.organization}/teams/${input.team}`,
   [ApiPathParams]: ["organization", "team"] as const,
 });
 export type DeleteOrganizationTeamInput = typeof DeleteOrganizationTeamInput.Type;
@@ -18,6 +18,16 @@ export const DeleteOrganizationTeamOutput = Schema.Void;
 export type DeleteOrganizationTeamOutput = typeof DeleteOrganizationTeamOutput.Type;
 
 // Error Schemas
+export class DeleteOrganizationTeamBadrequest extends Schema.TaggedError<DeleteOrganizationTeamBadrequest>()(
+  "DeleteOrganizationTeamBadrequest",
+  {
+    organization: Schema.String,
+    team: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "bad_request" },
+).pipe(Category.withBadRequestError) {}
+
 export class DeleteOrganizationTeamUnauthorized extends Schema.TaggedError<DeleteOrganizationTeamUnauthorized>()(
   "DeleteOrganizationTeamUnauthorized",
   {
@@ -26,7 +36,7 @@ export class DeleteOrganizationTeamUnauthorized extends Schema.TaggedError<Delet
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteOrganizationTeamForbidden extends Schema.TaggedError<DeleteOrganizationTeamForbidden>()(
   "DeleteOrganizationTeamForbidden",
@@ -36,7 +46,7 @@ export class DeleteOrganizationTeamForbidden extends Schema.TaggedError<DeleteOr
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteOrganizationTeamNotfound extends Schema.TaggedError<DeleteOrganizationTeamNotfound>()(
   "DeleteOrganizationTeamNotfound",
@@ -46,7 +56,7 @@ export class DeleteOrganizationTeamNotfound extends Schema.TaggedError<DeleteOrg
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 export class DeleteOrganizationTeamUnprocessableentity extends Schema.TaggedError<DeleteOrganizationTeamUnprocessableentity>()(
   "DeleteOrganizationTeamUnprocessableentity",
@@ -56,7 +66,17 @@ export class DeleteOrganizationTeamUnprocessableentity extends Schema.TaggedErro
     message: Schema.String,
   },
   { [ApiErrorCode]: "unprocessable_entity" },
-) {}
+).pipe(Category.withBadRequestError) {}
+
+export class DeleteOrganizationTeamInternalservererror extends Schema.TaggedError<DeleteOrganizationTeamInternalservererror>()(
+  "DeleteOrganizationTeamInternalservererror",
+  {
+    organization: Schema.String,
+    team: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -68,10 +88,5 @@ export class DeleteOrganizationTeamUnprocessableentity extends Schema.TaggedErro
 export const deleteOrganizationTeam = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteOrganizationTeamInput,
   outputSchema: DeleteOrganizationTeamOutput,
-  errors: [
-    DeleteOrganizationTeamUnauthorized,
-    DeleteOrganizationTeamForbidden,
-    DeleteOrganizationTeamNotfound,
-    DeleteOrganizationTeamUnprocessableentity,
-  ],
+  errors: [DeleteOrganizationTeamBadrequest, DeleteOrganizationTeamUnauthorized, DeleteOrganizationTeamForbidden, DeleteOrganizationTeamNotfound, DeleteOrganizationTeamUnprocessableentity, DeleteOrganizationTeamInternalservererror],
 }));

@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateRoleInput = Schema.Struct({
@@ -10,8 +11,7 @@ export const UpdateRoleInput = Schema.Struct({
   name: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type UpdateRoleInput = typeof UpdateRoleInput.Type;
@@ -36,23 +36,7 @@ export const UpdateRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(
-    Schema.Literal(
-      "pscale_managed",
-      "pg_checkpoint",
-      "pg_create_subscription",
-      "pg_maintain",
-      "pg_monitor",
-      "pg_read_all_data",
-      "pg_read_all_settings",
-      "pg_read_all_stats",
-      "pg_signal_backend",
-      "pg_stat_scan_tables",
-      "pg_use_reserved_connections",
-      "pg_write_all_data",
-      "postgres",
-    ),
-  ),
+  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,
@@ -79,7 +63,7 @@ export class UpdateRoleUnauthorized extends Schema.TaggedError<UpdateRoleUnautho
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateRoleForbidden extends Schema.TaggedError<UpdateRoleForbidden>()(
   "UpdateRoleForbidden",
@@ -91,7 +75,7 @@ export class UpdateRoleForbidden extends Schema.TaggedError<UpdateRoleForbidden>
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateRoleNotfound extends Schema.TaggedError<UpdateRoleNotfound>()(
   "UpdateRoleNotfound",
@@ -103,7 +87,19 @@ export class UpdateRoleNotfound extends Schema.TaggedError<UpdateRoleNotfound>()
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class UpdateRoleInternalservererror extends Schema.TaggedError<UpdateRoleInternalservererror>()(
+  "UpdateRoleInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -118,5 +114,5 @@ export class UpdateRoleNotfound extends Schema.TaggedError<UpdateRoleNotfound>()
 export const updateRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateRoleInput,
   outputSchema: UpdateRoleOutput,
-  errors: [UpdateRoleUnauthorized, UpdateRoleForbidden, UpdateRoleNotfound],
+  errors: [UpdateRoleUnauthorized, UpdateRoleForbidden, UpdateRoleNotfound, UpdateRoleInternalservererror],
 }));

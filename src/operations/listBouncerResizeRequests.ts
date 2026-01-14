@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListBouncerResizeRequestsInput = Schema.Struct({
@@ -11,8 +12,7 @@ export const ListBouncerResizeRequestsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; bouncer: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers/${input.bouncer}/resizes`,
   [ApiPathParams]: ["organization", "database", "branch", "bouncer"] as const,
 });
 export type ListBouncerResizeRequestsInput = typeof ListBouncerResizeRequestsInput.Type;
@@ -24,46 +24,44 @@ export const ListBouncerResizeRequestsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    state: Schema.Literal("pending", "resizing", "canceled", "completed"),
+    replicas_per_cell: Schema.Number,
+    parameters: Schema.Unknown,
+    previous_replicas_per_cell: Schema.Number,
+    previous_parameters: Schema.Unknown,
+    started_at: Schema.String,
+    completed_at: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    actor: Schema.Struct({
       id: Schema.String,
-      state: Schema.Literal("pending", "resizing", "canceled", "completed"),
-      replicas_per_cell: Schema.Number,
-      parameters: Schema.Unknown,
-      previous_replicas_per_cell: Schema.Number,
-      previous_parameters: Schema.Unknown,
-      started_at: Schema.String,
-      completed_at: Schema.String,
+      display_name: Schema.String,
+      avatar_url: Schema.String,
+    }),
+    bouncer: Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
       created_at: Schema.String,
       updated_at: Schema.String,
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
-      bouncer: Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        deleted_at: Schema.String,
-      }),
-      sku: Schema.Struct({
-        name: Schema.String,
-        display_name: Schema.String,
-        cpu: Schema.String,
-        ram: Schema.Number,
-        sort_order: Schema.Number,
-      }),
-      previous_sku: Schema.Struct({
-        name: Schema.String,
-        display_name: Schema.String,
-        cpu: Schema.String,
-        ram: Schema.Number,
-        sort_order: Schema.Number,
-      }),
+      deleted_at: Schema.String,
     }),
-  ),
+    sku: Schema.Struct({
+      name: Schema.String,
+      display_name: Schema.String,
+      cpu: Schema.String,
+      ram: Schema.Number,
+      sort_order: Schema.Number,
+    }),
+    previous_sku: Schema.Struct({
+      name: Schema.String,
+      display_name: Schema.String,
+      cpu: Schema.String,
+      ram: Schema.Number,
+      sort_order: Schema.Number,
+    }),
+  })),
 });
 export type ListBouncerResizeRequestsOutput = typeof ListBouncerResizeRequestsOutput.Type;
 
@@ -78,7 +76,7 @@ export class ListBouncerResizeRequestsUnauthorized extends Schema.TaggedError<Li
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListBouncerResizeRequestsForbidden extends Schema.TaggedError<ListBouncerResizeRequestsForbidden>()(
   "ListBouncerResizeRequestsForbidden",
@@ -90,7 +88,7 @@ export class ListBouncerResizeRequestsForbidden extends Schema.TaggedError<ListB
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListBouncerResizeRequestsNotfound extends Schema.TaggedError<ListBouncerResizeRequestsNotfound>()(
   "ListBouncerResizeRequestsNotfound",
@@ -102,7 +100,19 @@ export class ListBouncerResizeRequestsNotfound extends Schema.TaggedError<ListBo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListBouncerResizeRequestsInternalservererror extends Schema.TaggedError<ListBouncerResizeRequestsInternalservererror>()(
+  "ListBouncerResizeRequestsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    bouncer: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -118,9 +128,5 @@ export class ListBouncerResizeRequestsNotfound extends Schema.TaggedError<ListBo
 export const listBouncerResizeRequests = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBouncerResizeRequestsInput,
   outputSchema: ListBouncerResizeRequestsOutput,
-  errors: [
-    ListBouncerResizeRequestsUnauthorized,
-    ListBouncerResizeRequestsForbidden,
-    ListBouncerResizeRequestsNotfound,
-  ],
+  errors: [ListBouncerResizeRequestsUnauthorized, ListBouncerResizeRequestsForbidden, ListBouncerResizeRequestsNotfound, ListBouncerResizeRequestsInternalservererror],
 }));

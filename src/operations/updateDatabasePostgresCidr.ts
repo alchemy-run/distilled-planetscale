@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateDatabasePostgresCidrInput = Schema.Struct({
@@ -11,8 +12,7 @@ export const UpdateDatabasePostgresCidrInput = Schema.Struct({
   cidrs: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PUT",
-  [ApiPath]: (input: { organization: string; database: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs/${input.id}`,
   [ApiPathParams]: ["organization", "database", "id"] as const,
 });
 export type UpdateDatabasePostgresCidrInput = typeof UpdateDatabasePostgresCidrInput.Type;
@@ -44,7 +44,7 @@ export class UpdateDatabasePostgresCidrUnauthorized extends Schema.TaggedError<U
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateDatabasePostgresCidrForbidden extends Schema.TaggedError<UpdateDatabasePostgresCidrForbidden>()(
   "UpdateDatabasePostgresCidrForbidden",
@@ -55,7 +55,7 @@ export class UpdateDatabasePostgresCidrForbidden extends Schema.TaggedError<Upda
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateDatabasePostgresCidrNotfound extends Schema.TaggedError<UpdateDatabasePostgresCidrNotfound>()(
   "UpdateDatabasePostgresCidrNotfound",
@@ -66,7 +66,7 @@ export class UpdateDatabasePostgresCidrNotfound extends Schema.TaggedError<Updat
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 export class UpdateDatabasePostgresCidrUnprocessableentity extends Schema.TaggedError<UpdateDatabasePostgresCidrUnprocessableentity>()(
   "UpdateDatabasePostgresCidrUnprocessableentity",
@@ -77,7 +77,18 @@ export class UpdateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
     message: Schema.String,
   },
   { [ApiErrorCode]: "unprocessable_entity" },
-) {}
+).pipe(Category.withBadRequestError) {}
+
+export class UpdateDatabasePostgresCidrInternalservererror extends Schema.TaggedError<UpdateDatabasePostgresCidrInternalservererror>()(
+  "UpdateDatabasePostgresCidrInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -93,10 +104,5 @@ export class UpdateDatabasePostgresCidrUnprocessableentity extends Schema.Tagged
 export const updateDatabasePostgresCidr = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateDatabasePostgresCidrInput,
   outputSchema: UpdateDatabasePostgresCidrOutput,
-  errors: [
-    UpdateDatabasePostgresCidrUnauthorized,
-    UpdateDatabasePostgresCidrForbidden,
-    UpdateDatabasePostgresCidrNotfound,
-    UpdateDatabasePostgresCidrUnprocessableentity,
-  ],
+  errors: [UpdateDatabasePostgresCidrUnauthorized, UpdateDatabasePostgresCidrForbidden, UpdateDatabasePostgresCidrNotfound, UpdateDatabasePostgresCidrUnprocessableentity, UpdateDatabasePostgresCidrInternalservererror],
 }));

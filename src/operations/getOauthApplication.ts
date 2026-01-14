@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetOauthApplicationInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const GetOauthApplicationInput = Schema.Struct({
   application_id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; application_id: string }) =>
-    `/organizations/${input.organization}/oauth-applications/${input.application_id}`,
+  [ApiPath]: (input: { organization: string; application_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}`,
   [ApiPathParams]: ["organization", "application_id"] as const,
 });
 export type GetOauthApplicationInput = typeof GetOauthApplicationInput.Type;
@@ -37,7 +37,7 @@ export class GetOauthApplicationUnauthorized extends Schema.TaggedError<GetOauth
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetOauthApplicationForbidden extends Schema.TaggedError<GetOauthApplicationForbidden>()(
   "GetOauthApplicationForbidden",
@@ -47,7 +47,7 @@ export class GetOauthApplicationForbidden extends Schema.TaggedError<GetOauthApp
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetOauthApplicationNotfound extends Schema.TaggedError<GetOauthApplicationNotfound>()(
   "GetOauthApplicationNotfound",
@@ -57,7 +57,17 @@ export class GetOauthApplicationNotfound extends Schema.TaggedError<GetOauthAppl
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetOauthApplicationInternalservererror extends Schema.TaggedError<GetOauthApplicationInternalservererror>()(
+  "GetOauthApplicationInternalservererror",
+  {
+    organization: Schema.String,
+    application_id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -69,9 +79,5 @@ export class GetOauthApplicationNotfound extends Schema.TaggedError<GetOauthAppl
 export const getOauthApplication = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOauthApplicationInput,
   outputSchema: GetOauthApplicationOutput,
-  errors: [
-    GetOauthApplicationUnauthorized,
-    GetOauthApplicationForbidden,
-    GetOauthApplicationNotfound,
-  ],
+  errors: [GetOauthApplicationUnauthorized, GetOauthApplicationForbidden, GetOauthApplicationNotfound, GetOauthApplicationInternalservererror],
 }));

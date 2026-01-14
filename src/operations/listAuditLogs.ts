@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListAuditLogsInput = Schema.Struct({
@@ -17,27 +18,25 @@ export const ListAuditLogsOutput = Schema.Struct({
   has_prev: Schema.Boolean,
   cursor_start: Schema.NullOr(Schema.String),
   cursor_end: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
-      id: Schema.String,
-      actor_id: Schema.String,
-      actor_type: Schema.String,
-      auditable_id: Schema.String,
-      auditable_type: Schema.String,
-      target_id: Schema.String,
-      target_type: Schema.String,
-      location: Schema.NullOr(Schema.String),
-      target_display_name: Schema.String,
-      audit_action: Schema.String,
-      action: Schema.String,
-      actor_display_name: Schema.String,
-      auditable_display_name: Schema.String,
-      remote_ip: Schema.NullOr(Schema.String),
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      metadata: Schema.Unknown,
-    }),
-  ),
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    actor_id: Schema.String,
+    actor_type: Schema.String,
+    auditable_id: Schema.String,
+    auditable_type: Schema.String,
+    target_id: Schema.String,
+    target_type: Schema.String,
+    location: Schema.NullOr(Schema.String),
+    target_display_name: Schema.String,
+    audit_action: Schema.String,
+    action: Schema.String,
+    actor_display_name: Schema.String,
+    auditable_display_name: Schema.String,
+    remote_ip: Schema.NullOr(Schema.String),
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    metadata: Schema.Unknown,
+  })),
 });
 export type ListAuditLogsOutput = typeof ListAuditLogsOutput.Type;
 
@@ -49,7 +48,7 @@ export class ListAuditLogsUnauthorized extends Schema.TaggedError<ListAuditLogsU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListAuditLogsForbidden extends Schema.TaggedError<ListAuditLogsForbidden>()(
   "ListAuditLogsForbidden",
@@ -58,7 +57,7 @@ export class ListAuditLogsForbidden extends Schema.TaggedError<ListAuditLogsForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListAuditLogsNotfound extends Schema.TaggedError<ListAuditLogsNotfound>()(
   "ListAuditLogsNotfound",
@@ -67,7 +66,16 @@ export class ListAuditLogsNotfound extends Schema.TaggedError<ListAuditLogsNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListAuditLogsInternalservererror extends Schema.TaggedError<ListAuditLogsInternalservererror>()(
+  "ListAuditLogsInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -78,5 +86,5 @@ export class ListAuditLogsNotfound extends Schema.TaggedError<ListAuditLogsNotfo
 export const listAuditLogs = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListAuditLogsInput,
   outputSchema: ListAuditLogsOutput,
-  errors: [ListAuditLogsUnauthorized, ListAuditLogsForbidden, ListAuditLogsNotfound],
+  errors: [ListAuditLogsUnauthorized, ListAuditLogsForbidden, ListAuditLogsNotfound, ListAuditLogsInternalservererror],
 }));

@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateKeyspaceInput = Schema.Struct({
@@ -9,13 +10,7 @@ export const UpdateKeyspaceInput = Schema.Struct({
   keyspace: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: {
-    organization: string;
-    database: string;
-    branch: string;
-    keyspace: string;
-  }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}`,
   [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type UpdateKeyspaceInput = typeof UpdateKeyspaceInput.Type;
@@ -61,7 +56,7 @@ export class UpdateKeyspaceUnauthorized extends Schema.TaggedError<UpdateKeyspac
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateKeyspaceForbidden extends Schema.TaggedError<UpdateKeyspaceForbidden>()(
   "UpdateKeyspaceForbidden",
@@ -73,7 +68,7 @@ export class UpdateKeyspaceForbidden extends Schema.TaggedError<UpdateKeyspaceFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateKeyspaceNotfound extends Schema.TaggedError<UpdateKeyspaceNotfound>()(
   "UpdateKeyspaceNotfound",
@@ -85,7 +80,19 @@ export class UpdateKeyspaceNotfound extends Schema.TaggedError<UpdateKeyspaceNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class UpdateKeyspaceInternalservererror extends Schema.TaggedError<UpdateKeyspaceInternalservererror>()(
+  "UpdateKeyspaceInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    keyspace: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -99,5 +106,5 @@ export class UpdateKeyspaceNotfound extends Schema.TaggedError<UpdateKeyspaceNot
 export const updateKeyspace = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateKeyspaceInput,
   outputSchema: UpdateKeyspaceOutput,
-  errors: [UpdateKeyspaceUnauthorized, UpdateKeyspaceForbidden, UpdateKeyspaceNotfound],
+  errors: [UpdateKeyspaceUnauthorized, UpdateKeyspaceForbidden, UpdateKeyspaceNotfound, UpdateKeyspaceInternalservererror],
 }));

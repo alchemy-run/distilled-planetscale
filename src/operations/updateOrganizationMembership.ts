@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateOrganizationMembershipInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const UpdateOrganizationMembershipInput = Schema.Struct({
   role: Schema.String,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; id: string }) =>
-    `/organizations/${input.organization}/members/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/members/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type UpdateOrganizationMembershipInput = typeof UpdateOrganizationMembershipInput.Type;
@@ -26,15 +26,13 @@ export const UpdateOrganizationMembershipOutput = Schema.Struct({
     created_at: Schema.String,
     updated_at: Schema.String,
     two_factor_auth_configured: Schema.Boolean,
-    default_organization: Schema.optional(
-      Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        deleted_at: Schema.String,
-      }),
-    ),
+    default_organization: Schema.optional(Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    })),
     sso: Schema.optional(Schema.Boolean),
     managed: Schema.optional(Schema.Boolean),
     directory_managed: Schema.optional(Schema.Boolean),
@@ -55,7 +53,7 @@ export class UpdateOrganizationMembershipUnauthorized extends Schema.TaggedError
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateOrganizationMembershipForbidden extends Schema.TaggedError<UpdateOrganizationMembershipForbidden>()(
   "UpdateOrganizationMembershipForbidden",
@@ -65,7 +63,7 @@ export class UpdateOrganizationMembershipForbidden extends Schema.TaggedError<Up
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateOrganizationMembershipNotfound extends Schema.TaggedError<UpdateOrganizationMembershipNotfound>()(
   "UpdateOrganizationMembershipNotfound",
@@ -75,7 +73,17 @@ export class UpdateOrganizationMembershipNotfound extends Schema.TaggedError<Upd
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class UpdateOrganizationMembershipInternalservererror extends Schema.TaggedError<UpdateOrganizationMembershipInternalservererror>()(
+  "UpdateOrganizationMembershipInternalservererror",
+  {
+    organization: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -88,9 +96,5 @@ export class UpdateOrganizationMembershipNotfound extends Schema.TaggedError<Upd
 export const updateOrganizationMembership = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationMembershipInput,
   outputSchema: UpdateOrganizationMembershipOutput,
-  errors: [
-    UpdateOrganizationMembershipUnauthorized,
-    UpdateOrganizationMembershipForbidden,
-    UpdateOrganizationMembershipNotfound,
-  ],
+  errors: [UpdateOrganizationMembershipUnauthorized, UpdateOrganizationMembershipForbidden, UpdateOrganizationMembershipNotfound, UpdateOrganizationMembershipInternalservererror],
 }));

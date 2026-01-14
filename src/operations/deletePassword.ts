@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeletePasswordInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const DeletePasswordInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type DeletePasswordInput = typeof DeletePasswordInput.Type;
@@ -30,7 +30,7 @@ export class DeletePasswordUnauthorized extends Schema.TaggedError<DeletePasswor
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeletePasswordForbidden extends Schema.TaggedError<DeletePasswordForbidden>()(
   "DeletePasswordForbidden",
@@ -42,7 +42,7 @@ export class DeletePasswordForbidden extends Schema.TaggedError<DeletePasswordFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeletePasswordNotfound extends Schema.TaggedError<DeletePasswordNotfound>()(
   "DeletePasswordNotfound",
@@ -54,7 +54,19 @@ export class DeletePasswordNotfound extends Schema.TaggedError<DeletePasswordNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class DeletePasswordInternalservererror extends Schema.TaggedError<DeletePasswordInternalservererror>()(
+  "DeletePasswordInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -68,5 +80,5 @@ export class DeletePasswordNotfound extends Schema.TaggedError<DeletePasswordNot
 export const deletePassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeletePasswordInput,
   outputSchema: DeletePasswordOutput,
-  errors: [DeletePasswordUnauthorized, DeletePasswordForbidden, DeletePasswordNotfound],
+  errors: [DeletePasswordUnauthorized, DeletePasswordForbidden, DeletePasswordNotfound, DeletePasswordInternalservererror],
 }));

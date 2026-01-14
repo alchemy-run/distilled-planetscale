@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetInvoiceLineItemsInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const GetInvoiceLineItemsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) =>
-    `/organizations/${input.organization}/invoices/${input.id}/line-items`,
+  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/invoices/${input.id}/line-items`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type GetInvoiceLineItemsInput = typeof GetInvoiceLineItemsInput.Type;
@@ -22,23 +22,21 @@ export const GetInvoiceLineItemsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    subtotal: Schema.Number,
+    description: Schema.String,
+    metric_name: Schema.String,
+    database_id: Schema.String,
+    database_name: Schema.String,
+    resource: Schema.Struct({
       id: Schema.String,
-      subtotal: Schema.Number,
-      description: Schema.String,
-      metric_name: Schema.String,
-      database_id: Schema.String,
-      database_name: Schema.String,
-      resource: Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        deleted_at: Schema.String,
-      }),
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
     }),
-  ),
+  })),
 });
 export type GetInvoiceLineItemsOutput = typeof GetInvoiceLineItemsOutput.Type;
 
@@ -51,7 +49,7 @@ export class GetInvoiceLineItemsUnauthorized extends Schema.TaggedError<GetInvoi
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetInvoiceLineItemsForbidden extends Schema.TaggedError<GetInvoiceLineItemsForbidden>()(
   "GetInvoiceLineItemsForbidden",
@@ -61,7 +59,7 @@ export class GetInvoiceLineItemsForbidden extends Schema.TaggedError<GetInvoiceL
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetInvoiceLineItemsNotfound extends Schema.TaggedError<GetInvoiceLineItemsNotfound>()(
   "GetInvoiceLineItemsNotfound",
@@ -71,7 +69,17 @@ export class GetInvoiceLineItemsNotfound extends Schema.TaggedError<GetInvoiceLi
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetInvoiceLineItemsInternalservererror extends Schema.TaggedError<GetInvoiceLineItemsInternalservererror>()(
+  "GetInvoiceLineItemsInternalservererror",
+  {
+    organization: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -87,9 +95,5 @@ export class GetInvoiceLineItemsNotfound extends Schema.TaggedError<GetInvoiceLi
 export const getInvoiceLineItems = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetInvoiceLineItemsInput,
   outputSchema: GetInvoiceLineItemsOutput,
-  errors: [
-    GetInvoiceLineItemsUnauthorized,
-    GetInvoiceLineItemsForbidden,
-    GetInvoiceLineItemsNotfound,
-  ],
+  errors: [GetInvoiceLineItemsUnauthorized, GetInvoiceLineItemsForbidden, GetInvoiceLineItemsNotfound, GetInvoiceLineItemsInternalservererror],
 }));

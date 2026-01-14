@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetInvoiceInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const GetInvoiceInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; id: string }) =>
-    `/organizations/${input.organization}/invoices/${input.id}`,
+  [ApiPath]: (input: { organization: string; id: string }) => `/organizations/${input.organization}/invoices/${input.id}`,
   [ApiPathParams]: ["organization", "id"] as const,
 });
 export type GetInvoiceInput = typeof GetInvoiceInput.Type;
@@ -31,7 +31,7 @@ export class GetInvoiceUnauthorized extends Schema.TaggedError<GetInvoiceUnautho
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetInvoiceForbidden extends Schema.TaggedError<GetInvoiceForbidden>()(
   "GetInvoiceForbidden",
@@ -41,7 +41,7 @@ export class GetInvoiceForbidden extends Schema.TaggedError<GetInvoiceForbidden>
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetInvoiceNotfound extends Schema.TaggedError<GetInvoiceNotfound>()(
   "GetInvoiceNotfound",
@@ -51,7 +51,17 @@ export class GetInvoiceNotfound extends Schema.TaggedError<GetInvoiceNotfound>()
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetInvoiceInternalservererror extends Schema.TaggedError<GetInvoiceInternalservererror>()(
+  "GetInvoiceInternalservererror",
+  {
+    organization: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -63,5 +73,5 @@ export class GetInvoiceNotfound extends Schema.TaggedError<GetInvoiceNotfound>()
 export const getInvoice = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetInvoiceInput,
   outputSchema: GetInvoiceOutput,
-  errors: [GetInvoiceUnauthorized, GetInvoiceForbidden, GetInvoiceNotfound],
+  errors: [GetInvoiceUnauthorized, GetInvoiceForbidden, GetInvoiceNotfound, GetInvoiceInternalservererror],
 }));

@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetOauthTokenInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const GetOauthTokenInput = Schema.Struct({
   token_id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) =>
-    `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
+  [ApiPath]: (input: { organization: string; application_id: string; token_id: string }) => `/organizations/${input.organization}/oauth-applications/${input.application_id}/tokens/${input.token_id}`,
   [ApiPathParams]: ["organization", "application_id", "token_id"] as const,
 });
 export type GetOauthTokenInput = typeof GetOauthTokenInput.Type;
@@ -29,85 +29,67 @@ export const GetOauthTokenOutput = Schema.Struct({
   actor_id: Schema.String,
   actor_display_name: Schema.String,
   actor_type: Schema.String,
-  service_token_accesses: Schema.Array(
-    Schema.Struct({
+  service_token_accesses: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    access: Schema.String,
+    description: Schema.String,
+    resource_name: Schema.String,
+    resource_id: Schema.String,
+    resource_type: Schema.String,
+    resource: Schema.Struct({
       id: Schema.String,
-      access: Schema.String,
-      description: Schema.String,
-      resource_name: Schema.String,
-      resource_id: Schema.String,
-      resource_type: Schema.String,
-      resource: Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        deleted_at: Schema.String,
-      }),
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
     }),
-  ),
+  })),
   oauth_accesses_by_resource: Schema.Struct({
     database: Schema.Struct({
-      databases: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-          organization: Schema.String,
-          url: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      databases: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        organization: Schema.String,
+        url: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
     organization: Schema.Struct({
-      organizations: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-          url: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      organizations: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        url: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
     branch: Schema.Struct({
-      branches: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-          database: Schema.String,
-          organization: Schema.String,
-          url: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      branches: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        database: Schema.String,
+        organization: Schema.String,
+        url: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
     user: Schema.Struct({
-      users: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      users: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
   }),
 });
@@ -123,7 +105,7 @@ export class GetOauthTokenUnauthorized extends Schema.TaggedError<GetOauthTokenU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetOauthTokenForbidden extends Schema.TaggedError<GetOauthTokenForbidden>()(
   "GetOauthTokenForbidden",
@@ -134,7 +116,7 @@ export class GetOauthTokenForbidden extends Schema.TaggedError<GetOauthTokenForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetOauthTokenNotfound extends Schema.TaggedError<GetOauthTokenNotfound>()(
   "GetOauthTokenNotfound",
@@ -145,7 +127,18 @@ export class GetOauthTokenNotfound extends Schema.TaggedError<GetOauthTokenNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetOauthTokenInternalservererror extends Schema.TaggedError<GetOauthTokenInternalservererror>()(
+  "GetOauthTokenInternalservererror",
+  {
+    organization: Schema.String,
+    application_id: Schema.String,
+    token_id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -158,5 +151,5 @@ export class GetOauthTokenNotfound extends Schema.TaggedError<GetOauthTokenNotfo
 export const getOauthToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOauthTokenInput,
   outputSchema: GetOauthTokenOutput,
-  errors: [GetOauthTokenUnauthorized, GetOauthTokenForbidden, GetOauthTokenNotfound],
+  errors: [GetOauthTokenUnauthorized, GetOauthTokenForbidden, GetOauthTokenNotfound, GetOauthTokenInternalservererror],
 }));

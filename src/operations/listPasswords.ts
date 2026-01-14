@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListPasswordsInput = Schema.Struct({
@@ -11,8 +12,7 @@ export const ListPasswordsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type ListPasswordsInput = typeof ListPasswordsInput.Type;
@@ -24,51 +24,49 @@ export const ListPasswordsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    role: Schema.Literal("reader", "writer", "admin", "readwriter"),
+    cidrs: Schema.Array(Schema.String),
+    created_at: Schema.String,
+    deleted_at: Schema.String,
+    expires_at: Schema.String,
+    last_used_at: Schema.String,
+    expired: Schema.Boolean,
+    direct_vtgate: Schema.Boolean,
+    direct_vtgate_addresses: Schema.Array(Schema.String),
+    ttl_seconds: Schema.Number,
+    access_host_url: Schema.String,
+    access_host_regional_url: Schema.String,
+    access_host_regional_urls: Schema.Array(Schema.String),
+    actor: Schema.Struct({
       id: Schema.String,
-      name: Schema.String,
-      role: Schema.Literal("reader", "writer", "admin", "readwriter"),
-      cidrs: Schema.Array(Schema.String),
-      created_at: Schema.String,
-      deleted_at: Schema.String,
-      expires_at: Schema.String,
-      last_used_at: Schema.String,
-      expired: Schema.Boolean,
-      direct_vtgate: Schema.Boolean,
-      direct_vtgate_addresses: Schema.Array(Schema.String),
-      ttl_seconds: Schema.Number,
-      access_host_url: Schema.String,
-      access_host_regional_url: Schema.String,
-      access_host_regional_urls: Schema.Array(Schema.String),
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
-      region: Schema.Struct({
-        id: Schema.String,
-        provider: Schema.String,
-        enabled: Schema.Boolean,
-        public_ip_addresses: Schema.Array(Schema.String),
-        display_name: Schema.String,
-        location: Schema.String,
-        slug: Schema.String,
-        current_default: Schema.Boolean,
-      }),
-      username: Schema.String,
-      plain_text: Schema.String,
-      replica: Schema.Boolean,
-      renewable: Schema.Boolean,
-      database_branch: Schema.Struct({
-        name: Schema.String,
-        id: Schema.String,
-        production: Schema.Boolean,
-        mysql_edge_address: Schema.String,
-        private_edge_connectivity: Schema.Boolean,
-      }),
+      display_name: Schema.String,
+      avatar_url: Schema.String,
     }),
-  ),
+    region: Schema.Struct({
+      id: Schema.String,
+      provider: Schema.String,
+      enabled: Schema.Boolean,
+      public_ip_addresses: Schema.Array(Schema.String),
+      display_name: Schema.String,
+      location: Schema.String,
+      slug: Schema.String,
+      current_default: Schema.Boolean,
+    }),
+    username: Schema.String,
+    plain_text: Schema.String,
+    replica: Schema.Boolean,
+    renewable: Schema.Boolean,
+    database_branch: Schema.Struct({
+      name: Schema.String,
+      id: Schema.String,
+      production: Schema.Boolean,
+      mysql_edge_address: Schema.String,
+      private_edge_connectivity: Schema.Boolean,
+    }),
+  })),
 });
 export type ListPasswordsOutput = typeof ListPasswordsOutput.Type;
 
@@ -82,7 +80,7 @@ export class ListPasswordsUnauthorized extends Schema.TaggedError<ListPasswordsU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListPasswordsForbidden extends Schema.TaggedError<ListPasswordsForbidden>()(
   "ListPasswordsForbidden",
@@ -93,7 +91,7 @@ export class ListPasswordsForbidden extends Schema.TaggedError<ListPasswordsForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListPasswordsNotfound extends Schema.TaggedError<ListPasswordsNotfound>()(
   "ListPasswordsNotfound",
@@ -104,7 +102,18 @@ export class ListPasswordsNotfound extends Schema.TaggedError<ListPasswordsNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListPasswordsInternalservererror extends Schema.TaggedError<ListPasswordsInternalservererror>()(
+  "ListPasswordsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -120,5 +129,5 @@ export class ListPasswordsNotfound extends Schema.TaggedError<ListPasswordsNotfo
 export const listPasswords = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListPasswordsInput,
   outputSchema: ListPasswordsOutput,
-  errors: [ListPasswordsUnauthorized, ListPasswordsForbidden, ListPasswordsNotfound],
+  errors: [ListPasswordsUnauthorized, ListPasswordsForbidden, ListPasswordsNotfound, ListPasswordsInternalservererror],
 }));

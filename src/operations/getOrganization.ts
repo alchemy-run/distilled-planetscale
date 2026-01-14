@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetOrganizationInput = Schema.Struct({
@@ -44,7 +45,7 @@ export class GetOrganizationUnauthorized extends Schema.TaggedError<GetOrganizat
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetOrganizationForbidden extends Schema.TaggedError<GetOrganizationForbidden>()(
   "GetOrganizationForbidden",
@@ -53,7 +54,7 @@ export class GetOrganizationForbidden extends Schema.TaggedError<GetOrganization
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationNotfound>()(
   "GetOrganizationNotfound",
@@ -62,7 +63,16 @@ export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationN
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetOrganizationInternalservererror extends Schema.TaggedError<GetOrganizationInternalservererror>()(
+  "GetOrganizationInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -73,5 +83,5 @@ export class GetOrganizationNotfound extends Schema.TaggedError<GetOrganizationN
 export const getOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetOrganizationInput,
   outputSchema: GetOrganizationOutput,
-  errors: [GetOrganizationUnauthorized, GetOrganizationForbidden, GetOrganizationNotfound],
+  errors: [GetOrganizationUnauthorized, GetOrganizationForbidden, GetOrganizationNotfound, GetOrganizationInternalservererror],
 }));

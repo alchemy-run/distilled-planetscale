@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const RenewPasswordInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const RenewPasswordInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}/renew`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}/renew`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type RenewPasswordInput = typeof RenewPasswordInput.Type;
@@ -72,7 +72,7 @@ export class RenewPasswordUnauthorized extends Schema.TaggedError<RenewPasswordU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class RenewPasswordForbidden extends Schema.TaggedError<RenewPasswordForbidden>()(
   "RenewPasswordForbidden",
@@ -84,7 +84,7 @@ export class RenewPasswordForbidden extends Schema.TaggedError<RenewPasswordForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class RenewPasswordNotfound extends Schema.TaggedError<RenewPasswordNotfound>()(
   "RenewPasswordNotfound",
@@ -96,7 +96,19 @@ export class RenewPasswordNotfound extends Schema.TaggedError<RenewPasswordNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class RenewPasswordInternalservererror extends Schema.TaggedError<RenewPasswordInternalservererror>()(
+  "RenewPasswordInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -110,5 +122,5 @@ export class RenewPasswordNotfound extends Schema.TaggedError<RenewPasswordNotfo
 export const renewPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: RenewPasswordInput,
   outputSchema: RenewPasswordOutput,
-  errors: [RenewPasswordUnauthorized, RenewPasswordForbidden, RenewPasswordNotfound],
+  errors: [RenewPasswordUnauthorized, RenewPasswordForbidden, RenewPasswordNotfound, RenewPasswordInternalservererror],
 }));

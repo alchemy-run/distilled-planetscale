@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListDeployRequestReviewsInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const ListDeployRequestReviewsInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}/reviews`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type ListDeployRequestReviewsInput = typeof ListDeployRequestReviewsInput.Type;
@@ -21,21 +21,19 @@ export const ListDeployRequestReviewsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    body: Schema.String,
+    html_body: Schema.String,
+    state: Schema.Literal("commented", "approved"),
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    actor: Schema.Struct({
       id: Schema.String,
-      body: Schema.String,
-      html_body: Schema.String,
-      state: Schema.Literal("commented", "approved"),
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
+      display_name: Schema.String,
+      avatar_url: Schema.String,
     }),
-  ),
+  })),
 });
 export type ListDeployRequestReviewsOutput = typeof ListDeployRequestReviewsOutput.Type;
 
@@ -49,7 +47,7 @@ export class ListDeployRequestReviewsUnauthorized extends Schema.TaggedError<Lis
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListDeployRequestReviewsForbidden extends Schema.TaggedError<ListDeployRequestReviewsForbidden>()(
   "ListDeployRequestReviewsForbidden",
@@ -60,7 +58,7 @@ export class ListDeployRequestReviewsForbidden extends Schema.TaggedError<ListDe
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListDeployRequestReviewsNotfound extends Schema.TaggedError<ListDeployRequestReviewsNotfound>()(
   "ListDeployRequestReviewsNotfound",
@@ -71,7 +69,18 @@ export class ListDeployRequestReviewsNotfound extends Schema.TaggedError<ListDep
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListDeployRequestReviewsInternalservererror extends Schema.TaggedError<ListDeployRequestReviewsInternalservererror>()(
+  "ListDeployRequestReviewsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    number: Schema.NumberFromString,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -84,9 +93,5 @@ export class ListDeployRequestReviewsNotfound extends Schema.TaggedError<ListDep
 export const listDeployRequestReviews = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDeployRequestReviewsInput,
   outputSchema: ListDeployRequestReviewsOutput,
-  errors: [
-    ListDeployRequestReviewsUnauthorized,
-    ListDeployRequestReviewsForbidden,
-    ListDeployRequestReviewsNotfound,
-  ],
+  errors: [ListDeployRequestReviewsUnauthorized, ListDeployRequestReviewsForbidden, ListDeployRequestReviewsNotfound, ListDeployRequestReviewsInternalservererror],
 }));

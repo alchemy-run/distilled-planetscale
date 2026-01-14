@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ReassignRoleObjectsInput = Schema.Struct({
@@ -10,8 +11,7 @@ export const ReassignRoleObjectsInput = Schema.Struct({
   successor: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reassign`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reassign`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type ReassignRoleObjectsInput = typeof ReassignRoleObjectsInput.Type;
@@ -31,7 +31,7 @@ export class ReassignRoleObjectsUnauthorized extends Schema.TaggedError<Reassign
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ReassignRoleObjectsForbidden extends Schema.TaggedError<ReassignRoleObjectsForbidden>()(
   "ReassignRoleObjectsForbidden",
@@ -43,7 +43,7 @@ export class ReassignRoleObjectsForbidden extends Schema.TaggedError<ReassignRol
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ReassignRoleObjectsNotfound extends Schema.TaggedError<ReassignRoleObjectsNotfound>()(
   "ReassignRoleObjectsNotfound",
@@ -55,7 +55,19 @@ export class ReassignRoleObjectsNotfound extends Schema.TaggedError<ReassignRole
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ReassignRoleObjectsInternalservererror extends Schema.TaggedError<ReassignRoleObjectsInternalservererror>()(
+  "ReassignRoleObjectsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -70,9 +82,5 @@ export class ReassignRoleObjectsNotfound extends Schema.TaggedError<ReassignRole
 export const reassignRoleObjects = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ReassignRoleObjectsInput,
   outputSchema: ReassignRoleObjectsOutput,
-  errors: [
-    ReassignRoleObjectsUnauthorized,
-    ReassignRoleObjectsForbidden,
-    ReassignRoleObjectsNotfound,
-  ],
+  errors: [ReassignRoleObjectsUnauthorized, ReassignRoleObjectsForbidden, ReassignRoleObjectsNotfound, ReassignRoleObjectsInternalservererror],
 }));

@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetDeployRequestInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const GetDeployRequestInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/deploy-requests/${input.number}`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type GetDeployRequestInput = typeof GetDeployRequestInput.Type;
@@ -42,28 +42,7 @@ export const GetDeployRequestOutput = Schema.Struct({
   into_branch_shard_count: Schema.Number,
   approved: Schema.Boolean,
   state: Schema.Literal("open", "closed"),
-  deployment_state: Schema.Literal(
-    "pending",
-    "ready",
-    "no_changes",
-    "queued",
-    "submitting",
-    "in_progress",
-    "pending_cutover",
-    "in_progress_vschema",
-    "in_progress_cancel",
-    "in_progress_cutover",
-    "complete",
-    "complete_cancel",
-    "complete_error",
-    "complete_pending_revert",
-    "in_progress_revert",
-    "in_progress_revert_vschema",
-    "complete_revert",
-    "complete_revert_error",
-    "cancelled",
-    "error",
-  ),
+  deployment_state: Schema.Literal("pending", "ready", "no_changes", "queued", "submitting", "in_progress", "pending_cutover", "in_progress_vschema", "in_progress_cancel", "in_progress_cutover", "complete", "complete_cancel", "complete_error", "complete_pending_revert", "in_progress_revert", "in_progress_revert_vschema", "complete_revert", "complete_revert_error", "cancelled", "error"),
   deployment: Schema.Struct({
     id: Schema.String,
     auto_cutover: Schema.Boolean,
@@ -76,96 +55,62 @@ export const GetDeployRequestOutput = Schema.Struct({
     queued_at: Schema.String,
     ready_to_cutover_at: Schema.String,
     started_at: Schema.String,
-    state: Schema.Literal(
-      "pending",
-      "ready",
-      "no_changes",
-      "queued",
-      "submitting",
-      "in_progress",
-      "pending_cutover",
-      "in_progress_vschema",
-      "in_progress_cancel",
-      "in_progress_cutover",
-      "complete",
-      "complete_cancel",
-      "complete_error",
-      "complete_pending_revert",
-      "in_progress_revert",
-      "in_progress_revert_vschema",
-      "complete_revert",
-      "complete_revert_error",
-      "cancelled",
-      "error",
-    ),
+    state: Schema.Literal("pending", "ready", "no_changes", "queued", "submitting", "in_progress", "pending_cutover", "in_progress_vschema", "in_progress_cancel", "in_progress_cutover", "complete", "complete_cancel", "complete_error", "complete_pending_revert", "in_progress_revert", "in_progress_revert_vschema", "complete_revert", "complete_revert_error", "cancelled", "error"),
     submitted_at: Schema.String,
     updated_at: Schema.String,
     into_branch: Schema.String,
     deploy_request_number: Schema.Number,
     deployable: Schema.Boolean,
     preceding_deployments: Schema.Array(Schema.Unknown),
-    deploy_operations: Schema.Array(
-      Schema.Struct({
+    deploy_operations: Schema.Array(Schema.Struct({
+      id: Schema.String,
+      state: Schema.Literal("pending", "queued", "in_progress", "complete", "cancelled", "error"),
+      keyspace_name: Schema.String,
+      table_name: Schema.String,
+      operation_name: Schema.String,
+      eta_seconds: Schema.Number,
+      progress_percentage: Schema.Number,
+      deploy_error_docs_url: Schema.String,
+      ddl_statement: Schema.String,
+      syntax_highlighted_ddl: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      throttled_at: Schema.String,
+      can_drop_data: Schema.Boolean,
+      table_locked: Schema.Boolean,
+      table_recently_used: Schema.Boolean,
+      table_recently_used_at: Schema.String,
+      removed_foreign_key_names: Schema.Array(Schema.String),
+      deploy_errors: Schema.String,
+    })),
+    deploy_operation_summaries: Schema.Array(Schema.Struct({
+      id: Schema.String,
+      created_at: Schema.String,
+      deploy_errors: Schema.String,
+      ddl_statement: Schema.String,
+      eta_seconds: Schema.Number,
+      keyspace_name: Schema.String,
+      operation_name: Schema.String,
+      progress_percentage: Schema.Number,
+      state: Schema.Literal("pending", "in_progress", "complete", "cancelled", "error"),
+      syntax_highlighted_ddl: Schema.String,
+      table_name: Schema.String,
+      table_recently_used_at: Schema.String,
+      throttled_at: Schema.String,
+      removed_foreign_key_names: Schema.Array(Schema.String),
+      shard_count: Schema.Number,
+      shard_names: Schema.Array(Schema.String),
+      can_drop_data: Schema.Boolean,
+      table_recently_used: Schema.Boolean,
+      sharded: Schema.Boolean,
+      operations: Schema.Array(Schema.Struct({
         id: Schema.String,
+        shard: Schema.String,
         state: Schema.Literal("pending", "queued", "in_progress", "complete", "cancelled", "error"),
-        keyspace_name: Schema.String,
-        table_name: Schema.String,
-        operation_name: Schema.String,
-        eta_seconds: Schema.Number,
         progress_percentage: Schema.Number,
-        deploy_error_docs_url: Schema.String,
-        ddl_statement: Schema.String,
-        syntax_highlighted_ddl: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        throttled_at: Schema.String,
-        can_drop_data: Schema.Boolean,
-        table_locked: Schema.Boolean,
-        table_recently_used: Schema.Boolean,
-        table_recently_used_at: Schema.String,
-        removed_foreign_key_names: Schema.Array(Schema.String),
-        deploy_errors: Schema.String,
-      }),
-    ),
-    deploy_operation_summaries: Schema.Array(
-      Schema.Struct({
-        id: Schema.String,
-        created_at: Schema.String,
-        deploy_errors: Schema.String,
-        ddl_statement: Schema.String,
         eta_seconds: Schema.Number,
-        keyspace_name: Schema.String,
-        operation_name: Schema.String,
-        progress_percentage: Schema.Number,
-        state: Schema.Literal("pending", "in_progress", "complete", "cancelled", "error"),
-        syntax_highlighted_ddl: Schema.String,
-        table_name: Schema.String,
-        table_recently_used_at: Schema.String,
-        throttled_at: Schema.String,
-        removed_foreign_key_names: Schema.Array(Schema.String),
-        shard_count: Schema.Number,
-        shard_names: Schema.Array(Schema.String),
-        can_drop_data: Schema.Boolean,
-        table_recently_used: Schema.Boolean,
-        sharded: Schema.Boolean,
-        operations: Schema.Array(
-          Schema.Struct({
-            id: Schema.String,
-            shard: Schema.String,
-            state: Schema.Literal(
-              "pending",
-              "queued",
-              "in_progress",
-              "complete",
-              "cancelled",
-              "error",
-            ),
-            progress_percentage: Schema.Number,
-            eta_seconds: Schema.Number,
-          }),
-        ),
-      }),
-    ),
+      })),
+    })),
     lint_errors: Schema.Array(Schema.Unknown),
     sequential_diff_dependencies: Schema.Array(Schema.Unknown),
     lookup_vindex_operations: Schema.Array(Schema.Unknown),
@@ -213,7 +158,7 @@ export class GetDeployRequestUnauthorized extends Schema.TaggedError<GetDeployRe
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetDeployRequestForbidden extends Schema.TaggedError<GetDeployRequestForbidden>()(
   "GetDeployRequestForbidden",
@@ -224,7 +169,7 @@ export class GetDeployRequestForbidden extends Schema.TaggedError<GetDeployReque
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetDeployRequestNotfound extends Schema.TaggedError<GetDeployRequestNotfound>()(
   "GetDeployRequestNotfound",
@@ -235,7 +180,18 @@ export class GetDeployRequestNotfound extends Schema.TaggedError<GetDeployReques
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetDeployRequestInternalservererror extends Schema.TaggedError<GetDeployRequestInternalservererror>()(
+  "GetDeployRequestInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    number: Schema.NumberFromString,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -248,5 +204,5 @@ export class GetDeployRequestNotfound extends Schema.TaggedError<GetDeployReques
 export const getDeployRequest = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDeployRequestInput,
   outputSchema: GetDeployRequestOutput,
-  errors: [GetDeployRequestUnauthorized, GetDeployRequestForbidden, GetDeployRequestNotfound],
+  errors: [GetDeployRequestUnauthorized, GetDeployRequestForbidden, GetDeployRequestNotfound, GetDeployRequestInternalservererror],
 }));

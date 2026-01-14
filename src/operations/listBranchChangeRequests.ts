@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListBranchChangeRequestsInput = Schema.Struct({
@@ -10,8 +11,7 @@ export const ListBranchChangeRequestsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/changes`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type ListBranchChangeRequestsInput = typeof ListBranchChangeRequestsInput.Type;
@@ -23,46 +23,44 @@ export const ListBranchChangeRequestsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    restart: Schema.Array(Schema.Number),
+    state: Schema.Literal("queued", "pending", "resizing", "canceled", "completed"),
+    started_at: Schema.String,
+    completed_at: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    actor: Schema.Struct({
       id: Schema.String,
-      restart: Schema.Array(Schema.Number),
-      state: Schema.Literal("queued", "pending", "resizing", "canceled", "completed"),
-      started_at: Schema.String,
-      completed_at: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
-      cluster_name: Schema.String,
-      cluster_display_name: Schema.String,
-      cluster_metal: Schema.Boolean,
-      replicas: Schema.Number,
-      parameters: Schema.Unknown,
-      previous_cluster_name: Schema.String,
-      previous_cluster_display_name: Schema.String,
-      previous_cluster_metal: Schema.Boolean,
-      previous_replicas: Schema.Number,
-      previous_parameters: Schema.Unknown,
-      minimum_storage_bytes: Schema.Number,
-      maximum_storage_bytes: Schema.Number,
-      storage_autoscaling: Schema.Boolean,
-      storage_shrinking: Schema.Boolean,
-      storage_type: Schema.Literal("gp3", "io2", "pd_ssd"),
-      storage_iops: Schema.Number,
-      storage_throughput_mibs: Schema.Number,
-      previous_minimum_storage_bytes: Schema.Number,
-      previous_maximum_storage_bytes: Schema.Number,
-      previous_storage_autoscaling: Schema.Boolean,
-      previous_storage_shrinking: Schema.Boolean,
-      previous_storage_type: Schema.String,
-      previous_storage_iops: Schema.Number,
-      previous_storage_throughput_mibs: Schema.Number,
+      display_name: Schema.String,
+      avatar_url: Schema.String,
     }),
-  ),
+    cluster_name: Schema.String,
+    cluster_display_name: Schema.String,
+    cluster_metal: Schema.Boolean,
+    replicas: Schema.Number,
+    parameters: Schema.Unknown,
+    previous_cluster_name: Schema.String,
+    previous_cluster_display_name: Schema.String,
+    previous_cluster_metal: Schema.Boolean,
+    previous_replicas: Schema.Number,
+    previous_parameters: Schema.Unknown,
+    minimum_storage_bytes: Schema.Number,
+    maximum_storage_bytes: Schema.Number,
+    storage_autoscaling: Schema.Boolean,
+    storage_shrinking: Schema.Boolean,
+    storage_type: Schema.Literal("gp3", "io2", "pd_ssd"),
+    storage_iops: Schema.Number,
+    storage_throughput_mibs: Schema.Number,
+    previous_minimum_storage_bytes: Schema.Number,
+    previous_maximum_storage_bytes: Schema.Number,
+    previous_storage_autoscaling: Schema.Boolean,
+    previous_storage_shrinking: Schema.Boolean,
+    previous_storage_type: Schema.String,
+    previous_storage_iops: Schema.Number,
+    previous_storage_throughput_mibs: Schema.Number,
+  })),
 });
 export type ListBranchChangeRequestsOutput = typeof ListBranchChangeRequestsOutput.Type;
 
@@ -76,7 +74,7 @@ export class ListBranchChangeRequestsUnauthorized extends Schema.TaggedError<Lis
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListBranchChangeRequestsForbidden extends Schema.TaggedError<ListBranchChangeRequestsForbidden>()(
   "ListBranchChangeRequestsForbidden",
@@ -87,7 +85,7 @@ export class ListBranchChangeRequestsForbidden extends Schema.TaggedError<ListBr
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListBranchChangeRequestsNotfound extends Schema.TaggedError<ListBranchChangeRequestsNotfound>()(
   "ListBranchChangeRequestsNotfound",
@@ -98,7 +96,18 @@ export class ListBranchChangeRequestsNotfound extends Schema.TaggedError<ListBra
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListBranchChangeRequestsInternalservererror extends Schema.TaggedError<ListBranchChangeRequestsInternalservererror>()(
+  "ListBranchChangeRequestsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -113,9 +122,5 @@ export class ListBranchChangeRequestsNotfound extends Schema.TaggedError<ListBra
 export const listBranchChangeRequests = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListBranchChangeRequestsInput,
   outputSchema: ListBranchChangeRequestsOutput,
-  errors: [
-    ListBranchChangeRequestsUnauthorized,
-    ListBranchChangeRequestsForbidden,
-    ListBranchChangeRequestsNotfound,
-  ],
+  errors: [ListBranchChangeRequestsUnauthorized, ListBranchChangeRequestsForbidden, ListBranchChangeRequestsNotfound, ListBranchChangeRequestsInternalservererror],
 }));

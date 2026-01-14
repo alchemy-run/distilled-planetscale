@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdateOrganizationInput = Schema.Struct({
@@ -47,7 +48,7 @@ export class UpdateOrganizationUnauthorized extends Schema.TaggedError<UpdateOrg
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateOrganizationForbidden extends Schema.TaggedError<UpdateOrganizationForbidden>()(
   "UpdateOrganizationForbidden",
@@ -56,7 +57,7 @@ export class UpdateOrganizationForbidden extends Schema.TaggedError<UpdateOrgani
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdateOrganizationNotfound extends Schema.TaggedError<UpdateOrganizationNotfound>()(
   "UpdateOrganizationNotfound",
@@ -65,7 +66,16 @@ export class UpdateOrganizationNotfound extends Schema.TaggedError<UpdateOrganiz
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class UpdateOrganizationInternalservererror extends Schema.TaggedError<UpdateOrganizationInternalservererror>()(
+  "UpdateOrganizationInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -79,5 +89,5 @@ export class UpdateOrganizationNotfound extends Schema.TaggedError<UpdateOrganiz
 export const updateOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdateOrganizationInput,
   outputSchema: UpdateOrganizationOutput,
-  errors: [UpdateOrganizationUnauthorized, UpdateOrganizationForbidden, UpdateOrganizationNotfound],
+  errors: [UpdateOrganizationUnauthorized, UpdateOrganizationForbidden, UpdateOrganizationNotfound, UpdateOrganizationInternalservererror],
 }));

@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const UpdatePasswordInput = Schema.Struct({
@@ -11,8 +12,7 @@ export const UpdatePasswordInput = Schema.Struct({
   cidrs: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type UpdatePasswordInput = typeof UpdatePasswordInput.Type;
@@ -74,7 +74,7 @@ export class UpdatePasswordUnauthorized extends Schema.TaggedError<UpdatePasswor
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdatePasswordForbidden extends Schema.TaggedError<UpdatePasswordForbidden>()(
   "UpdatePasswordForbidden",
@@ -86,7 +86,7 @@ export class UpdatePasswordForbidden extends Schema.TaggedError<UpdatePasswordFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class UpdatePasswordNotfound extends Schema.TaggedError<UpdatePasswordNotfound>()(
   "UpdatePasswordNotfound",
@@ -98,7 +98,19 @@ export class UpdatePasswordNotfound extends Schema.TaggedError<UpdatePasswordNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class UpdatePasswordInternalservererror extends Schema.TaggedError<UpdatePasswordInternalservererror>()(
+  "UpdatePasswordInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -114,5 +126,5 @@ export class UpdatePasswordNotfound extends Schema.TaggedError<UpdatePasswordNot
 export const updatePassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: UpdatePasswordInput,
   outputSchema: UpdatePasswordOutput,
-  errors: [UpdatePasswordUnauthorized, UpdatePasswordForbidden, UpdatePasswordNotfound],
+  errors: [UpdatePasswordUnauthorized, UpdatePasswordForbidden, UpdatePasswordNotfound, UpdatePasswordInternalservererror],
 }));

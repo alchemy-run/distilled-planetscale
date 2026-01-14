@@ -6,12 +6,20 @@ import { applyAllPatches } from "./apply-patches";
 // Types for OpenAPI Spec
 // ============================================================================
 
+interface ErrorCategoryInfo {
+  category: string;
+  decorator: string;
+  description: string;
+}
+
 interface OpenAPISpec {
   swagger: string;
   info: { title: string; version: string };
   basePath: string;
   paths: Record<string, PathItem>;
   definitions: Record<string, SchemaObject>;
+  "x-error-categories"?: Record<string, ErrorCategoryInfo>;
+  "x-http-status-to-error-code"?: Record<string, string>;
 }
 
 interface PathItem {
@@ -440,13 +448,18 @@ function generateErrorClasses(
   operationId: string,
   responses: Record<string, Response>,
   pathParamInfos: PathParamInfo[],
-): { errorCode: string; errorNames: string[] } {
+  spec: OpenAPISpec,
+): { errorCode: string; errorNames: string[]; usesCategory: boolean } {
   const className = toPascalCase(operationId);
   const errorNames: string[] = [];
   const errorClasses: string[] = [];
+  let usesCategory = false;
 
-  // Map HTTP status codes to error codes
-  const statusToCode: Record<string, string> = {
+  // Get error categories from spec (populated by patch)
+  const errorCategories = spec["x-error-categories"] || {};
+
+  // Use spec's status-to-code mapping if available, otherwise fall back to defaults
+  const statusToCode: Record<string, string> = spec["x-http-status-to-error-code"] || {
     "401": "unauthorized",
     "403": "forbidden",
     "404": "not_found",
@@ -470,7 +483,22 @@ function generateErrorClasses(
       })
       .join("\n");
 
-    errorClasses.push(`export class ${errorName} extends Schema.TaggedError<${errorName}>()(
+    // Look up the category decorator for this error code
+    const categoryInfo = errorCategories[code];
+    const categoryDecorator = categoryInfo?.decorator;
+
+    if (categoryDecorator) {
+      usesCategory = true;
+      errorClasses.push(`export class ${errorName} extends Schema.TaggedError<${errorName}>()(
+  "${errorName}",
+  {
+${paramFields}
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "${code}" },
+).pipe(Category.${categoryDecorator}) {}`);
+    } else {
+      errorClasses.push(`export class ${errorName} extends Schema.TaggedError<${errorName}>()(
   "${errorName}",
   {
 ${paramFields}
@@ -478,11 +506,13 @@ ${paramFields}
   },
   { [ApiErrorCode]: "${code}" },
 ) {}`);
+    }
   }
 
   return {
     errorCode: errorClasses.join("\n\n"),
     errorNames,
+    usesCategory,
   };
 }
 
@@ -521,10 +551,11 @@ function generateOperation(
   );
 
   // Generate error classes
-  const { errorCode, errorNames } = generateErrorClasses(
+  const { errorCode, errorNames, usesCategory } = generateErrorClasses(
     operationId,
     operation.responses,
     pathParamInfos,
+    spec,
   );
 
   // Generate the operation function
@@ -544,8 +575,13 @@ export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
 }));`;
 
   // Combine all code
-  const imports = `import * as Schema from "effect/Schema";
+  const baseImports = `import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";`;
+
+  const imports = usesCategory
+    ? `${baseImports}
+import * as Category from "../category";`
+    : baseImports;
 
   const code = [
     imports,

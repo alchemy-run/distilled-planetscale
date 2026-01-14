@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeleteQueryPatternsReportInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const DeleteQueryPatternsReportInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/query-patterns/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type DeleteQueryPatternsReportInput = typeof DeleteQueryPatternsReportInput.Type;
@@ -30,7 +30,7 @@ export class DeleteQueryPatternsReportUnauthorized extends Schema.TaggedError<De
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteQueryPatternsReportForbidden extends Schema.TaggedError<DeleteQueryPatternsReportForbidden>()(
   "DeleteQueryPatternsReportForbidden",
@@ -42,7 +42,7 @@ export class DeleteQueryPatternsReportForbidden extends Schema.TaggedError<Delet
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteQueryPatternsReportNotfound extends Schema.TaggedError<DeleteQueryPatternsReportNotfound>()(
   "DeleteQueryPatternsReportNotfound",
@@ -54,7 +54,19 @@ export class DeleteQueryPatternsReportNotfound extends Schema.TaggedError<Delete
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class DeleteQueryPatternsReportInternalservererror extends Schema.TaggedError<DeleteQueryPatternsReportInternalservererror>()(
+  "DeleteQueryPatternsReportInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -68,9 +80,5 @@ export class DeleteQueryPatternsReportNotfound extends Schema.TaggedError<Delete
 export const deleteQueryPatternsReport = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteQueryPatternsReportInput,
   outputSchema: DeleteQueryPatternsReportOutput,
-  errors: [
-    DeleteQueryPatternsReportUnauthorized,
-    DeleteQueryPatternsReportForbidden,
-    DeleteQueryPatternsReportNotfound,
-  ],
+  errors: [DeleteQueryPatternsReportUnauthorized, DeleteQueryPatternsReportForbidden, DeleteQueryPatternsReportNotfound, DeleteQueryPatternsReportInternalservererror],
 }));

@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const WorkflowRetryInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const WorkflowRetryInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/retry`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/retry`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type WorkflowRetryInput = typeof WorkflowRetryInput.Type;
@@ -19,27 +19,7 @@ export const WorkflowRetryOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal(
-    "pending",
-    "copying",
-    "running",
-    "stopped",
-    "verifying_data",
-    "verified_data",
-    "switching_replicas",
-    "switched_replicas",
-    "switching_primaries",
-    "switched_primaries",
-    "reversing_traffic",
-    "reversing_traffic_for_cancel",
-    "cutting_over",
-    "cutover",
-    "reversed_cutover",
-    "completed",
-    "cancelling",
-    "cancelled",
-    "error",
-  ),
+  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,
@@ -154,7 +134,7 @@ export class WorkflowRetryUnauthorized extends Schema.TaggedError<WorkflowRetryU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class WorkflowRetryForbidden extends Schema.TaggedError<WorkflowRetryForbidden>()(
   "WorkflowRetryForbidden",
@@ -165,7 +145,7 @@ export class WorkflowRetryForbidden extends Schema.TaggedError<WorkflowRetryForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class WorkflowRetryNotfound extends Schema.TaggedError<WorkflowRetryNotfound>()(
   "WorkflowRetryNotfound",
@@ -176,7 +156,18 @@ export class WorkflowRetryNotfound extends Schema.TaggedError<WorkflowRetryNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class WorkflowRetryInternalservererror extends Schema.TaggedError<WorkflowRetryInternalservererror>()(
+  "WorkflowRetryInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    number: Schema.NumberFromString,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -189,5 +180,5 @@ export class WorkflowRetryNotfound extends Schema.TaggedError<WorkflowRetryNotfo
 export const workflowRetry = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowRetryInput,
   outputSchema: WorkflowRetryOutput,
-  errors: [WorkflowRetryUnauthorized, WorkflowRetryForbidden, WorkflowRetryNotfound],
+  errors: [WorkflowRetryUnauthorized, WorkflowRetryForbidden, WorkflowRetryNotfound, WorkflowRetryInternalservererror],
 }));

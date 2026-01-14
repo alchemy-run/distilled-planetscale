@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListReadOnlyRegionsInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const ListReadOnlyRegionsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/read-only-regions`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/read-only-regions`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type ListReadOnlyRegionsInput = typeof ListReadOnlyRegionsInput.Type;
@@ -22,31 +22,29 @@ export const ListReadOnlyRegionsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    display_name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    ready_at: Schema.String,
+    ready: Schema.Boolean,
+    actor: Schema.Struct({
       id: Schema.String,
       display_name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      ready_at: Schema.String,
-      ready: Schema.Boolean,
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
-      region: Schema.Struct({
-        id: Schema.String,
-        provider: Schema.String,
-        enabled: Schema.Boolean,
-        public_ip_addresses: Schema.Array(Schema.String),
-        display_name: Schema.String,
-        location: Schema.String,
-        slug: Schema.String,
-        current_default: Schema.Boolean,
-      }),
+      avatar_url: Schema.String,
     }),
-  ),
+    region: Schema.Struct({
+      id: Schema.String,
+      provider: Schema.String,
+      enabled: Schema.Boolean,
+      public_ip_addresses: Schema.Array(Schema.String),
+      display_name: Schema.String,
+      location: Schema.String,
+      slug: Schema.String,
+      current_default: Schema.Boolean,
+    }),
+  })),
 });
 export type ListReadOnlyRegionsOutput = typeof ListReadOnlyRegionsOutput.Type;
 
@@ -59,7 +57,7 @@ export class ListReadOnlyRegionsUnauthorized extends Schema.TaggedError<ListRead
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListReadOnlyRegionsForbidden extends Schema.TaggedError<ListReadOnlyRegionsForbidden>()(
   "ListReadOnlyRegionsForbidden",
@@ -69,7 +67,7 @@ export class ListReadOnlyRegionsForbidden extends Schema.TaggedError<ListReadOnl
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListReadOnlyRegionsNotfound extends Schema.TaggedError<ListReadOnlyRegionsNotfound>()(
   "ListReadOnlyRegionsNotfound",
@@ -79,7 +77,17 @@ export class ListReadOnlyRegionsNotfound extends Schema.TaggedError<ListReadOnly
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListReadOnlyRegionsInternalservererror extends Schema.TaggedError<ListReadOnlyRegionsInternalservererror>()(
+  "ListReadOnlyRegionsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -95,9 +103,5 @@ export class ListReadOnlyRegionsNotfound extends Schema.TaggedError<ListReadOnly
 export const listReadOnlyRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListReadOnlyRegionsInput,
   outputSchema: ListReadOnlyRegionsOutput,
-  errors: [
-    ListReadOnlyRegionsUnauthorized,
-    ListReadOnlyRegionsForbidden,
-    ListReadOnlyRegionsNotfound,
-  ],
+  errors: [ListReadOnlyRegionsUnauthorized, ListReadOnlyRegionsForbidden, ListReadOnlyRegionsNotfound, ListReadOnlyRegionsInternalservererror],
 }));

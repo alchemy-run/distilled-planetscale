@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ResetRoleInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const ResetRoleInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reset`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}/reset`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type ResetRoleInput = typeof ResetRoleInput.Type;
@@ -35,23 +35,7 @@ export const ResetRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(
-    Schema.Literal(
-      "pscale_managed",
-      "pg_checkpoint",
-      "pg_create_subscription",
-      "pg_maintain",
-      "pg_monitor",
-      "pg_read_all_data",
-      "pg_read_all_settings",
-      "pg_read_all_stats",
-      "pg_signal_backend",
-      "pg_stat_scan_tables",
-      "pg_use_reserved_connections",
-      "pg_write_all_data",
-      "postgres",
-    ),
-  ),
+  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,
@@ -78,7 +62,7 @@ export class ResetRoleUnauthorized extends Schema.TaggedError<ResetRoleUnauthori
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ResetRoleForbidden extends Schema.TaggedError<ResetRoleForbidden>()(
   "ResetRoleForbidden",
@@ -90,7 +74,7 @@ export class ResetRoleForbidden extends Schema.TaggedError<ResetRoleForbidden>()
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ResetRoleNotfound extends Schema.TaggedError<ResetRoleNotfound>()(
   "ResetRoleNotfound",
@@ -102,7 +86,19 @@ export class ResetRoleNotfound extends Schema.TaggedError<ResetRoleNotfound>()(
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ResetRoleInternalservererror extends Schema.TaggedError<ResetRoleInternalservererror>()(
+  "ResetRoleInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -116,5 +112,5 @@ export class ResetRoleNotfound extends Schema.TaggedError<ResetRoleNotfound>()(
 export const resetRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ResetRoleInput,
   outputSchema: ResetRoleOutput,
-  errors: [ResetRoleUnauthorized, ResetRoleForbidden, ResetRoleNotfound],
+  errors: [ResetRoleUnauthorized, ResetRoleForbidden, ResetRoleNotfound, ResetRoleInternalservererror],
 }));

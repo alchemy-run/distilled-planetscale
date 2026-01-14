@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateWorkflowInput = Schema.Struct({
@@ -14,8 +15,7 @@ export const CreateWorkflowInput = Schema.Struct({
   tables: Schema.Array(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/workflows`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateWorkflowInput = typeof CreateWorkflowInput.Type;
@@ -25,27 +25,7 @@ export const CreateWorkflowOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal(
-    "pending",
-    "copying",
-    "running",
-    "stopped",
-    "verifying_data",
-    "verified_data",
-    "switching_replicas",
-    "switched_replicas",
-    "switching_primaries",
-    "switched_primaries",
-    "reversing_traffic",
-    "reversing_traffic_for_cancel",
-    "cutting_over",
-    "cutover",
-    "reversed_cutover",
-    "completed",
-    "cancelling",
-    "cancelled",
-    "error",
-  ),
+  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,
@@ -159,7 +139,7 @@ export class CreateWorkflowUnauthorized extends Schema.TaggedError<CreateWorkflo
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateWorkflowForbidden extends Schema.TaggedError<CreateWorkflowForbidden>()(
   "CreateWorkflowForbidden",
@@ -169,7 +149,7 @@ export class CreateWorkflowForbidden extends Schema.TaggedError<CreateWorkflowFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateWorkflowNotfound extends Schema.TaggedError<CreateWorkflowNotfound>()(
   "CreateWorkflowNotfound",
@@ -179,7 +159,17 @@ export class CreateWorkflowNotfound extends Schema.TaggedError<CreateWorkflowNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateWorkflowInternalservererror extends Schema.TaggedError<CreateWorkflowInternalservererror>()(
+  "CreateWorkflowInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -198,5 +188,5 @@ export class CreateWorkflowNotfound extends Schema.TaggedError<CreateWorkflowNot
 export const createWorkflow = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateWorkflowInput,
   outputSchema: CreateWorkflowOutput,
-  errors: [CreateWorkflowUnauthorized, CreateWorkflowForbidden, CreateWorkflowNotfound],
+  errors: [CreateWorkflowUnauthorized, CreateWorkflowForbidden, CreateWorkflowNotfound, CreateWorkflowInternalservererror],
 }));

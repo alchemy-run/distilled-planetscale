@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetDatabaseThrottlerInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const GetDatabaseThrottlerInput = Schema.Struct({
   database: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/throttler`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/throttler`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type GetDatabaseThrottlerInput = typeof GetDatabaseThrottlerInput.Type;
@@ -23,12 +23,10 @@ export const GetDatabaseThrottlerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  configurations: Schema.Array(
-    Schema.Struct({
-      keyspace_name: Schema.String,
-      ratio: Schema.Number,
-    }),
-  ),
+  configurations: Schema.Array(Schema.Struct({
+    keyspace_name: Schema.String,
+    ratio: Schema.Number,
+  })),
 });
 export type GetDatabaseThrottlerOutput = typeof GetDatabaseThrottlerOutput.Type;
 
@@ -41,7 +39,7 @@ export class GetDatabaseThrottlerUnauthorized extends Schema.TaggedError<GetData
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetDatabaseThrottlerForbidden extends Schema.TaggedError<GetDatabaseThrottlerForbidden>()(
   "GetDatabaseThrottlerForbidden",
@@ -51,7 +49,7 @@ export class GetDatabaseThrottlerForbidden extends Schema.TaggedError<GetDatabas
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetDatabaseThrottlerNotfound extends Schema.TaggedError<GetDatabaseThrottlerNotfound>()(
   "GetDatabaseThrottlerNotfound",
@@ -61,7 +59,17 @@ export class GetDatabaseThrottlerNotfound extends Schema.TaggedError<GetDatabase
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetDatabaseThrottlerInternalservererror extends Schema.TaggedError<GetDatabaseThrottlerInternalservererror>()(
+  "GetDatabaseThrottlerInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -73,9 +81,5 @@ export class GetDatabaseThrottlerNotfound extends Schema.TaggedError<GetDatabase
 export const getDatabaseThrottler = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDatabaseThrottlerInput,
   outputSchema: GetDatabaseThrottlerOutput,
-  errors: [
-    GetDatabaseThrottlerUnauthorized,
-    GetDatabaseThrottlerForbidden,
-    GetDatabaseThrottlerNotfound,
-  ],
+  errors: [GetDatabaseThrottlerUnauthorized, GetDatabaseThrottlerForbidden, GetDatabaseThrottlerNotfound, GetDatabaseThrottlerInternalservererror],
 }));

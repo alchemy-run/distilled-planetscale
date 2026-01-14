@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetKeyspaceVschemaInput = Schema.Struct({
@@ -9,13 +10,7 @@ export const GetKeyspaceVschemaInput = Schema.Struct({
   keyspace: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: {
-    organization: string;
-    database: string;
-    branch: string;
-    keyspace: string;
-  }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; keyspace: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/keyspaces/${input.keyspace}/vschema`,
   [ApiPathParams]: ["organization", "database", "branch", "keyspace"] as const,
 });
 export type GetKeyspaceVschemaInput = typeof GetKeyspaceVschemaInput.Type;
@@ -37,7 +32,7 @@ export class GetKeyspaceVschemaUnauthorized extends Schema.TaggedError<GetKeyspa
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetKeyspaceVschemaForbidden extends Schema.TaggedError<GetKeyspaceVschemaForbidden>()(
   "GetKeyspaceVschemaForbidden",
@@ -49,7 +44,7 @@ export class GetKeyspaceVschemaForbidden extends Schema.TaggedError<GetKeyspaceV
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetKeyspaceVschemaNotfound extends Schema.TaggedError<GetKeyspaceVschemaNotfound>()(
   "GetKeyspaceVschemaNotfound",
@@ -61,7 +56,19 @@ export class GetKeyspaceVschemaNotfound extends Schema.TaggedError<GetKeyspaceVs
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetKeyspaceVschemaInternalservererror extends Schema.TaggedError<GetKeyspaceVschemaInternalservererror>()(
+  "GetKeyspaceVschemaInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    keyspace: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -75,5 +82,5 @@ export class GetKeyspaceVschemaNotfound extends Schema.TaggedError<GetKeyspaceVs
 export const getKeyspaceVschema = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetKeyspaceVschemaInput,
   outputSchema: GetKeyspaceVschemaOutput,
-  errors: [GetKeyspaceVschemaUnauthorized, GetKeyspaceVschemaForbidden, GetKeyspaceVschemaNotfound],
+  errors: [GetKeyspaceVschemaUnauthorized, GetKeyspaceVschemaForbidden, GetKeyspaceVschemaNotfound, GetKeyspaceVschemaInternalservererror],
 }));

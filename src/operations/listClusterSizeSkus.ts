@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListClusterSizeSkusInput = Schema.Struct({
@@ -9,33 +10,30 @@ export const ListClusterSizeSkusInput = Schema.Struct({
   region: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string }) =>
-    `/organizations/${input.organization}/cluster-size-skus`,
+  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/cluster-size-skus`,
   [ApiPathParams]: ["organization"] as const,
 });
 export type ListClusterSizeSkusInput = typeof ListClusterSizeSkusInput.Type;
 
 // Output Schema
-export const ListClusterSizeSkusOutput = Schema.Array(
-  Schema.Struct({
-    name: Schema.String,
-    display_name: Schema.String,
-    cpu: Schema.String,
-    storage: Schema.optional(Schema.NullOr(Schema.Number)),
-    ram: Schema.Number,
-    metal: Schema.Boolean,
-    enabled: Schema.Boolean,
-    provider: Schema.optional(Schema.NullOr(Schema.String)),
-    default_vtgate: Schema.String,
-    default_vtgate_rate: Schema.optional(Schema.NullOr(Schema.Number)),
-    replica_rate: Schema.optional(Schema.NullOr(Schema.Number)),
-    rate: Schema.optional(Schema.NullOr(Schema.Number)),
-    sort_order: Schema.Number,
-    architecture: Schema.optional(Schema.NullOr(Schema.String)),
-    development: Schema.Boolean,
-    production: Schema.Boolean,
-  }),
-);
+export const ListClusterSizeSkusOutput = Schema.Array(Schema.Struct({
+  name: Schema.String,
+  display_name: Schema.String,
+  cpu: Schema.String,
+  storage: Schema.optional(Schema.NullOr(Schema.Number)),
+  ram: Schema.Number,
+  metal: Schema.Boolean,
+  enabled: Schema.Boolean,
+  provider: Schema.optional(Schema.NullOr(Schema.String)),
+  default_vtgate: Schema.String,
+  default_vtgate_rate: Schema.optional(Schema.NullOr(Schema.Number)),
+  replica_rate: Schema.optional(Schema.NullOr(Schema.Number)),
+  rate: Schema.optional(Schema.NullOr(Schema.Number)),
+  sort_order: Schema.Number,
+  architecture: Schema.optional(Schema.NullOr(Schema.String)),
+  development: Schema.Boolean,
+  production: Schema.Boolean,
+}));
 export type ListClusterSizeSkusOutput = typeof ListClusterSizeSkusOutput.Type;
 
 // Error Schemas
@@ -46,7 +44,7 @@ export class ListClusterSizeSkusUnauthorized extends Schema.TaggedError<ListClus
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListClusterSizeSkusForbidden extends Schema.TaggedError<ListClusterSizeSkusForbidden>()(
   "ListClusterSizeSkusForbidden",
@@ -55,7 +53,7 @@ export class ListClusterSizeSkusForbidden extends Schema.TaggedError<ListCluster
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListClusterSizeSkusNotfound extends Schema.TaggedError<ListClusterSizeSkusNotfound>()(
   "ListClusterSizeSkusNotfound",
@@ -64,7 +62,16 @@ export class ListClusterSizeSkusNotfound extends Schema.TaggedError<ListClusterS
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListClusterSizeSkusInternalservererror extends Schema.TaggedError<ListClusterSizeSkusInternalservererror>()(
+  "ListClusterSizeSkusInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -80,9 +87,5 @@ export class ListClusterSizeSkusNotfound extends Schema.TaggedError<ListClusterS
 export const listClusterSizeSkus = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListClusterSizeSkusInput,
   outputSchema: ListClusterSizeSkusOutput,
-  errors: [
-    ListClusterSizeSkusUnauthorized,
-    ListClusterSizeSkusForbidden,
-    ListClusterSizeSkusNotfound,
-  ],
+  errors: [ListClusterSizeSkusUnauthorized, ListClusterSizeSkusForbidden, ListClusterSizeSkusNotfound, ListClusterSizeSkusInternalservererror],
 }));

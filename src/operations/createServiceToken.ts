@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateServiceTokenInput = Schema.Struct({
@@ -7,8 +8,7 @@ export const CreateServiceTokenInput = Schema.Struct({
   name: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string }) =>
-    `/organizations/${input.organization}/service-tokens`,
+  [ApiPath]: (input: { organization: string }) => `/organizations/${input.organization}/service-tokens`,
   [ApiPathParams]: ["organization"] as const,
 });
 export type CreateServiceTokenInput = typeof CreateServiceTokenInput.Type;
@@ -28,85 +28,67 @@ export const CreateServiceTokenOutput = Schema.Struct({
   actor_id: Schema.String,
   actor_display_name: Schema.String,
   actor_type: Schema.String,
-  service_token_accesses: Schema.Array(
-    Schema.Struct({
+  service_token_accesses: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    access: Schema.String,
+    description: Schema.String,
+    resource_name: Schema.String,
+    resource_id: Schema.String,
+    resource_type: Schema.String,
+    resource: Schema.Struct({
       id: Schema.String,
-      access: Schema.String,
-      description: Schema.String,
-      resource_name: Schema.String,
-      resource_id: Schema.String,
-      resource_type: Schema.String,
-      resource: Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        deleted_at: Schema.String,
-      }),
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
     }),
-  ),
+  })),
   oauth_accesses_by_resource: Schema.Struct({
     database: Schema.Struct({
-      databases: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-          organization: Schema.String,
-          url: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      databases: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        organization: Schema.String,
+        url: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
     organization: Schema.Struct({
-      organizations: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-          url: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      organizations: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        url: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
     branch: Schema.Struct({
-      branches: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-          database: Schema.String,
-          organization: Schema.String,
-          url: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      branches: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        database: Schema.String,
+        organization: Schema.String,
+        url: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
     user: Schema.Struct({
-      users: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          id: Schema.String,
-        }),
-      ),
-      accesses: Schema.Array(
-        Schema.Struct({
-          name: Schema.String,
-          description: Schema.String,
-        }),
-      ),
+      users: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+      })),
+      accesses: Schema.Array(Schema.Struct({
+        name: Schema.String,
+        description: Schema.String,
+      })),
     }),
   }),
 });
@@ -120,7 +102,7 @@ export class CreateServiceTokenUnauthorized extends Schema.TaggedError<CreateSer
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateServiceTokenForbidden extends Schema.TaggedError<CreateServiceTokenForbidden>()(
   "CreateServiceTokenForbidden",
@@ -129,7 +111,7 @@ export class CreateServiceTokenForbidden extends Schema.TaggedError<CreateServic
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateServiceTokenNotfound extends Schema.TaggedError<CreateServiceTokenNotfound>()(
   "CreateServiceTokenNotfound",
@@ -138,7 +120,16 @@ export class CreateServiceTokenNotfound extends Schema.TaggedError<CreateService
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateServiceTokenInternalservererror extends Schema.TaggedError<CreateServiceTokenInternalservererror>()(
+  "CreateServiceTokenInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -152,5 +143,5 @@ export class CreateServiceTokenNotfound extends Schema.TaggedError<CreateService
 export const createServiceToken = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateServiceTokenInput,
   outputSchema: CreateServiceTokenOutput,
-  errors: [CreateServiceTokenUnauthorized, CreateServiceTokenForbidden, CreateServiceTokenNotfound],
+  errors: [CreateServiceTokenUnauthorized, CreateServiceTokenForbidden, CreateServiceTokenNotfound, CreateServiceTokenInternalservererror],
 }));

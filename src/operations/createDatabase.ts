@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateDatabaseInput = Schema.Struct({
@@ -31,21 +32,17 @@ export const CreateDatabaseOutput = Schema.Struct({
   ready: Schema.Boolean,
   at_backup_restore_branches_limit: Schema.optional(Schema.Boolean),
   at_development_branch_usage_limit: Schema.optional(Schema.Boolean),
-  data_import: Schema.optional(
-    Schema.NullOr(
-      Schema.Struct({
-        state: Schema.String,
-        import_check_errors: Schema.String,
-        started_at: Schema.String,
-        finished_at: Schema.String,
-        data_source: Schema.Struct({
-          hostname: Schema.String,
-          port: Schema.Number,
-          database: Schema.String,
-        }),
-      }),
-    ),
-  ),
+  data_import: Schema.optional(Schema.NullOr(Schema.Struct({
+    state: Schema.String,
+    import_check_errors: Schema.String,
+    started_at: Schema.String,
+    finished_at: Schema.String,
+    data_source: Schema.Struct({
+      hostname: Schema.String,
+      port: Schema.Number,
+      database: Schema.String,
+    }),
+  }))),
   region: Schema.Struct({
     id: Schema.String,
     provider: Schema.String,
@@ -58,15 +55,7 @@ export const CreateDatabaseOutput = Schema.Struct({
   }),
   html_url: Schema.String,
   name: Schema.String,
-  state: Schema.Literal(
-    "pending",
-    "importing",
-    "sleep_in_progress",
-    "sleeping",
-    "awakening",
-    "import_ready",
-    "ready",
-  ),
+  state: Schema.Literal("pending", "importing", "sleep_in_progress", "sleeping", "awakening", "import_ready", "ready"),
   sharded: Schema.optional(Schema.Boolean),
   default_branch_shard_count: Schema.optional(Schema.Number),
   default_branch_read_only_regions_count: Schema.optional(Schema.Number),
@@ -100,7 +89,7 @@ export class CreateDatabaseUnauthorized extends Schema.TaggedError<CreateDatabas
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateDatabaseForbidden extends Schema.TaggedError<CreateDatabaseForbidden>()(
   "CreateDatabaseForbidden",
@@ -109,7 +98,7 @@ export class CreateDatabaseForbidden extends Schema.TaggedError<CreateDatabaseFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateDatabaseNotfound extends Schema.TaggedError<CreateDatabaseNotfound>()(
   "CreateDatabaseNotfound",
@@ -118,7 +107,16 @@ export class CreateDatabaseNotfound extends Schema.TaggedError<CreateDatabaseNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateDatabaseInternalservererror extends Schema.TaggedError<CreateDatabaseInternalservererror>()(
+  "CreateDatabaseInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -135,5 +133,5 @@ export class CreateDatabaseNotfound extends Schema.TaggedError<CreateDatabaseNot
 export const createDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateDatabaseInput,
   outputSchema: CreateDatabaseOutput,
-  errors: [CreateDatabaseUnauthorized, CreateDatabaseForbidden, CreateDatabaseNotfound],
+  errors: [CreateDatabaseUnauthorized, CreateDatabaseForbidden, CreateDatabaseNotfound, CreateDatabaseInternalservererror],
 }));

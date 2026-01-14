@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const DeleteRoleInput = Schema.Struct({
@@ -10,8 +11,7 @@ export const DeleteRoleInput = Schema.Struct({
   successor: Schema.optional(Schema.String),
 }).annotations({
   [ApiMethod]: "DELETE",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type DeleteRoleInput = typeof DeleteRoleInput.Type;
@@ -31,7 +31,7 @@ export class DeleteRoleUnauthorized extends Schema.TaggedError<DeleteRoleUnautho
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteRoleForbidden extends Schema.TaggedError<DeleteRoleForbidden>()(
   "DeleteRoleForbidden",
@@ -43,7 +43,7 @@ export class DeleteRoleForbidden extends Schema.TaggedError<DeleteRoleForbidden>
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class DeleteRoleNotfound extends Schema.TaggedError<DeleteRoleNotfound>()(
   "DeleteRoleNotfound",
@@ -55,7 +55,19 @@ export class DeleteRoleNotfound extends Schema.TaggedError<DeleteRoleNotfound>()
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class DeleteRoleInternalservererror extends Schema.TaggedError<DeleteRoleInternalservererror>()(
+  "DeleteRoleInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -70,5 +82,5 @@ export class DeleteRoleNotfound extends Schema.TaggedError<DeleteRoleNotfound>()
 export const deleteRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: DeleteRoleInput,
   outputSchema: DeleteRoleOutput,
-  errors: [DeleteRoleUnauthorized, DeleteRoleForbidden, DeleteRoleNotfound],
+  errors: [DeleteRoleUnauthorized, DeleteRoleForbidden, DeleteRoleNotfound, DeleteRoleInternalservererror],
 }));

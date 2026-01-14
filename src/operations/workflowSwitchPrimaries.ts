@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const WorkflowSwitchPrimariesInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const WorkflowSwitchPrimariesInput = Schema.Struct({
   number: Schema.Number,
 }).annotations({
   [ApiMethod]: "PATCH",
-  [ApiPath]: (input: { organization: string; database: string; number: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/switch-primaries`,
+  [ApiPath]: (input: { organization: string; database: string; number: string }) => `/organizations/${input.organization}/databases/${input.database}/workflows/${input.number}/switch-primaries`,
   [ApiPathParams]: ["organization", "database", "number"] as const,
 });
 export type WorkflowSwitchPrimariesInput = typeof WorkflowSwitchPrimariesInput.Type;
@@ -19,27 +19,7 @@ export const WorkflowSwitchPrimariesOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal(
-    "pending",
-    "copying",
-    "running",
-    "stopped",
-    "verifying_data",
-    "verified_data",
-    "switching_replicas",
-    "switched_replicas",
-    "switching_primaries",
-    "switched_primaries",
-    "reversing_traffic",
-    "reversing_traffic_for_cancel",
-    "cutting_over",
-    "cutover",
-    "reversed_cutover",
-    "completed",
-    "cancelling",
-    "cancelled",
-    "error",
-  ),
+  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,
@@ -154,7 +134,7 @@ export class WorkflowSwitchPrimariesUnauthorized extends Schema.TaggedError<Work
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class WorkflowSwitchPrimariesForbidden extends Schema.TaggedError<WorkflowSwitchPrimariesForbidden>()(
   "WorkflowSwitchPrimariesForbidden",
@@ -165,7 +145,7 @@ export class WorkflowSwitchPrimariesForbidden extends Schema.TaggedError<Workflo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class WorkflowSwitchPrimariesNotfound extends Schema.TaggedError<WorkflowSwitchPrimariesNotfound>()(
   "WorkflowSwitchPrimariesNotfound",
@@ -176,7 +156,18 @@ export class WorkflowSwitchPrimariesNotfound extends Schema.TaggedError<Workflow
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class WorkflowSwitchPrimariesInternalservererror extends Schema.TaggedError<WorkflowSwitchPrimariesInternalservererror>()(
+  "WorkflowSwitchPrimariesInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    number: Schema.NumberFromString,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -189,9 +180,5 @@ export class WorkflowSwitchPrimariesNotfound extends Schema.TaggedError<Workflow
 export const workflowSwitchPrimaries = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: WorkflowSwitchPrimariesInput,
   outputSchema: WorkflowSwitchPrimariesOutput,
-  errors: [
-    WorkflowSwitchPrimariesUnauthorized,
-    WorkflowSwitchPrimariesForbidden,
-    WorkflowSwitchPrimariesNotfound,
-  ],
+  errors: [WorkflowSwitchPrimariesUnauthorized, WorkflowSwitchPrimariesForbidden, WorkflowSwitchPrimariesNotfound, WorkflowSwitchPrimariesInternalservererror],
 }));

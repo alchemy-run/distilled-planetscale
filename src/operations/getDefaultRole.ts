@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetDefaultRoleInput = Schema.Struct({
@@ -8,8 +9,7 @@ export const GetDefaultRoleInput = Schema.Struct({
   branch: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/default`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/roles/default`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type GetDefaultRoleInput = typeof GetDefaultRoleInput.Type;
@@ -34,23 +34,7 @@ export const GetDefaultRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(
-    Schema.Literal(
-      "pscale_managed",
-      "pg_checkpoint",
-      "pg_create_subscription",
-      "pg_maintain",
-      "pg_monitor",
-      "pg_read_all_data",
-      "pg_read_all_settings",
-      "pg_read_all_stats",
-      "pg_signal_backend",
-      "pg_stat_scan_tables",
-      "pg_use_reserved_connections",
-      "pg_write_all_data",
-      "postgres",
-    ),
-  ),
+  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,
@@ -76,7 +60,7 @@ export class GetDefaultRoleUnauthorized extends Schema.TaggedError<GetDefaultRol
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetDefaultRoleForbidden extends Schema.TaggedError<GetDefaultRoleForbidden>()(
   "GetDefaultRoleForbidden",
@@ -87,7 +71,7 @@ export class GetDefaultRoleForbidden extends Schema.TaggedError<GetDefaultRoleFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetDefaultRoleNotfound extends Schema.TaggedError<GetDefaultRoleNotfound>()(
   "GetDefaultRoleNotfound",
@@ -98,7 +82,18 @@ export class GetDefaultRoleNotfound extends Schema.TaggedError<GetDefaultRoleNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetDefaultRoleInternalservererror extends Schema.TaggedError<GetDefaultRoleInternalservererror>()(
+  "GetDefaultRoleInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -111,5 +106,5 @@ export class GetDefaultRoleNotfound extends Schema.TaggedError<GetDefaultRoleNot
 export const getDefaultRole = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetDefaultRoleInput,
   outputSchema: GetDefaultRoleOutput,
-  errors: [GetDefaultRoleUnauthorized, GetDefaultRoleForbidden, GetDefaultRoleNotfound],
+  errors: [GetDefaultRoleUnauthorized, GetDefaultRoleForbidden, GetDefaultRoleNotfound, GetDefaultRoleInternalservererror],
 }));

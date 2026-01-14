@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreatePasswordInput = Schema.Struct({
@@ -14,8 +15,7 @@ export const CreatePasswordInput = Schema.Struct({
   direct_vtgate: Schema.optional(Schema.Boolean),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreatePasswordInput = typeof CreatePasswordInput.Type;
@@ -76,7 +76,7 @@ export class CreatePasswordUnauthorized extends Schema.TaggedError<CreatePasswor
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreatePasswordForbidden extends Schema.TaggedError<CreatePasswordForbidden>()(
   "CreatePasswordForbidden",
@@ -87,7 +87,7 @@ export class CreatePasswordForbidden extends Schema.TaggedError<CreatePasswordFo
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreatePasswordNotfound extends Schema.TaggedError<CreatePasswordNotfound>()(
   "CreatePasswordNotfound",
@@ -98,7 +98,7 @@ export class CreatePasswordNotfound extends Schema.TaggedError<CreatePasswordNot
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 export class CreatePasswordUnprocessableentity extends Schema.TaggedError<CreatePasswordUnprocessableentity>()(
   "CreatePasswordUnprocessableentity",
@@ -109,7 +109,18 @@ export class CreatePasswordUnprocessableentity extends Schema.TaggedError<Create
     message: Schema.String,
   },
   { [ApiErrorCode]: "unprocessable_entity" },
-) {}
+).pipe(Category.withBadRequestError) {}
+
+export class CreatePasswordInternalservererror extends Schema.TaggedError<CreatePasswordInternalservererror>()(
+  "CreatePasswordInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -128,10 +139,5 @@ export class CreatePasswordUnprocessableentity extends Schema.TaggedError<Create
 export const createPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreatePasswordInput,
   outputSchema: CreatePasswordOutput,
-  errors: [
-    CreatePasswordUnauthorized,
-    CreatePasswordForbidden,
-    CreatePasswordNotfound,
-    CreatePasswordUnprocessableentity,
-  ],
+  errors: [CreatePasswordUnauthorized, CreatePasswordForbidden, CreatePasswordNotfound, CreatePasswordUnprocessableentity, CreatePasswordInternalservererror],
 }));

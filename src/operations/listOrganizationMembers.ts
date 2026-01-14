@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListOrganizationMembersInput = Schema.Struct({
@@ -21,37 +22,33 @@ export const ListOrganizationMembersOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    user: Schema.Struct({
       id: Schema.String,
-      user: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        name: Schema.optional(Schema.NullOr(Schema.String)),
-        email: Schema.String,
-        avatar_url: Schema.String,
-        created_at: Schema.String,
-        updated_at: Schema.String,
-        two_factor_auth_configured: Schema.Boolean,
-        default_organization: Schema.optional(
-          Schema.Struct({
-            id: Schema.String,
-            name: Schema.String,
-            created_at: Schema.String,
-            updated_at: Schema.String,
-            deleted_at: Schema.String,
-          }),
-        ),
-        sso: Schema.optional(Schema.Boolean),
-        managed: Schema.optional(Schema.Boolean),
-        directory_managed: Schema.optional(Schema.Boolean),
-        email_verified: Schema.optional(Schema.Boolean),
-      }),
-      role: Schema.Literal("member", "admin"),
+      display_name: Schema.String,
+      name: Schema.optional(Schema.NullOr(Schema.String)),
+      email: Schema.String,
+      avatar_url: Schema.String,
       created_at: Schema.String,
       updated_at: Schema.String,
+      two_factor_auth_configured: Schema.Boolean,
+      default_organization: Schema.optional(Schema.Struct({
+        id: Schema.String,
+        name: Schema.String,
+        created_at: Schema.String,
+        updated_at: Schema.String,
+        deleted_at: Schema.String,
+      })),
+      sso: Schema.optional(Schema.Boolean),
+      managed: Schema.optional(Schema.Boolean),
+      directory_managed: Schema.optional(Schema.Boolean),
+      email_verified: Schema.optional(Schema.Boolean),
     }),
-  ),
+    role: Schema.Literal("member", "admin"),
+    created_at: Schema.String,
+    updated_at: Schema.String,
+  })),
 });
 export type ListOrganizationMembersOutput = typeof ListOrganizationMembersOutput.Type;
 
@@ -63,7 +60,7 @@ export class ListOrganizationMembersUnauthorized extends Schema.TaggedError<List
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListOrganizationMembersForbidden extends Schema.TaggedError<ListOrganizationMembersForbidden>()(
   "ListOrganizationMembersForbidden",
@@ -72,7 +69,7 @@ export class ListOrganizationMembersForbidden extends Schema.TaggedError<ListOrg
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListOrganizationMembersNotfound extends Schema.TaggedError<ListOrganizationMembersNotfound>()(
   "ListOrganizationMembersNotfound",
@@ -81,7 +78,16 @@ export class ListOrganizationMembersNotfound extends Schema.TaggedError<ListOrga
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListOrganizationMembersInternalservererror extends Schema.TaggedError<ListOrganizationMembersInternalservererror>()(
+  "ListOrganizationMembersInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -95,9 +101,5 @@ export class ListOrganizationMembersNotfound extends Schema.TaggedError<ListOrga
 export const listOrganizationMembers = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListOrganizationMembersInput,
   outputSchema: ListOrganizationMembersOutput,
-  errors: [
-    ListOrganizationMembersUnauthorized,
-    ListOrganizationMembersForbidden,
-    ListOrganizationMembersNotfound,
-  ],
+  errors: [ListOrganizationMembersUnauthorized, ListOrganizationMembersForbidden, ListOrganizationMembersNotfound, ListOrganizationMembersInternalservererror],
 }));

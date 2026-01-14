@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateBackupInput = Schema.Struct({
@@ -12,8 +13,7 @@ export const CreateBackupInput = Schema.Struct({
   emergency: Schema.optional(Schema.Boolean),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/backups`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateBackupInput = typeof CreateBackupInput.Type;
@@ -34,15 +34,13 @@ export const CreateBackupOutput = Schema.Struct({
   pvc_size: Schema.Number,
   protected: Schema.Boolean,
   required: Schema.Boolean,
-  restored_branches: Schema.Array(
-    Schema.Struct({
-      id: Schema.String,
-      name: Schema.String,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
-    }),
-  ),
+  restored_branches: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    name: Schema.String,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+  })),
   actor: Schema.Struct({
     id: Schema.String,
     display_name: Schema.String,
@@ -93,7 +91,7 @@ export class CreateBackupUnauthorized extends Schema.TaggedError<CreateBackupUna
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateBackupForbidden extends Schema.TaggedError<CreateBackupForbidden>()(
   "CreateBackupForbidden",
@@ -104,7 +102,7 @@ export class CreateBackupForbidden extends Schema.TaggedError<CreateBackupForbid
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateBackupNotfound extends Schema.TaggedError<CreateBackupNotfound>()(
   "CreateBackupNotfound",
@@ -115,7 +113,18 @@ export class CreateBackupNotfound extends Schema.TaggedError<CreateBackupNotfoun
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateBackupInternalservererror extends Schema.TaggedError<CreateBackupInternalservererror>()(
+  "CreateBackupInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -132,5 +141,5 @@ export class CreateBackupNotfound extends Schema.TaggedError<CreateBackupNotfoun
 export const createBackup = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateBackupInput,
   outputSchema: CreateBackupOutput,
-  errors: [CreateBackupUnauthorized, CreateBackupForbidden, CreateBackupNotfound],
+  errors: [CreateBackupUnauthorized, CreateBackupForbidden, CreateBackupNotfound, CreateBackupInternalservererror],
 }));

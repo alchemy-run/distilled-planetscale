@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListDatabasePostgresCidrsInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const ListDatabasePostgresCidrsInput = Schema.Struct({
   per_page: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/cidrs`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/cidrs`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type ListDatabasePostgresCidrsInput = typeof ListDatabasePostgresCidrsInput.Type;
@@ -22,22 +22,20 @@ export const ListDatabasePostgresCidrsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    schema: Schema.String,
+    role: Schema.String,
+    cidrs: Schema.Array(Schema.String),
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    deleted_at: Schema.String,
+    actor: Schema.Struct({
       id: Schema.String,
-      schema: Schema.String,
-      role: Schema.String,
-      cidrs: Schema.Array(Schema.String),
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      deleted_at: Schema.String,
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
+      display_name: Schema.String,
+      avatar_url: Schema.String,
     }),
-  ),
+  })),
 });
 export type ListDatabasePostgresCidrsOutput = typeof ListDatabasePostgresCidrsOutput.Type;
 
@@ -50,7 +48,7 @@ export class ListDatabasePostgresCidrsUnauthorized extends Schema.TaggedError<Li
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListDatabasePostgresCidrsForbidden extends Schema.TaggedError<ListDatabasePostgresCidrsForbidden>()(
   "ListDatabasePostgresCidrsForbidden",
@@ -60,7 +58,7 @@ export class ListDatabasePostgresCidrsForbidden extends Schema.TaggedError<ListD
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListDatabasePostgresCidrsNotfound extends Schema.TaggedError<ListDatabasePostgresCidrsNotfound>()(
   "ListDatabasePostgresCidrsNotfound",
@@ -70,7 +68,7 @@ export class ListDatabasePostgresCidrsNotfound extends Schema.TaggedError<ListDa
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
 
 export class ListDatabasePostgresCidrsUnprocessableentity extends Schema.TaggedError<ListDatabasePostgresCidrsUnprocessableentity>()(
   "ListDatabasePostgresCidrsUnprocessableentity",
@@ -80,7 +78,17 @@ export class ListDatabasePostgresCidrsUnprocessableentity extends Schema.TaggedE
     message: Schema.String,
   },
   { [ApiErrorCode]: "unprocessable_entity" },
-) {}
+).pipe(Category.withBadRequestError) {}
+
+export class ListDatabasePostgresCidrsInternalservererror extends Schema.TaggedError<ListDatabasePostgresCidrsInternalservererror>()(
+  "ListDatabasePostgresCidrsInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -94,10 +102,5 @@ export class ListDatabasePostgresCidrsUnprocessableentity extends Schema.TaggedE
 export const listDatabasePostgresCidrs = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListDatabasePostgresCidrsInput,
   outputSchema: ListDatabasePostgresCidrsOutput,
-  errors: [
-    ListDatabasePostgresCidrsUnauthorized,
-    ListDatabasePostgresCidrsForbidden,
-    ListDatabasePostgresCidrsNotfound,
-    ListDatabasePostgresCidrsUnprocessableentity,
-  ],
+  errors: [ListDatabasePostgresCidrsUnauthorized, ListDatabasePostgresCidrsForbidden, ListDatabasePostgresCidrsNotfound, ListDatabasePostgresCidrsUnprocessableentity, ListDatabasePostgresCidrsInternalservererror],
 }));

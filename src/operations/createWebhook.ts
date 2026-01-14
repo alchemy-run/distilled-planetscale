@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateWebhookInput = Schema.Struct({
@@ -10,8 +11,7 @@ export const CreateWebhookInput = Schema.Struct({
   events: Schema.optional(Schema.Array(Schema.String)),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/webhooks`,
+  [ApiPath]: (input: { organization: string; database: string }) => `/organizations/${input.organization}/databases/${input.database}/webhooks`,
   [ApiPathParams]: ["organization", "database"] as const,
 });
 export type CreateWebhookInput = typeof CreateWebhookInput.Type;
@@ -27,28 +27,7 @@ export const CreateWebhookOutput = Schema.Struct({
   last_sent_at: Schema.NullOr(Schema.String),
   created_at: Schema.String,
   updated_at: Schema.String,
-  events: Schema.Array(
-    Schema.Literal(
-      "branch.ready",
-      "branch.anomaly",
-      "branch.primary_promoted",
-      "branch.schema_recommendation",
-      "branch.sleeping",
-      "branch.start_maintenance",
-      "cluster.storage",
-      "database.access_request",
-      "deploy_request.closed",
-      "deploy_request.errored",
-      "deploy_request.in_progress",
-      "deploy_request.opened",
-      "deploy_request.pending_cutover",
-      "deploy_request.queued",
-      "deploy_request.reverted",
-      "deploy_request.schema_applied",
-      "keyspace.storage",
-      "webhook.test",
-    ),
-  ),
+  events: Schema.Array(Schema.Literal("branch.ready", "branch.anomaly", "branch.primary_promoted", "branch.schema_recommendation", "branch.sleeping", "branch.start_maintenance", "cluster.storage", "database.access_request", "deploy_request.closed", "deploy_request.errored", "deploy_request.in_progress", "deploy_request.opened", "deploy_request.pending_cutover", "deploy_request.queued", "deploy_request.reverted", "deploy_request.schema_applied", "keyspace.storage", "webhook.test")),
 });
 export type CreateWebhookOutput = typeof CreateWebhookOutput.Type;
 
@@ -61,7 +40,7 @@ export class CreateWebhookUnauthorized extends Schema.TaggedError<CreateWebhookU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateWebhookForbidden extends Schema.TaggedError<CreateWebhookForbidden>()(
   "CreateWebhookForbidden",
@@ -71,7 +50,7 @@ export class CreateWebhookForbidden extends Schema.TaggedError<CreateWebhookForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateWebhookNotfound extends Schema.TaggedError<CreateWebhookNotfound>()(
   "CreateWebhookNotfound",
@@ -81,7 +60,17 @@ export class CreateWebhookNotfound extends Schema.TaggedError<CreateWebhookNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateWebhookInternalservererror extends Schema.TaggedError<CreateWebhookInternalservererror>()(
+  "CreateWebhookInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -96,5 +85,5 @@ export class CreateWebhookNotfound extends Schema.TaggedError<CreateWebhookNotfo
 export const createWebhook = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateWebhookInput,
   outputSchema: CreateWebhookOutput,
-  errors: [CreateWebhookUnauthorized, CreateWebhookForbidden, CreateWebhookNotfound],
+  errors: [CreateWebhookUnauthorized, CreateWebhookForbidden, CreateWebhookNotfound, CreateWebhookInternalservererror],
 }));

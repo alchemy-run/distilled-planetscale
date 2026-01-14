@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const CreateBouncerInput = Schema.Struct({
@@ -12,8 +13,7 @@ export const CreateBouncerInput = Schema.Struct({
   replicas_per_cell: Schema.optional(Schema.Number),
 }).annotations({
   [ApiMethod]: "POST",
-  [ApiPath]: (input: { organization: string; database: string; branch: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/bouncers`,
   [ApiPathParams]: ["organization", "database", "branch"] as const,
 });
 export type CreateBouncerInput = typeof CreateBouncerInput.Type;
@@ -46,44 +46,31 @@ export const CreateBouncerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  parameters: Schema.Array(
-    Schema.Struct({
+  parameters: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    namespace: Schema.Literal("pgbouncer"),
+    name: Schema.String,
+    display_name: Schema.String,
+    category: Schema.String,
+    description: Schema.String,
+    parameter_type: Schema.Literal("array", "boolean", "bytes", "float", "integer", "internal", "seconds", "select", "string", "time"),
+    default_value: Schema.String,
+    value: Schema.String,
+    required: Schema.Boolean,
+    created_at: Schema.String,
+    updated_at: Schema.String,
+    restart: Schema.Boolean,
+    max: Schema.Number,
+    min: Schema.Number,
+    step: Schema.Number,
+    url: Schema.String,
+    options: Schema.Array(Schema.String),
+    actor: Schema.Struct({
       id: Schema.String,
-      namespace: Schema.Literal("pgbouncer"),
-      name: Schema.String,
       display_name: Schema.String,
-      category: Schema.String,
-      description: Schema.String,
-      parameter_type: Schema.Literal(
-        "array",
-        "boolean",
-        "bytes",
-        "float",
-        "integer",
-        "internal",
-        "seconds",
-        "select",
-        "string",
-        "time",
-      ),
-      default_value: Schema.String,
-      value: Schema.String,
-      required: Schema.Boolean,
-      created_at: Schema.String,
-      updated_at: Schema.String,
-      restart: Schema.Boolean,
-      max: Schema.Number,
-      min: Schema.Number,
-      step: Schema.Number,
-      url: Schema.String,
-      options: Schema.Array(Schema.String),
-      actor: Schema.Struct({
-        id: Schema.String,
-        display_name: Schema.String,
-        avatar_url: Schema.String,
-      }),
+      avatar_url: Schema.String,
     }),
-  ),
+  })),
 });
 export type CreateBouncerOutput = typeof CreateBouncerOutput.Type;
 
@@ -97,7 +84,7 @@ export class CreateBouncerUnauthorized extends Schema.TaggedError<CreateBouncerU
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateBouncerForbidden extends Schema.TaggedError<CreateBouncerForbidden>()(
   "CreateBouncerForbidden",
@@ -108,7 +95,7 @@ export class CreateBouncerForbidden extends Schema.TaggedError<CreateBouncerForb
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class CreateBouncerNotfound extends Schema.TaggedError<CreateBouncerNotfound>()(
   "CreateBouncerNotfound",
@@ -119,7 +106,18 @@ export class CreateBouncerNotfound extends Schema.TaggedError<CreateBouncerNotfo
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class CreateBouncerInternalservererror extends Schema.TaggedError<CreateBouncerInternalservererror>()(
+  "CreateBouncerInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -136,5 +134,5 @@ export class CreateBouncerNotfound extends Schema.TaggedError<CreateBouncerNotfo
 export const createBouncer = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: CreateBouncerInput,
   outputSchema: CreateBouncerOutput,
-  errors: [CreateBouncerUnauthorized, CreateBouncerForbidden, CreateBouncerNotfound],
+  errors: [CreateBouncerUnauthorized, CreateBouncerForbidden, CreateBouncerNotfound, CreateBouncerInternalservererror],
 }));

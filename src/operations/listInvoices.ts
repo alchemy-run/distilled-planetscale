@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListInvoicesInput = Schema.Struct({
@@ -20,14 +21,12 @@ export const ListInvoicesOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
-      id: Schema.String,
-      total: Schema.String,
-      billing_period_start: Schema.String,
-      billing_period_end: Schema.String,
-    }),
-  ),
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    total: Schema.String,
+    billing_period_start: Schema.String,
+    billing_period_end: Schema.String,
+  })),
 });
 export type ListInvoicesOutput = typeof ListInvoicesOutput.Type;
 
@@ -39,7 +38,7 @@ export class ListInvoicesUnauthorized extends Schema.TaggedError<ListInvoicesUna
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListInvoicesForbidden extends Schema.TaggedError<ListInvoicesForbidden>()(
   "ListInvoicesForbidden",
@@ -48,7 +47,7 @@ export class ListInvoicesForbidden extends Schema.TaggedError<ListInvoicesForbid
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListInvoicesNotfound extends Schema.TaggedError<ListInvoicesNotfound>()(
   "ListInvoicesNotfound",
@@ -57,7 +56,16 @@ export class ListInvoicesNotfound extends Schema.TaggedError<ListInvoicesNotfoun
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListInvoicesInternalservererror extends Schema.TaggedError<ListInvoicesInternalservererror>()(
+  "ListInvoicesInternalservererror",
+  {
+    organization: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -72,5 +80,5 @@ export class ListInvoicesNotfound extends Schema.TaggedError<ListInvoicesNotfoun
 export const listInvoices = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListInvoicesInput,
   outputSchema: ListInvoicesOutput,
-  errors: [ListInvoicesUnauthorized, ListInvoicesForbidden, ListInvoicesNotfound],
+  errors: [ListInvoicesUnauthorized, ListInvoicesForbidden, ListInvoicesNotfound, ListInvoicesInternalservererror],
 }));

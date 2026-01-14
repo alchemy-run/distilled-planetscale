@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const ListPublicRegionsInput = Schema.Struct({
@@ -19,17 +20,15 @@ export const ListPublicRegionsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(
-    Schema.Struct({
-      id: Schema.String,
-      provider: Schema.String,
-      enabled: Schema.Boolean,
-      public_ip_addresses: Schema.Array(Schema.String),
-      display_name: Schema.String,
-      location: Schema.String,
-      slug: Schema.String,
-    }),
-  ),
+  data: Schema.Array(Schema.Struct({
+    id: Schema.String,
+    provider: Schema.String,
+    enabled: Schema.Boolean,
+    public_ip_addresses: Schema.Array(Schema.String),
+    display_name: Schema.String,
+    location: Schema.String,
+    slug: Schema.String,
+  })),
 });
 export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
 
@@ -37,26 +36,38 @@ export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
 export class ListPublicRegionsUnauthorized extends Schema.TaggedError<ListPublicRegionsUnauthorized>()(
   "ListPublicRegionsUnauthorized",
   {
+
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListPublicRegionsForbidden extends Schema.TaggedError<ListPublicRegionsForbidden>()(
   "ListPublicRegionsForbidden",
   {
+
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class ListPublicRegionsNotfound extends Schema.TaggedError<ListPublicRegionsNotfound>()(
   "ListPublicRegionsNotfound",
   {
+
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class ListPublicRegionsInternalservererror extends Schema.TaggedError<ListPublicRegionsInternalservererror>()(
+  "ListPublicRegionsInternalservererror",
+  {
+
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -70,5 +81,5 @@ export class ListPublicRegionsNotfound extends Schema.TaggedError<ListPublicRegi
 export const listPublicRegions = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: ListPublicRegionsInput,
   outputSchema: ListPublicRegionsOutput,
-  errors: [ListPublicRegionsUnauthorized, ListPublicRegionsForbidden, ListPublicRegionsNotfound],
+  errors: [ListPublicRegionsUnauthorized, ListPublicRegionsForbidden, ListPublicRegionsNotfound, ListPublicRegionsInternalservererror],
 }));

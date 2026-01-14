@@ -1,5 +1,6 @@
 import * as Schema from "effect/Schema";
 import { API, ApiErrorCode, ApiMethod, ApiPath, ApiPathParams } from "../client";
+import * as Category from "../category";
 
 // Input Schema
 export const GetPasswordInput = Schema.Struct({
@@ -9,8 +10,7 @@ export const GetPasswordInput = Schema.Struct({
   id: Schema.String,
 }).annotations({
   [ApiMethod]: "GET",
-  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) =>
-    `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
+  [ApiPath]: (input: { organization: string; database: string; branch: string; id: string }) => `/organizations/${input.organization}/databases/${input.database}/branches/${input.branch}/passwords/${input.id}`,
   [ApiPathParams]: ["organization", "database", "branch", "id"] as const,
 });
 export type GetPasswordInput = typeof GetPasswordInput.Type;
@@ -72,7 +72,7 @@ export class GetPasswordUnauthorized extends Schema.TaggedError<GetPasswordUnaut
     message: Schema.String,
   },
   { [ApiErrorCode]: "unauthorized" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetPasswordForbidden extends Schema.TaggedError<GetPasswordForbidden>()(
   "GetPasswordForbidden",
@@ -84,7 +84,7 @@ export class GetPasswordForbidden extends Schema.TaggedError<GetPasswordForbidde
     message: Schema.String,
   },
   { [ApiErrorCode]: "forbidden" },
-) {}
+).pipe(Category.withAuthError) {}
 
 export class GetPasswordNotfound extends Schema.TaggedError<GetPasswordNotfound>()(
   "GetPasswordNotfound",
@@ -96,7 +96,19 @@ export class GetPasswordNotfound extends Schema.TaggedError<GetPasswordNotfound>
     message: Schema.String,
   },
   { [ApiErrorCode]: "not_found" },
-) {}
+).pipe(Category.withNotFoundError) {}
+
+export class GetPasswordInternalservererror extends Schema.TaggedError<GetPasswordInternalservererror>()(
+  "GetPasswordInternalservererror",
+  {
+    organization: Schema.String,
+    database: Schema.String,
+    branch: Schema.String,
+    id: Schema.String,
+    message: Schema.String,
+  },
+  { [ApiErrorCode]: "internal_server_error" },
+).pipe(Category.withServerError) {}
 
 // The operation
 /**
@@ -110,5 +122,5 @@ export class GetPasswordNotfound extends Schema.TaggedError<GetPasswordNotfound>
 export const getPassword = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
   inputSchema: GetPasswordInput,
   outputSchema: GetPasswordOutput,
-  errors: [GetPasswordUnauthorized, GetPasswordForbidden, GetPasswordNotfound],
+  errors: [GetPasswordUnauthorized, GetPasswordForbidden, GetPasswordNotfound, GetPasswordInternalservererror],
 }));
