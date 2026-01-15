@@ -44,6 +44,7 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 │       └── listDatabases.ts    # listDatabases effect
 ├── tests/
 │   ├── setup.ts            # Loads .env, exports withMainLayer for tests
+│   ├── helpers.ts          # Test database helpers (MySqlTestDatabase, PostgresTestDatabase)
 │   ├── getOrganization.test.ts
 │   └── listDatabases.test.ts
 ├── specs/
@@ -502,6 +503,61 @@ it.effect("should create resource successfully", () =>
 - **Verify error properties** like `_tag`, `message`, etc.
 - **Import `./setup`** to load environment variables from `.env`
 - **Use `withMainLayer`** wrapper to automatically provide layer to all tests
+- **Use test database helpers** when tests require a database (see below)
+
+### Test Database Helpers
+
+For operations that require an existing database (branches, passwords, deploy requests, etc.), use the scoped test database helpers from `tests/helpers.ts`. These create a database once per test suite and clean it up when the suite ends.
+
+#### Available Helpers
+
+| Helper                      | Service Tag            | Database Name            |
+| --------------------------- | ---------------------- | ------------------------ |
+| `MySqlTestDatabaseLive`     | `MySqlTestDatabase`    | `distilled-test-mysql`   |
+| `PostgresTestDatabaseLive`  | `PostgresTestDatabase` | `distilled-test-postgres`|
+
+#### Usage with @effect/vitest
+
+Use the `layer()` function from `@effect/vitest` to provide the test database:
+
+```typescript
+import { layer } from "@effect/vitest";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { MySqlTestDatabaseLive, MySqlTestDatabase } from "./helpers";
+import { listBranches } from "../src/operations/listBranches";
+
+layer(MySqlTestDatabaseLive)("listBranches", (it) => {
+  it.effect("should list branches for the test database", () =>
+    Effect.gen(function* () {
+      const db = yield* MySqlTestDatabase;
+      const result = yield* listBranches({
+        organization: db.organization,
+        database: db.name,
+      });
+      expect(result.data).toBeDefined();
+    })
+  );
+});
+```
+
+#### How It Works
+
+1. **Deterministic names**: Uses fixed database names so the same database is reused across test runs
+2. **Scoped lifecycle**: Database is created when the layer is built, deleted when released
+3. **Waits for ready**: Polls until the database state is "ready" before returning
+4. **Includes dependencies**: `*Live` layers include `CredentialsFromEnv` and `FetchHttpClient`
+
+#### When to Use
+
+Use test database helpers when testing operations that:
+- Require a `database` parameter (branches, passwords, deploy requests, etc.)
+- Need to create resources within a database
+- Would otherwise need to create and clean up a database per test
+
+Do NOT use for:
+- Simple operations like `getOrganization`, `listDatabases`
+- Error handling tests with non-existent resources
 
 ## Schema Patching
 

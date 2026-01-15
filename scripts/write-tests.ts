@@ -92,7 +92,10 @@ IMPORTANT:
 - Use unique names with timestamps for any resources created
 - Test both success cases and error handling
 - After writing the test, run it to verify it works
-- DO NOT run the test automatically
+- DO NOT run the test
+- DO NOT run the test
+- DO NOT run the test
+- DO NOT run the test
 - BE SURE TO CLEAN UP ALL RESOURCES CREATED DURING THE TEST
 
 ERROR HANDLING PATTERN:
@@ -107,6 +110,36 @@ if (result instanceof NotFound) {
   expect(result.message).toBeDefined();
 }
 \`\`\`
+
+TEST DATABASE HELPERS:
+If the operation requires a database (e.g., branches, passwords, deploy requests), use the test database helpers from tests/helpers.ts:
+
+\`\`\`typescript
+import { layer } from "@effect/vitest";
+import { Effect } from "effect";
+import { expect } from "vitest";
+import { MySqlTestDatabaseLive, MySqlTestDatabase } from "./helpers";
+
+layer(MySqlTestDatabaseLive)("operationName", (it) => {
+  it.effect("should work with test database", () =>
+    Effect.gen(function* () {
+      const db = yield* MySqlTestDatabase;
+      const result = yield* someOperation({
+        organization: db.organization,
+        database: db.name,
+      });
+      expect(result).toBeDefined();
+    })
+  );
+});
+\`\`\`
+
+Available helpers:
+- MySqlTestDatabaseLive / MySqlTestDatabase - for MySQL database operations
+- PostgresTestDatabaseLive / PostgresTestDatabase - for PostgreSQL database operations
+
+Use withMainLayer (from ./setup) for simple operations that don't need a database.
+Use layer(MySqlTestDatabaseLive) or layer(PostgresTestDatabaseLive) for operations that require a database.
 
 Look at existing tests in the tests/ directory for examples (especially getOrganization.test.ts and listDatabases.test.ts).`;
 
