@@ -185,10 +185,10 @@
 
 ### Service Tokens
 
-- [ ] createServiceToken
-- [ ] deleteServiceToken
-- [ ] getServiceToken
-- [ ] listServiceTokens
+- [x] createServiceToken
+- [x] deleteServiceToken
+- [x] getServiceToken
+- [x] listServiceTokens
 
 ### Users
 
