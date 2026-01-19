@@ -2,8 +2,8 @@
 
 ### Organizations
 
-- [ ] getOrganization
-- [ ] listOrganizations
+- [x] getOrganization
+- [x] listOrganizations
 - [ ] updateOrganization
 
 ### Databases
@@ -134,8 +134,8 @@
 
 ### Organization Members
 
-- [ ] getOrganizationMembership
-- [ ] listOrganizationMembers
+- [x] getOrganizationMembership
+- [x] listOrganizationMembers
 - [ ] removeOrganizationMember
 - [ ] updateOrganizationMembership
 
@@ -143,8 +143,8 @@
 
 - [ ] createOrganizationTeam
 - [ ] deleteOrganizationTeam
-- [ ] getOrganizationTeam
-- [ ] listOrganizationTeams
+- [x] getOrganizationTeam
+- [x] listOrganizationTeams
 - [ ] updateOrganizationTeam
 
 ### Parameters
@@ -192,7 +192,7 @@
 
 ### Users
 
-- [ ] getCurrentUser
+- [x] getCurrentUser
 
 ### Webhooks
 
