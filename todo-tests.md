@@ -2,7 +2,6 @@
 
 ### Organizations
 
-- [x] createBranch
 - [ ] getOrganization
 - [ ] listOrganizations
 - [ ] updateOrganization
@@ -20,6 +19,7 @@
 
 ### Branches
 
+- [ ] createBranch
 - [ ] deleteBranch
 - [ ] demoteBranch
 - [ ] getBranch
