@@ -180,8 +180,8 @@
 
 ### Safe Migrations
 
-- [ ] disableSafeMigrations
-- [ ] enableSafeMigrations
+- [x] disableSafeMigrations
+- [x] enableSafeMigrations
 
 ### Service Tokens
 
