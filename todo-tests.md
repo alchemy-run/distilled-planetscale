@@ -19,15 +19,15 @@
 
 ### Branches
 
-- [ ] createBranch
-- [ ] deleteBranch
-- [ ] demoteBranch
-- [ ] getBranch
-- [ ] getBranchSchema
-- [ ] listBranches
-- [ ] lintBranchSchema
-- [ ] promoteBranch
-- [ ] updateBranchClusterConfig
+- [x] createBranch
+- [x] deleteBranch
+- [x] demoteBranch
+- [x] getBranch
+- [x] getBranchSchema
+- [x] listBranches
+- [x] lintBranchSchema
+- [x] promoteBranch
+- [x] updateBranchClusterConfig
 
 ### Passwords
 

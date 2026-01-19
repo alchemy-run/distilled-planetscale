@@ -12,7 +12,7 @@ config();
 // Main layer providing credentials and HTTP client for all tests
 export const MainLayer = Layer.merge(CredentialsFromEnv, FetchHttpClient.layer);
 
-const TEST_DATABASE_NAME = "distilled-test-db";
+const TEST_DATABASE_PREFIX = "distilled-test-db";
 
 /**
  * Test database configuration
@@ -23,30 +23,44 @@ export interface TestDatabaseConfig {
   readonly kind: "mysql" | "postgresql";
 }
 
-// Shared state for the test database
-let testDatabase: TestDatabaseConfig | null = null;
+// Shared state for test databases, keyed by suffix
+const testDatabases: Map<string, TestDatabaseConfig> = new Map();
+
+/**
+ * Get the database name with optional suffix
+ */
+const getDatabaseName = (suffix?: string): string =>
+  suffix ? `${TEST_DATABASE_PREFIX}-${suffix}` : TEST_DATABASE_PREFIX;
 
 /**
  * Get the test database config. Throws if not initialized.
+ * @param suffix - Optional suffix to identify the database (e.g., "branches")
  */
-export const getTestDatabase = (): TestDatabaseConfig => {
-  if (!testDatabase) {
-    throw new Error("Test database not initialized. Call setupTestDatabase() in beforeAll.");
+export const getTestDatabase = (suffix?: string): TestDatabaseConfig => {
+  const key = suffix ?? "";
+  const db = testDatabases.get(key);
+  if (!db) {
+    const dbName = getDatabaseName(suffix);
+    throw new Error(
+      `Test database "${dbName}" not initialized. Call setupTestDatabase(${suffix ? `"${suffix}"` : ""}) in beforeAll.`,
+    );
   }
-  return testDatabase;
+  return db;
 };
 
 /**
  * Setup the test database. Call this in beforeAll.
  * Creates the database if it doesn't exist and waits for it to be ready.
+ * @param suffix - Optional suffix to identify the database (e.g., "branches" -> "distilled-test-db-branches")
  */
-export const setupTestDatabase = () =>
+export const setupTestDatabase = (suffix?: string) =>
   Effect.gen(function* () {
     const { organization } = yield* Credentials;
+    const databaseName = getDatabaseName(suffix);
 
-    process.stderr.write(`[setup] Checking for existing database "${TEST_DATABASE_NAME}"...\n`);
+    process.stderr.write(`[setup] Checking for existing database "${databaseName}"...\n`);
 
-    const existing = yield* getDatabase({ organization, database: TEST_DATABASE_NAME }).pipe(
+    const existing = yield* getDatabase({ organization, database: databaseName }).pipe(
       Effect.tap((db) =>
         Effect.sync(() => process.stderr.write(`[setup] Found existing database: state=${db.state}\n`)),
       ),
@@ -65,10 +79,10 @@ export const setupTestDatabase = () =>
     if (existing !== null) {
       kind = existing.kind;
     } else {
-      process.stderr.write(`[setup] Creating database "${TEST_DATABASE_NAME}"...\n`);
+      process.stderr.write(`[setup] Creating database "${databaseName}"...\n`);
       const created = yield* createDatabase({
         organization,
-        name: TEST_DATABASE_NAME,
+        name: databaseName,
         cluster_size: "PS_10",
         kind: "mysql",
       });
@@ -79,7 +93,7 @@ export const setupTestDatabase = () =>
     process.stderr.write(`[setup] Waiting for database to be ready...\n`);
 
     yield* Effect.retry(
-      getDatabase({ organization, database: TEST_DATABASE_NAME }).pipe(
+      getDatabase({ organization, database: databaseName }).pipe(
         Effect.tap((db) =>
           Effect.sync(() => process.stderr.write(`[setup] Polling database: state=${db.state}\n`)),
         ),
@@ -97,25 +111,30 @@ export const setupTestDatabase = () =>
 
     process.stderr.write(`[setup] Database is ready!\n`);
 
-    testDatabase = { organization, name: TEST_DATABASE_NAME, kind };
-    return testDatabase;
+    const dbConfig: TestDatabaseConfig = { organization, name: databaseName, kind };
+    testDatabases.set(suffix ?? "", dbConfig);
+    return dbConfig;
   }).pipe(Effect.provide(MainLayer));
 
 /**
  * Teardown the test database. Call this in afterAll.
+ * @param suffix - Optional suffix to identify the database (e.g., "branches")
  */
-export const teardownTestDatabase = () =>
+export const teardownTestDatabase = (suffix?: string) =>
   Effect.gen(function* () {
-    if (!testDatabase) return;
+    const key = suffix ?? "";
+    const db = testDatabases.get(key);
+    if (!db) return;
 
-    process.stderr.write(`[teardown] Deleting database "${TEST_DATABASE_NAME}"...\n`);
+    const databaseName = getDatabaseName(suffix);
+    process.stderr.write(`[teardown] Deleting database "${databaseName}"...\n`);
     yield* deleteDatabase({
-      organization: testDatabase.organization,
-      database: TEST_DATABASE_NAME,
+      organization: db.organization,
+      database: databaseName,
     }).pipe(Effect.ignore);
     process.stderr.write(`[teardown] Done\n`);
 
-    testDatabase = null;
+    testDatabases.delete(key);
   }).pipe(Effect.provide(MainLayer));
 
 /**
