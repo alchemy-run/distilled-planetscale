@@ -125,12 +125,12 @@
 
 ### OAuth
 
-- [ ] createOauthToken
-- [ ] deleteOauthToken
-- [ ] getOauthApplication
-- [ ] getOauthToken
-- [ ] listOauthApplications
-- [ ] listOauthTokens
+- [x] createOauthToken
+- [x] deleteOauthToken
+- [x] getOauthApplication
+- [x] getOauthToken
+- [x] listOauthApplications
+- [x] listOauthTokens
 
 ### Organization Members
 
