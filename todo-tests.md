@@ -31,12 +31,12 @@
 
 ### Passwords
 
-- [ ] createPassword
-- [ ] deletePassword
-- [ ] getPassword
-- [ ] listPasswords
-- [ ] renewPassword
-- [ ] updatePassword
+- [x] createPassword
+- [x] deletePassword
+- [x] getPassword
+- [x] listPasswords
+- [x] renewPassword
+- [x] updatePassword
 
 ### Audit Logs
 
