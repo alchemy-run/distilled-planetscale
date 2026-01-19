@@ -161,9 +161,9 @@
 
 ### Regions
 
-- [ ] listPublicRegions
-- [ ] listReadOnlyRegions
-- [ ] listRegionsForOrganization
+- [x] listPublicRegions
+- [x] listReadOnlyRegions
+- [x] listRegionsForOrganization
 
 ### Roles
 
