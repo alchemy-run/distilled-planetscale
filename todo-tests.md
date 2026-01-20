@@ -4,7 +4,7 @@
 
 - [x] getOrganization
 - [x] listOrganizations
-- [ ] updateOrganization
+- [x] updateOrganization
 
 ### Databases
 
@@ -40,7 +40,7 @@
 
 ### Audit Logs
 
-- [ ] listAuditLogs
+- [x] listAuditLogs
 
 ### Backups
 
@@ -52,76 +52,76 @@
 
 ### Bouncers
 
-- [ ] cancelBouncerResizeRequest
-- [ ] createBouncer
-- [ ] deleteBouncer
-- [ ] getBouncer
-- [ ] listBouncerResizeRequests
-- [ ] listBouncers
-- [ ] listBranchBouncerResizeRequests
-- [ ] updateBouncerResizeRequest
+- [x] cancelBouncerResizeRequest
+- [x] createBouncer
+- [x] deleteBouncer
+- [x] getBouncer
+- [x] listBouncerResizeRequests
+- [x] listBouncers
+- [x] listBranchBouncerResizeRequests
+- [x] updateBouncerResizeRequest
 
 ### Branch Change Requests
 
-- [ ] cancelBranchChangeRequest
-- [ ] getBranchChangeRequest
-- [ ] listBranchChangeRequests
-- [ ] updateBranchChangeRequest
+- [x] cancelBranchChangeRequest
+- [x] getBranchChangeRequest
+- [x] listBranchChangeRequests
+- [x] updateBranchChangeRequest
 
 ### Cluster
 
-- [ ] listClusterSizeSkus
+- [x] listClusterSizeSkus
 
 ### Database Postgres CIDRs
 
-- [ ] createDatabasePostgresCidr
-- [ ] deleteDatabasePostgresCidr
-- [ ] getDatabasePostgresCidr
-- [ ] listDatabasePostgresCidrs
-- [ ] updateDatabasePostgresCidr
+- [x] createDatabasePostgresCidr
+- [x] deleteDatabasePostgresCidr
+- [x] getDatabasePostgresCidr
+- [x] listDatabasePostgresCidrs
+- [x] updateDatabasePostgresCidr
 
 ### Deploy Requests
 
-- [ ] cancelDeployRequest
-- [ ] closeDeployRequest
-- [ ] completeErroredDeploy
-- [ ] completeGatedDeployRequest
-- [ ] completeRevert
-- [ ] createDeployRequest
-- [ ] getDeployment
-- [ ] getDeployQueue
-- [ ] getDeployRequest
-- [ ] getDeployRequestThrottler
-- [ ] listDeployOperations
-- [ ] listDeployRequestReviews
-- [ ] listDeployRequests
-- [ ] queueDeployRequest
-- [ ] reviewDeployRequest
-- [ ] skipRevertPeriod
-- [ ] updateAutoApply
-- [ ] updateAutoDeleteBranch
-- [ ] updateDeployRequestThrottler
+- [x] cancelDeployRequest
+- [x] closeDeployRequest
+- [x] completeErroredDeploy
+- [x] completeGatedDeployRequest
+- [x] completeRevert
+- [x] createDeployRequest
+- [x] getDeployment
+- [x] getDeployQueue
+- [x] getDeployRequest
+- [x] getDeployRequestThrottler
+- [x] listDeployOperations
+- [x] listDeployRequestReviews
+- [x] listDeployRequests
+- [x] queueDeployRequest
+- [x] reviewDeployRequest
+- [x] skipRevertPeriod
+- [x] updateAutoApply
+- [x] updateAutoDeleteBranch
+- [x] updateDeployRequestThrottler
 
 ### Extensions
 
-- [ ] listExtensions
+- [x] listExtensions
 
 ### Invoices
 
-- [ ] getInvoice
-- [ ] getInvoiceLineItems
-- [ ] listInvoices
+- [x] getInvoice
+- [x] getInvoiceLineItems
+- [x] listInvoices
 
 ### Keyspaces
 
-- [ ] createKeyspace
-- [ ] deleteKeyspace
-- [ ] getKeyspace
-- [ ] getKeyspaceRolloutStatus
-- [ ] getKeyspaceVschema
-- [ ] listKeyspaces
-- [ ] updateKeyspace
-- [ ] updateKeyspaceVschema
+- [x] createKeyspace
+- [x] deleteKeyspace
+- [x] getKeyspace
+- [x] getKeyspaceRolloutStatus
+- [x] getKeyspaceVschema
+- [x] listKeyspaces
+- [x] updateKeyspace
+- [x] updateKeyspaceVschema
 
 ### OAuth
 
@@ -136,28 +136,28 @@
 
 - [x] getOrganizationMembership
 - [x] listOrganizationMembers
-- [ ] removeOrganizationMember
-- [ ] updateOrganizationMembership
+- [x] removeOrganizationMember
+- [x] updateOrganizationMembership
 
 ### Organization Teams
 
-- [ ] createOrganizationTeam
-- [ ] deleteOrganizationTeam
+- [x] createOrganizationTeam
+- [x] deleteOrganizationTeam
 - [x] getOrganizationTeam
 - [x] listOrganizationTeams
-- [ ] updateOrganizationTeam
+- [x] updateOrganizationTeam
 
 ### Parameters
 
-- [ ] listParameters
+- [x] listParameters
 
 ### Query Patterns Reports
 
-- [ ] createQueryPatternsReport
-- [ ] deleteQueryPatternsReport
-- [ ] getQueryPatternsReport
-- [ ] getQueryPatternsReportStatus
-- [ ] listGeneratedQueryPatternsReports
+- [x] createQueryPatternsReport
+- [x] deleteQueryPatternsReport
+- [x] getQueryPatternsReport
+- [x] getQueryPatternsReportStatus
+- [x] listGeneratedQueryPatternsReports
 
 ### Regions
 
@@ -167,16 +167,16 @@
 
 ### Roles
 
-- [ ] createRole
-- [ ] deleteRole
-- [ ] getDefaultRole
-- [ ] getRole
-- [ ] listRoles
-- [ ] reassignRoleObjects
-- [ ] renewRole
-- [ ] resetDefaultRole
-- [ ] resetRole
-- [ ] updateRole
+- [x] createRole
+- [x] deleteRole
+- [x] getDefaultRole
+- [x] getRole
+- [x] listRoles
+- [x] reassignRoleObjects
+- [x] renewRole
+- [x] resetDefaultRole
+- [x] resetRole
+- [x] updateRole
 
 ### Safe Migrations
 
@@ -205,15 +205,15 @@
 
 ### Workflows
 
-- [ ] createWorkflow
-- [ ] getWorkflow
-- [ ] listWorkflows
-- [ ] verifyWorkflow
-- [ ] workflowCancel
-- [ ] workflowComplete
-- [ ] workflowCutover
-- [ ] workflowRetry
-- [ ] workflowReverseCutover
-- [ ] workflowReverseTraffic
-- [ ] workflowSwitchPrimaries
-- [ ] workflowSwitchReplicas
+- [x] createWorkflow
+- [x] getWorkflow
+- [x] listWorkflows
+- [x] verifyWorkflow
+- [x] workflowCancel
+- [x] workflowComplete
+- [x] workflowCutover
+- [x] workflowRetry
+- [x] workflowReverseCutover
+- [x] workflowReverseTraffic
+- [x] workflowSwitchPrimaries
+- [x] workflowSwitchReplicas

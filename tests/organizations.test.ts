@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { PlanetScaleApiError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import { Forbidden, NotFound, Unauthorized } from "../src/errors";
+import { createOrganizationTeam } from "../src/operations/createOrganizationTeam";
+import { deleteOrganizationTeam } from "../src/operations/deleteOrganizationTeam";
 import { getCurrentUser } from "../src/operations/getCurrentUser";
 import { getOrganization } from "../src/operations/getOrganization";
 import { getOrganizationMembership } from "../src/operations/getOrganizationMembership";
@@ -10,6 +12,10 @@ import { getOrganizationTeam } from "../src/operations/getOrganizationTeam";
 import { listOrganizationMembers } from "../src/operations/listOrganizationMembers";
 import { listOrganizations } from "../src/operations/listOrganizations";
 import { listOrganizationTeams } from "../src/operations/listOrganizationTeams";
+import { removeOrganizationMember } from "../src/operations/removeOrganizationMember";
+import { updateOrganization } from "../src/operations/updateOrganization";
+import { updateOrganizationMembership } from "../src/operations/updateOrganizationMembership";
+import { updateOrganizationTeam } from "../src/operations/updateOrganizationTeam";
 import { runEffect } from "./setup";
 
 // Non-existent identifiers for unhappy path tests
@@ -455,6 +461,369 @@ describe("organizations", () => {
 
       expect(error).not.toBeNull();
       expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // updateOrganization
+  // ============================================================================
+
+  describe("updateOrganization", () => {
+    it("can update an organization (or returns error if no permission)", async () => {
+      const result = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+          // Get current organization to retrieve current billing email
+          const currentOrg = yield* getOrganization({ organization });
+          // Update with same billing email (no-op change)
+          return yield* updateOrganization({
+            organization,
+            billing_email: currentOrg.billing_email,
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed({ error: e }),
+              onSuccess: (data) => Effect.succeed({ data }),
+            }),
+          );
+        }),
+      );
+
+      if ("data" in result) {
+        expect(result.data.id).toBeDefined();
+        expect(result.data.name).toBeDefined();
+        expect(result.data.billing_email).toBeDefined();
+        expect(result.data.updated_at).toBeDefined();
+      } else {
+        // Forbidden or other error is acceptable if token lacks permission
+        expect(isApiError(result.error)).toBe(true);
+      }
+    });
+
+    it("returns NotFound or Forbidden for non-existent organization", async () => {
+      const error = await runEffect(
+        updateOrganization({
+          organization: NON_EXISTENT_ORG,
+          billing_email: "test@example.com",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (e) => Effect.succeed(e),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        ),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // removeOrganizationMember
+  // ============================================================================
+
+  describe("removeOrganizationMember", () => {
+    it("returns NotFound for non-existent member", async () => {
+      const error = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+          return yield* removeOrganizationMember({
+            organization,
+            id: NON_EXISTENT_MEMBERSHIP_ID,
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed(e),
+              onSuccess: () => Effect.succeed(null),
+            }),
+          );
+        }),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isApiError(error)).toBe(true);
+    });
+
+    it("returns an error for non-existent organization", async () => {
+      const error = await runEffect(
+        removeOrganizationMember({
+          organization: NON_EXISTENT_ORG,
+          id: NON_EXISTENT_MEMBERSHIP_ID,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (e) => Effect.succeed(e),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        ),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isApiError(error)).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // updateOrganizationMembership
+  // ============================================================================
+
+  describe("updateOrganizationMembership", () => {
+    it("returns NotFound for non-existent member", async () => {
+      const error = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+          return yield* updateOrganizationMembership({
+            organization,
+            id: NON_EXISTENT_MEMBERSHIP_ID,
+            role: "member",
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed(e),
+              onSuccess: () => Effect.succeed(null),
+            }),
+          );
+        }),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isApiError(error)).toBe(true);
+    });
+
+    it("returns an error for non-existent organization", async () => {
+      const error = await runEffect(
+        updateOrganizationMembership({
+          organization: NON_EXISTENT_ORG,
+          id: NON_EXISTENT_MEMBERSHIP_ID,
+          role: "member",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (e) => Effect.succeed(e),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        ),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isApiError(error)).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // createOrganizationTeam
+  // ============================================================================
+
+  describe("createOrganizationTeam", () => {
+    it("can create and delete an organization team", async () => {
+      const teamName = `test-team-${Date.now()}`;
+
+      const result = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+          return yield* createOrganizationTeam({
+            organization,
+            name: teamName,
+            description: "Test team created by automated tests",
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed({ error: e }),
+              onSuccess: (data) => Effect.succeed({ data }),
+            }),
+          );
+        }),
+      );
+
+      if ("data" in result) {
+        expect(result.data.id).toBeDefined();
+        expect(result.data.name).toBe(teamName);
+        expect(result.data.slug).toBeDefined();
+        expect(result.data.display_name).toBeDefined();
+        expect(result.data.creator).toBeDefined();
+        expect(Array.isArray(result.data.members)).toBe(true);
+        expect(Array.isArray(result.data.databases)).toBe(true);
+        expect(result.data.created_at).toBeDefined();
+
+        // Clean up: delete the team
+        await runEffect(
+          Effect.gen(function* () {
+            const { organization } = yield* Credentials;
+            yield* deleteOrganizationTeam({
+              organization,
+              team: result.data.slug,
+            }).pipe(Effect.ignore);
+          }),
+        );
+      } else {
+        // Forbidden or other error is acceptable if token lacks permission
+        expect(isApiError(result.error)).toBe(true);
+      }
+    });
+
+    it("returns NotFound or Forbidden for non-existent organization", async () => {
+      const error = await runEffect(
+        createOrganizationTeam({
+          organization: NON_EXISTENT_ORG,
+          name: `test-team-${Date.now()}`,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (e) => Effect.succeed(e),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        ),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // deleteOrganizationTeam
+  // ============================================================================
+
+  describe("deleteOrganizationTeam", () => {
+    it("returns NotFound or Forbidden for non-existent team", async () => {
+      const error = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+          return yield* deleteOrganizationTeam({
+            organization,
+            team: NON_EXISTENT_TEAM,
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed(e),
+              onSuccess: () => Effect.succeed(null),
+            }),
+          );
+        }),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+
+    it("returns NotFound or Forbidden for non-existent organization", async () => {
+      const error = await runEffect(
+        deleteOrganizationTeam({
+          organization: NON_EXISTENT_ORG,
+          team: NON_EXISTENT_TEAM,
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (e) => Effect.succeed(e),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        ),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // updateOrganizationTeam
+  // ============================================================================
+
+  describe("updateOrganizationTeam", () => {
+    it("returns NotFound or Forbidden for non-existent team", async () => {
+      const error = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+          return yield* updateOrganizationTeam({
+            organization,
+            team: NON_EXISTENT_TEAM,
+            description: "Updated description",
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed(e),
+              onSuccess: () => Effect.succeed(null),
+            }),
+          );
+        }),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+
+    it("returns NotFound or Forbidden for non-existent organization", async () => {
+      const error = await runEffect(
+        updateOrganizationTeam({
+          organization: NON_EXISTENT_ORG,
+          team: NON_EXISTENT_TEAM,
+          description: "Updated description",
+        }).pipe(
+          Effect.matchEffect({
+            onFailure: (e) => Effect.succeed(e),
+            onSuccess: () => Effect.succeed(null),
+          }),
+        ),
+      );
+
+      expect(error).not.toBeNull();
+      expect(isNotFoundOrForbiddenOrUnauthorized(error)).toBe(true);
+    });
+
+    it("can update an existing team", async () => {
+      // First create a team to update
+      const teamName = `test-team-update-${Date.now()}`;
+      let teamSlug: string | null = null;
+
+      const result = await runEffect(
+        Effect.gen(function* () {
+          const { organization } = yield* Credentials;
+
+          // Create team
+          const createResult = yield* createOrganizationTeam({
+            organization,
+            name: teamName,
+            description: "Original description",
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed({ error: e }),
+              onSuccess: (data) => Effect.succeed({ data }),
+            }),
+          );
+
+          if ("error" in createResult) {
+            return { error: createResult.error };
+          }
+
+          teamSlug = createResult.data.slug;
+
+          // Update the team
+          const updateResult = yield* updateOrganizationTeam({
+            organization,
+            team: teamSlug,
+            description: "Updated description",
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (e) => Effect.succeed({ error: e }),
+              onSuccess: (data) => Effect.succeed({ data }),
+            }),
+          );
+
+          return updateResult;
+        }),
+      );
+
+      // Clean up
+      if (teamSlug) {
+        await runEffect(
+          Effect.gen(function* () {
+            const { organization } = yield* Credentials;
+            yield* deleteOrganizationTeam({
+              organization,
+              team: teamSlug!,
+            }).pipe(Effect.ignore);
+          }),
+        );
+      }
+
+      if ("data" in result) {
+        expect(result.data.description).toBe("Updated description");
+        expect(result.data.id).toBeDefined();
+        expect(result.data.slug).toBe(teamSlug);
+      } else {
+        // Forbidden or other error is acceptable if token lacks permission
+        expect(isApiError(result.error)).toBe(true);
+      }
     });
   });
 });
