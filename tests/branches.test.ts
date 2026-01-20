@@ -487,7 +487,7 @@ describe("branches", () => {
     });
 
     // This test creates an actual branch - skip by default as it's slow
-    it.skip("can create and delete a branch", async () => {
+    it("can create and delete a branch", async () => {
       const db = getDb();
       const branchName = `test-${Date.now()}`;
 

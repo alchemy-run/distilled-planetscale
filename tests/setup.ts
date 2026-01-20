@@ -49,6 +49,13 @@ export const getTestDatabase = (suffix?: string): TestDatabaseConfig => {
 };
 
 /**
+ * Helper to create a prefixed logger for test output
+ */
+const log = (prefix: string, message: string) => {
+  process.stderr.write(`[${prefix}] ${message}\n`);
+};
+
+/**
  * Setup the test database. Call this in beforeAll.
  * Creates the database if it doesn't exist and waits for it to be ready.
  * @param suffix - Optional suffix to identify the database (e.g., "branches" -> "distilled-test-db-branches")
@@ -57,19 +64,18 @@ export const setupTestDatabase = (suffix?: string) =>
   Effect.gen(function* () {
     const { organization } = yield* Credentials;
     const databaseName = getDatabaseName(suffix);
+    const prefix = suffix ?? "default";
 
-    process.stderr.write(`[setup] Checking for existing database "${databaseName}"...\n`);
+    log(prefix, "checking for existing database...");
 
     const existing = yield* getDatabase({ organization, database: databaseName }).pipe(
-      Effect.tap((db) =>
-        Effect.sync(() => process.stderr.write(`[setup] Found existing database: state=${db.state}\n`)),
-      ),
+      Effect.tap((db) => Effect.sync(() => log(prefix, `found existing database: state=${db.state}`))),
       Effect.catchTag("NotFound", () => {
-        process.stderr.write(`[setup] Database not found, will create\n`);
+        log(prefix, "database not found, will create");
         return Effect.succeed(null);
       }),
       Effect.catchTag("Forbidden", () => {
-        process.stderr.write(`[setup] Forbidden error, treating as not found\n`);
+        log(prefix, "forbidden error, treating as not found");
         return Effect.succeed(null);
       }),
     );
@@ -79,24 +85,22 @@ export const setupTestDatabase = (suffix?: string) =>
     if (existing !== null) {
       kind = existing.kind;
     } else {
-      process.stderr.write(`[setup] Creating database "${databaseName}"...\n`);
+      log(prefix, "creating database...");
       const created = yield* createDatabase({
         organization,
         name: databaseName,
         cluster_size: "PS_10",
         kind: "mysql",
       });
-      process.stderr.write(`[setup] Created database: state=${created.state}\n`);
+      log(prefix, `created database: state=${created.state}`);
       kind = created.kind;
     }
 
-    process.stderr.write(`[setup] Waiting for database to be ready...\n`);
+    log(prefix, "waiting for database to be ready...");
 
     yield* Effect.retry(
       getDatabase({ organization, database: databaseName }).pipe(
-        Effect.tap((db) =>
-          Effect.sync(() => process.stderr.write(`[setup] Polling database: state=${db.state}\n`)),
-        ),
+        Effect.tap((db) => Effect.sync(() => log(prefix, `polling: state=${db.state}`))),
         Effect.flatMap((db) =>
           db.state === "ready"
             ? Effect.succeed(db)
@@ -109,7 +113,7 @@ export const setupTestDatabase = (suffix?: string) =>
       },
     );
 
-    process.stderr.write(`[setup] Database is ready!\n`);
+    log(prefix, "database is ready!");
 
     const dbConfig: TestDatabaseConfig = { organization, name: databaseName, kind };
     testDatabases.set(suffix ?? "", dbConfig);
@@ -126,13 +130,13 @@ export const teardownTestDatabase = (suffix?: string) =>
     const db = testDatabases.get(key);
     if (!db) return;
 
-    const databaseName = getDatabaseName(suffix);
-    process.stderr.write(`[teardown] Deleting database "${databaseName}"...\n`);
+    const prefix = suffix ?? "default";
+    log(prefix, "deleting database...");
     yield* deleteDatabase({
       organization: db.organization,
-      database: databaseName,
+      database: db.name,
     }).pipe(Effect.ignore);
-    process.stderr.write(`[teardown] Done\n`);
+    log(prefix, "done");
 
     testDatabases.delete(key);
   }).pipe(Effect.provide(MainLayer));

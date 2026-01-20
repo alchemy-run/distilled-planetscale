@@ -44,11 +44,11 @@
 
 ### Backups
 
-- [ ] createBackup
-- [ ] deleteBackup
-- [ ] getBackup
-- [ ] listBackups
-- [ ] updateBackup
+- [x] createBackup
+- [x] deleteBackup
+- [x] getBackup
+- [x] listBackups
+- [x] updateBackup
 
 ### Bouncers
 

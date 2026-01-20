@@ -30,9 +30,7 @@ const waitForBackupComplete = (
   Effect.retry(
     getBackup({ organization, database, branch, id: backupId }).pipe(
       Effect.tap((b) =>
-        Effect.sync(() =>
-          process.stderr.write(`[waitForBackupComplete] backup="${backupId}" state=${b.state}\n`),
-        ),
+        Effect.sync(() => process.stderr.write(`[${TEST_SUFFIX}] waiting for backup: state=${b.state}\n`)),
       ),
       Effect.flatMap((b) =>
         b.state === "success" || b.state === "failed" || b.state === "canceled"

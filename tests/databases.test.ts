@@ -27,9 +27,7 @@ const waitForDatabaseReady = (organization: string, database: string) =>
   Effect.retry(
     getDatabase({ organization, database }).pipe(
       Effect.tap((db) =>
-        Effect.sync(() =>
-          process.stderr.write(`[waitForDatabaseReady] database="${database}" state=${db.state}\n`),
-        ),
+        Effect.sync(() => process.stderr.write(`[${TEST_SUFFIX}] waiting for database: state=${db.state}\n`)),
       ),
       Effect.flatMap((db) =>
         db.state === "ready"
