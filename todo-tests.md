@@ -8,14 +8,14 @@
 
 ### Databases
 
-- [ ] getDatabase
-- [ ] listDatabases
-- [ ] createDatabase
-- [ ] deleteDatabase
-- [ ] getDatabaseThrottler
-- [ ] listDatabaseRegions
-- [ ] updateDatabaseSettings
-- [ ] updateDatabaseThrottler
+- [x] getDatabase
+- [x] listDatabases
+- [x] createDatabase
+- [x] deleteDatabase
+- [x] getDatabaseThrottler
+- [x] listDatabaseRegions
+- [x] updateDatabaseSettings
+- [x] updateDatabaseThrottler
 
 ### Branches
 
