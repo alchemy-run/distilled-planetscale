@@ -1,13 +1,13 @@
 {
   "name": "distilled-planetscale",
   "version": "0.0.1",
-  "type": "module",
-  "module": "index.ts",
-  "sideEffects": false,
   "files": [
-    "src",
-    "lib"
+    "lib",
+    "src"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "module": "index.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
@@ -70,10 +70,6 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check ."
   },
-  "peerDependencies": {
-    "effect": "latest",
-    "@effect/platform": "latest"
-  },
   "dependencies": {},
   "devDependencies": {
     "@effect/platform": "^0.94.1",
@@ -87,5 +83,9 @@
     "oxlint": "^1.38.0",
     "typescript": "^5",
     "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "@effect/platform": "latest",
+    "effect": "latest"
   }
 }

@@ -7,7 +7,12 @@ export const GetDefaultRoleInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/default" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/default",
+  }),
+);
 export type GetDefaultRoleInput = typeof GetDefaultRoleInput.Type;
 
 // Output Schema
@@ -30,7 +35,23 @@ export const GetDefaultRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
+  inherited_roles: Schema.Array(
+    Schema.Literal(
+      "pscale_managed",
+      "pg_checkpoint",
+      "pg_create_subscription",
+      "pg_maintain",
+      "pg_monitor",
+      "pg_read_all_data",
+      "pg_read_all_settings",
+      "pg_read_all_stats",
+      "pg_signal_backend",
+      "pg_stat_scan_tables",
+      "pg_use_reserved_connections",
+      "pg_write_all_data",
+      "postgres",
+    ),
+  ),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,

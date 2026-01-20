@@ -1,7 +1,7 @@
 import * as Schema from "effect/Schema";
 import { API } from "../client";
 import * as T from "../traits";
-import { SensitiveString, SensitiveNullableString } from "../sensitive";
+import { SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const GetPasswordInput = Schema.Struct({
@@ -9,7 +9,12 @@ export const GetPasswordInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}",
+  }),
+);
 export type GetPasswordInput = typeof GetPasswordInput.Type;
 
 // Output Schema

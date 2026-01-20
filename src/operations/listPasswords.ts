@@ -10,7 +10,12 @@ export const ListPasswordsInput = Schema.Struct({
   read_only_region_id: Schema.optional(Schema.String),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords",
+  }),
+);
 export type ListPasswordsInput = typeof ListPasswordsInput.Type;
 
 // Output Schema
@@ -20,49 +25,51 @@ export const ListPasswordsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    role: Schema.Literal("reader", "writer", "admin", "readwriter"),
-    cidrs: Schema.Array(Schema.String),
-    created_at: Schema.String,
-    deleted_at: Schema.String,
-    expires_at: Schema.String,
-    last_used_at: Schema.String,
-    expired: Schema.Boolean,
-    direct_vtgate: Schema.Boolean,
-    direct_vtgate_addresses: Schema.Array(Schema.String),
-    ttl_seconds: Schema.Number,
-    access_host_url: Schema.String,
-    access_host_regional_url: Schema.String,
-    access_host_regional_urls: Schema.Array(Schema.String),
-    actor: Schema.Struct({
+  data: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
-      display_name: Schema.String,
-      avatar_url: Schema.String,
-    }),
-    region: Schema.Struct({
-      id: Schema.String,
-      provider: Schema.String,
-      enabled: Schema.Boolean,
-      public_ip_addresses: Schema.Array(Schema.String),
-      display_name: Schema.String,
-      location: Schema.String,
-      slug: Schema.String,
-      current_default: Schema.Boolean,
-    }),
-    username: Schema.String,
-    plain_text: Schema.String,
-    replica: Schema.Boolean,
-    renewable: Schema.Boolean,
-    database_branch: Schema.Struct({
       name: Schema.String,
-      id: Schema.String,
-      production: Schema.Boolean,
-      mysql_edge_address: Schema.String,
-      private_edge_connectivity: Schema.Boolean,
+      role: Schema.Literal("reader", "writer", "admin", "readwriter"),
+      cidrs: Schema.Array(Schema.String),
+      created_at: Schema.String,
+      deleted_at: Schema.String,
+      expires_at: Schema.String,
+      last_used_at: Schema.String,
+      expired: Schema.Boolean,
+      direct_vtgate: Schema.Boolean,
+      direct_vtgate_addresses: Schema.Array(Schema.String),
+      ttl_seconds: Schema.Number,
+      access_host_url: Schema.String,
+      access_host_regional_url: Schema.String,
+      access_host_regional_urls: Schema.Array(Schema.String),
+      actor: Schema.Struct({
+        id: Schema.String,
+        display_name: Schema.String,
+        avatar_url: Schema.String,
+      }),
+      region: Schema.Struct({
+        id: Schema.String,
+        provider: Schema.String,
+        enabled: Schema.Boolean,
+        public_ip_addresses: Schema.Array(Schema.String),
+        display_name: Schema.String,
+        location: Schema.String,
+        slug: Schema.String,
+        current_default: Schema.Boolean,
+      }),
+      username: Schema.String,
+      plain_text: Schema.String,
+      replica: Schema.Boolean,
+      renewable: Schema.Boolean,
+      database_branch: Schema.Struct({
+        name: Schema.String,
+        id: Schema.String,
+        production: Schema.Boolean,
+        mysql_edge_address: Schema.String,
+        private_edge_connectivity: Schema.Boolean,
+      }),
     }),
-  })),
+  ),
 });
 export type ListPasswordsOutput = typeof ListPasswordsOutput.Type;
 

@@ -75,16 +75,11 @@ export class Retry extends Context.Tag("Retry")<Retry, Policy>() {}
 export const policy: {
   (
     options: Options,
-  ): <A, E, R>(
-    effect: Effect.Effect<A, E, R>,
-  ) => Effect.Effect<A, E, Exclude<R, Retry>>;
+  ): <A, E, R>(effect: Effect.Effect<A, E, R>) => Effect.Effect<A, E, Exclude<R, Retry>>;
   (
     factory: Factory,
-  ): <A, E, R>(
-    effect: Effect.Effect<A, E, R>,
-  ) => Effect.Effect<A, E, Exclude<R, Retry>>;
-} = (optionsOrFactory: Options | Factory) =>
-  Effect.provide(Layer.succeed(Retry, optionsOrFactory));
+  ): <A, E, R>(effect: Effect.Effect<A, E, R>) => Effect.Effect<A, E, Exclude<R, Retry>>;
+} = (optionsOrFactory: Options | Factory) => Effect.provide(Layer.succeed(Retry, optionsOrFactory));
 
 /**
  * Disables all automatic retries.

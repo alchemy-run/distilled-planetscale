@@ -1,6 +1,5 @@
 import { Effect, Schedule } from "effect";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { PlanetScaleApiError } from "../src/client";
 import { Forbidden, NotFound } from "../src/errors";
 import { createBackup } from "../src/operations/createBackup";
 import { deleteBackup } from "../src/operations/deleteBackup";
@@ -30,7 +29,9 @@ const waitForBackupComplete = (
   Effect.retry(
     getBackup({ organization, database, branch, id: backupId }).pipe(
       Effect.tap((b) =>
-        Effect.sync(() => process.stderr.write(`[${TEST_SUFFIX}] waiting for backup: state=${b.state}\n`)),
+        Effect.sync(() =>
+          process.stderr.write(`[${TEST_SUFFIX}] waiting for backup: state=${b.state}\n`),
+        ),
       ),
       Effect.flatMap((b) =>
         b.state === "success" || b.state === "failed" || b.state === "canceled"
@@ -50,16 +51,6 @@ const waitForBackupComplete = (
  */
 const isNotFoundOrForbidden = (error: unknown): boolean =>
   error instanceof NotFound || error instanceof Forbidden;
-
-/**
- * Helper to check if an error is any API error type.
- * Includes both specific error types and the generic PlanetScaleApiError.
- */
-const isApiError = (error: unknown): boolean =>
-  error instanceof NotFound ||
-  error instanceof Forbidden ||
-  error instanceof PlanetScaleApiError ||
-  (error !== null && typeof error === "object" && "_tag" in error);
 
 describe("backups", () => {
   beforeAll(async () => {
@@ -345,7 +336,6 @@ describe("backups", () => {
       expect(error).not.toBeNull();
       expect(isNotFoundOrForbidden(error)).toBe(true);
     });
-
   });
 
   // ============================================================================
@@ -444,7 +434,6 @@ describe("backups", () => {
     it("can update backup protection status", async () => {
       const db = getDb();
       const backupName = `test-protect-${Date.now()}`;
-      let createdBackup: { id: string; protected: boolean } | null = null;
 
       try {
         // Create backup
@@ -458,8 +447,6 @@ describe("backups", () => {
             retention_value: 1,
           }),
         );
-
-        createdBackup = created;
 
         // Wait for backup to complete
         await runEffect(waitForBackupComplete(db.organization, db.name, "main", created.id));
@@ -479,7 +466,6 @@ describe("backups", () => {
 
           expect(updated.id).toBe(created.id);
           expect(updated.protected).toBe(true);
-          createdBackup = updated;
         }
 
         // Note: Some backups may not be unprotectable via API, so we just verify

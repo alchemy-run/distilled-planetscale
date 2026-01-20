@@ -8,7 +8,9 @@ export const ListDatabasePostgresCidrsInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   page: Schema.optional(Schema.Number),
   per_page: Schema.optional(Schema.Number),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/cidrs" }));
+}).pipe(
+  T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/cidrs" }),
+);
 export type ListDatabasePostgresCidrsInput = typeof ListDatabasePostgresCidrsInput.Type;
 
 // Output Schema
@@ -18,20 +20,22 @@ export const ListDatabasePostgresCidrsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    schema: Schema.String,
-    role: Schema.String,
-    cidrs: Schema.Array(Schema.String),
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-    actor: Schema.Struct({
+  data: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
-      display_name: Schema.String,
-      avatar_url: Schema.String,
+      schema: Schema.String,
+      role: Schema.String,
+      cidrs: Schema.Array(Schema.String),
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+      actor: Schema.Struct({
+        id: Schema.String,
+        display_name: Schema.String,
+        avatar_url: Schema.String,
+      }),
     }),
-  })),
+  ),
 });
 export type ListDatabasePostgresCidrsOutput = typeof ListDatabasePostgresCidrsOutput.Type;
 

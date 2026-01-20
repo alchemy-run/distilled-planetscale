@@ -8,7 +8,12 @@ export const DeleteBouncerInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   bouncer: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}",
+  }),
+);
 export type DeleteBouncerInput = typeof DeleteBouncerInput.Type;
 
 // Output Schema

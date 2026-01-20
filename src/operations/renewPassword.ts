@@ -1,7 +1,7 @@
 import * as Schema from "effect/Schema";
 import { API } from "../client";
 import * as T from "../traits";
-import { SensitiveString, SensitiveNullableString } from "../sensitive";
+import { SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const RenewPasswordInput = Schema.Struct({
@@ -9,7 +9,12 @@ export const RenewPasswordInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}/renew" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}/renew",
+  }),
+);
 export type RenewPasswordInput = typeof RenewPasswordInput.Type;
 
 // Output Schema

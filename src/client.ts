@@ -69,7 +69,9 @@ export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseEr
  * Match an API error response to the appropriate error class.
  * Returns the typed error or falls back to PlanetScaleApiError.
  */
-const matchApiError = (errorBody: unknown): Effect.Effect<never, ApiError | PlanetScaleApiError> => {
+const matchApiError = (
+  errorBody: unknown,
+): Effect.Effect<never, ApiError | PlanetScaleApiError> => {
   try {
     const parsed = Schema.decodeUnknownSync(ApiErrorResponse)(errorBody);
     const ErrorClass = ERROR_CODE_MAP[parsed.code as keyof typeof ERROR_CODE_MAP];
@@ -95,8 +97,10 @@ interface OperationConfig<I extends Schema.Schema.Any, O extends Schema.Schema.A
 }
 
 // Paginated operation configuration
-interface PaginatedOperationConfig<I extends Schema.Schema.Any, O extends Schema.Schema.Any>
-  extends OperationConfig<I, O> {
+interface PaginatedOperationConfig<
+  I extends Schema.Schema.Any,
+  O extends Schema.Schema.Any,
+> extends OperationConfig<I, O> {
   /** Pagination trait describing the input/output token fields */
   pagination?: PaginatedTrait;
 }

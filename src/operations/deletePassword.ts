@@ -8,7 +8,12 @@ export const DeletePasswordInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords/{id}",
+  }),
+);
 export type DeletePasswordInput = typeof DeletePasswordInput.Type;
 
 // Output Schema

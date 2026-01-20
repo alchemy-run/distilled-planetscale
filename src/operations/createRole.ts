@@ -9,8 +9,31 @@ export const CreateRoleInput = Schema.Struct({
   branch: Schema.String.pipe(T.PathParam()),
   name: Schema.optional(Schema.String),
   ttl: Schema.optional(Schema.Number),
-  inherited_roles: Schema.optional(Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres"))),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles" }));
+  inherited_roles: Schema.optional(
+    Schema.Array(
+      Schema.Literal(
+        "pscale_managed",
+        "pg_checkpoint",
+        "pg_create_subscription",
+        "pg_maintain",
+        "pg_monitor",
+        "pg_read_all_data",
+        "pg_read_all_settings",
+        "pg_read_all_stats",
+        "pg_signal_backend",
+        "pg_stat_scan_tables",
+        "pg_use_reserved_connections",
+        "pg_write_all_data",
+        "postgres",
+      ),
+    ),
+  ),
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles",
+  }),
+);
 export type CreateRoleInput = typeof CreateRoleInput.Type;
 
 // Output Schema
@@ -33,7 +56,23 @@ export const CreateRoleOutput = Schema.Struct({
   expired: Schema.Boolean,
   default: Schema.Boolean,
   ttl: Schema.Number,
-  inherited_roles: Schema.Array(Schema.Literal("pscale_managed", "pg_checkpoint", "pg_create_subscription", "pg_maintain", "pg_monitor", "pg_read_all_data", "pg_read_all_settings", "pg_read_all_stats", "pg_signal_backend", "pg_stat_scan_tables", "pg_use_reserved_connections", "pg_write_all_data", "postgres")),
+  inherited_roles: Schema.Array(
+    Schema.Literal(
+      "pscale_managed",
+      "pg_checkpoint",
+      "pg_create_subscription",
+      "pg_maintain",
+      "pg_monitor",
+      "pg_read_all_data",
+      "pg_read_all_settings",
+      "pg_read_all_stats",
+      "pg_signal_backend",
+      "pg_stat_scan_tables",
+      "pg_use_reserved_connections",
+      "pg_write_all_data",
+      "postgres",
+    ),
+  ),
   branch: Schema.Struct({
     id: Schema.String,
     name: Schema.String,

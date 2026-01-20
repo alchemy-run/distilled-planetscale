@@ -9,7 +9,12 @@ export const UpdateKeyspaceVschemaInput = Schema.Struct({
   branch: Schema.String.pipe(T.PathParam()),
   keyspace: Schema.String.pipe(T.PathParam()),
   vschema: Schema.String,
-}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}/vschema" }));
+}).pipe(
+  T.Http({
+    method: "PATCH",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}/vschema",
+  }),
+);
 export type UpdateKeyspaceVschemaInput = typeof UpdateKeyspaceVschemaInput.Type;
 
 // Output Schema

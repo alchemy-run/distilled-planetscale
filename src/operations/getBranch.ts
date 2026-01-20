@@ -7,7 +7,12 @@ export const GetBranchInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}",
+  }),
+);
 export type GetBranchInput = typeof GetBranchInput.Type;
 
 // Output Schema
@@ -41,13 +46,15 @@ export const GetBranchOutput = Schema.Struct({
     display_name: Schema.String,
     avatar_url: Schema.String,
   }),
-  restored_from_branch: Schema.NullOr(Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    deleted_at: Schema.String,
-  })),
+  restored_from_branch: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.String,
+      name: Schema.String,
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      deleted_at: Schema.String,
+    }),
+  ),
   private_edge_connectivity: Schema.Boolean,
   has_replicas: Schema.Boolean,
   has_read_only_replicas: Schema.Boolean,

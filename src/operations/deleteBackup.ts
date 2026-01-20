@@ -8,7 +8,12 @@ export const DeleteBackupInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/backups/{id}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/backups/{id}",
+  }),
+);
 export type DeleteBackupInput = typeof DeleteBackupInput.Type;
 
 // Output Schema

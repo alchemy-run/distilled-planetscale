@@ -20,7 +20,6 @@ const NON_EXISTENT_DB = "this-database-definitely-does-not-exist-12345";
 const NON_EXISTENT_BRANCH = "this-branch-definitely-does-not-exist-12345";
 const NON_EXISTENT_BOUNCER = "this-bouncer-definitely-does-not-exist-12345";
 
-
 /**
  * Helper to check if an error is an expected "not found" type error.
  * PlanetScale API may return NotFound or Forbidden for non-existent resources.

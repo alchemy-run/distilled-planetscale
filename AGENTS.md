@@ -61,18 +61,18 @@ PLANETSCALE_ORGANIZATION=<your-org-name>
 
 The package provides multiple entry points for tree-shaking and targeted imports:
 
-| Export Path                   | Description                                    |
-| ----------------------------- | ---------------------------------------------- |
-| `distilled-planetscale`       | Main entry - all exports                       |
-| `distilled-planetscale/Category` | Error categories and predicates             |
-| `distilled-planetscale/Client`   | API factory and error types                 |
-| `distilled-planetscale/Credentials` | Credentials service and layers           |
-| `distilled-planetscale/Errors`   | Base error types                            |
-| `distilled-planetscale/Operations` | All API operations                        |
-| `distilled-planetscale/Pagination` | Pagination utilities                      |
-| `distilled-planetscale/Retry`    | Retry policy configuration                  |
-| `distilled-planetscale/Sensitive` | Sensitive data schemas                     |
-| `distilled-planetscale/Traits`   | HTTP/API trait annotations                  |
+| Export Path                         | Description                     |
+| ----------------------------------- | ------------------------------- |
+| `distilled-planetscale`             | Main entry - all exports        |
+| `distilled-planetscale/Category`    | Error categories and predicates |
+| `distilled-planetscale/Client`      | API factory and error types     |
+| `distilled-planetscale/Credentials` | Credentials service and layers  |
+| `distilled-planetscale/Errors`      | Base error types                |
+| `distilled-planetscale/Operations`  | All API operations              |
+| `distilled-planetscale/Pagination`  | Pagination utilities            |
+| `distilled-planetscale/Retry`       | Retry policy configuration      |
+| `distilled-planetscale/Sensitive`   | Sensitive data schemas          |
+| `distilled-planetscale/Traits`      | HTTP/API trait annotations      |
 
 ### Import Examples
 
@@ -123,17 +123,17 @@ export const getOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
 
 All operations use the same global error classes defined in `src/errors.ts`:
 
-| Error Class          | API Error Code          | Category          |
-| -------------------- | ----------------------- | ----------------- |
-| `Unauthorized`       | `unauthorized`          | `AuthError`       |
-| `Forbidden`          | `forbidden`             | `AuthError`       |
-| `NotFound`           | `not_found`             | `NotFoundError`   |
-| `Conflict`           | `conflict`              | `ConflictError`   |
-| `UnprocessableEntity`| `unprocessable_entity`  | `BadRequestError` |
-| `BadRequest`         | `bad_request`           | `BadRequestError` |
-| `TooManyRequests`    | `too_many_requests`     | `ThrottlingError` |
-| `InternalServerError`| `internal_server_error` | `ServerError`     |
-| `ServiceUnavailable` | `service_unavailable`   | `ServerError`     |
+| Error Class           | API Error Code          | Category          |
+| --------------------- | ----------------------- | ----------------- |
+| `Unauthorized`        | `unauthorized`          | `AuthError`       |
+| `Forbidden`           | `forbidden`             | `AuthError`       |
+| `NotFound`            | `not_found`             | `NotFoundError`   |
+| `Conflict`            | `conflict`              | `ConflictError`   |
+| `UnprocessableEntity` | `unprocessable_entity`  | `BadRequestError` |
+| `BadRequest`          | `bad_request`           | `BadRequestError` |
+| `TooManyRequests`     | `too_many_requests`     | `ThrottlingError` |
+| `InternalServerError` | `internal_server_error` | `ServerError`     |
+| `ServiceUnavailable`  | `service_unavailable`   | `ServerError`     |
 
 The client automatically maps API error codes to these global error classes.
 
@@ -225,12 +225,7 @@ const program = myOperation().pipe(
 ```typescript
 import { FetchHttpClient } from "@effect/platform";
 import { Effect, Layer } from "effect";
-import {
-  getOrganization,
-  NotFound,
-  Credentials,
-  CredentialsLive,
-} from "distilled-planetscale";
+import { getOrganization, NotFound, Credentials, CredentialsLive } from "distilled-planetscale";
 
 const MainLayer = Layer.merge(CredentialsLive, FetchHttpClient.layer);
 
@@ -239,9 +234,7 @@ const program = Effect.gen(function* () {
   const org = yield* getOrganization({ organization });
   console.log(org);
 }).pipe(
-  Effect.catchTag("NotFound", (e) =>
-    Effect.log(`Resource not found: ${e.message}`),
-  ),
+  Effect.catchTag("NotFound", (e) => Effect.log(`Resource not found: ${e.message}`)),
   Effect.provide(MainLayer),
 );
 
@@ -511,10 +504,10 @@ For operations that require an existing database (branches, passwords, deploy re
 
 #### Available Helpers
 
-| Helper                      | Service Tag            | Database Name            |
-| --------------------------- | ---------------------- | ------------------------ |
-| `MySqlTestDatabaseLive`     | `MySqlTestDatabase`    | `distilled-test-mysql`   |
-| `PostgresTestDatabaseLive`  | `PostgresTestDatabase` | `distilled-test-postgres`|
+| Helper                     | Service Tag            | Database Name             |
+| -------------------------- | ---------------------- | ------------------------- |
+| `MySqlTestDatabaseLive`    | `MySqlTestDatabase`    | `distilled-test-mysql`    |
+| `PostgresTestDatabaseLive` | `PostgresTestDatabase` | `distilled-test-postgres` |
 
 #### Usage with @effect/vitest
 
@@ -536,7 +529,7 @@ layer(MySqlTestDatabaseLive)("listBranches", (it) => {
         database: db.name,
       });
       expect(result.data).toBeDefined();
-    })
+    }),
   );
 });
 ```
@@ -551,11 +544,13 @@ layer(MySqlTestDatabaseLive)("listBranches", (it) => {
 #### When to Use
 
 Use test database helpers when testing operations that:
+
 - Require a `database` parameter (branches, passwords, deploy requests, etc.)
 - Need to create resources within a database
 - Would otherwise need to create and clean up a database per test
 
 Do NOT use for:
+
 - Simple operations like `getOrganization`, `listDatabases`
 - Error handling tests with non-existent resources
 

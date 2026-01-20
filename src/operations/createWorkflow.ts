@@ -13,7 +13,9 @@ export const CreateWorkflowInput = Schema.Struct({
   defer_secondary_keys: Schema.optional(Schema.Boolean),
   on_ddl: Schema.optional(Schema.Literal("IGNORE", "STOP", "EXEC", "EXEC_IGNORE")),
   tables: Schema.Array(Schema.String),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/workflows" }));
+}).pipe(
+  T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/workflows" }),
+);
 export type CreateWorkflowInput = typeof CreateWorkflowInput.Type;
 
 // Output Schema
@@ -21,7 +23,27 @@ export const CreateWorkflowOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   number: Schema.Number,
-  state: Schema.Literal("pending", "copying", "running", "stopped", "verifying_data", "verified_data", "switching_replicas", "switched_replicas", "switching_primaries", "switched_primaries", "reversing_traffic", "reversing_traffic_for_cancel", "cutting_over", "cutover", "reversed_cutover", "completed", "cancelling", "cancelled", "error"),
+  state: Schema.Literal(
+    "pending",
+    "copying",
+    "running",
+    "stopped",
+    "verifying_data",
+    "verified_data",
+    "switching_replicas",
+    "switched_replicas",
+    "switching_primaries",
+    "switched_primaries",
+    "reversing_traffic",
+    "reversing_traffic_for_cancel",
+    "cutting_over",
+    "cutover",
+    "reversed_cutover",
+    "completed",
+    "cancelling",
+    "cancelled",
+    "error",
+  ),
   created_at: Schema.String,
   updated_at: Schema.String,
   started_at: Schema.String,

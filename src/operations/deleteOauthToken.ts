@@ -7,7 +7,12 @@ export const DeleteOauthTokenInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   application_id: Schema.String.pipe(T.PathParam()),
   token_id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/oauth-applications/{application_id}/tokens/{token_id}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/oauth-applications/{application_id}/tokens/{token_id}",
+  }),
+);
 export type DeleteOauthTokenInput = typeof DeleteOauthTokenInput.Type;
 
 // Output Schema

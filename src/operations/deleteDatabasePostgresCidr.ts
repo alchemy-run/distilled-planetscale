@@ -7,7 +7,12 @@ export const DeleteDatabasePostgresCidrInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/cidrs/{id}",
+  }),
+);
 export type DeleteDatabasePostgresCidrInput = typeof DeleteDatabasePostgresCidrInput.Type;
 
 // Output Schema

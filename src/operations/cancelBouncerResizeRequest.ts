@@ -8,7 +8,12 @@ export const CancelBouncerResizeRequestInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   bouncer: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}/resizes" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}/resizes",
+  }),
+);
 export type CancelBouncerResizeRequestInput = typeof CancelBouncerResizeRequestInput.Type;
 
 // Output Schema

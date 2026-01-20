@@ -7,7 +7,12 @@ export const DeleteWebhookInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/webhooks/{id}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/webhooks/{id}",
+  }),
+);
 export type DeleteWebhookInput = typeof DeleteWebhookInput.Type;
 
 // Output Schema

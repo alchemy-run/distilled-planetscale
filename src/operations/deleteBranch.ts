@@ -7,7 +7,12 @@ export const DeleteBranchInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}",
+  }),
+);
 export type DeleteBranchInput = typeof DeleteBranchInput.Type;
 
 // Output Schema

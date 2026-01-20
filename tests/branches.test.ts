@@ -486,8 +486,8 @@ describe("branches", () => {
       expect(isNotFoundOrForbidden(error)).toBe(true);
     });
 
-    // This test creates an actual branch - skip by default as it's slow
-    it("can create and delete a branch", async () => {
+    // This test creates an actual branch - it's slow due to provisioning time
+    it("can create and delete a branch", { timeout: 120000 }, async () => {
       const db = getDb();
       const branchName = `test-${Date.now()}`;
 

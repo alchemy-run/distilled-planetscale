@@ -10,7 +10,9 @@ export const UpdateDatabasePostgresCidrInput = Schema.Struct({
   schema: Schema.optional(Schema.String),
   role: Schema.optional(Schema.String),
   cidrs: Schema.optional(Schema.Array(Schema.String)),
-}).pipe(T.Http({ method: "PUT", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }));
+}).pipe(
+  T.Http({ method: "PUT", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }),
+);
 export type UpdateDatabasePostgresCidrInput = typeof UpdateDatabasePostgresCidrInput.Type;
 
 // Output Schema

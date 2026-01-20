@@ -10,7 +10,12 @@ export const UpdateWebhookInput = Schema.Struct({
   url: Schema.optional(Schema.String),
   enabled: Schema.optional(Schema.Boolean),
   events: Schema.optional(Schema.Array(Schema.String)),
-}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/webhooks/{id}" }));
+}).pipe(
+  T.Http({
+    method: "PATCH",
+    path: "/organizations/{organization}/databases/{database}/webhooks/{id}",
+  }),
+);
 export type UpdateWebhookInput = typeof UpdateWebhookInput.Type;
 
 // Output Schema
@@ -24,7 +29,28 @@ export const UpdateWebhookOutput = Schema.Struct({
   last_sent_at: Schema.NullOr(Schema.String),
   created_at: Schema.String,
   updated_at: Schema.String,
-  events: Schema.Array(Schema.Literal("branch.ready", "branch.anomaly", "branch.primary_promoted", "branch.schema_recommendation", "branch.sleeping", "branch.start_maintenance", "cluster.storage", "database.access_request", "deploy_request.closed", "deploy_request.errored", "deploy_request.in_progress", "deploy_request.opened", "deploy_request.pending_cutover", "deploy_request.queued", "deploy_request.reverted", "deploy_request.schema_applied", "keyspace.storage", "webhook.test")),
+  events: Schema.Array(
+    Schema.Literal(
+      "branch.ready",
+      "branch.anomaly",
+      "branch.primary_promoted",
+      "branch.schema_recommendation",
+      "branch.sleeping",
+      "branch.start_maintenance",
+      "cluster.storage",
+      "database.access_request",
+      "deploy_request.closed",
+      "deploy_request.errored",
+      "deploy_request.in_progress",
+      "deploy_request.opened",
+      "deploy_request.pending_cutover",
+      "deploy_request.queued",
+      "deploy_request.reverted",
+      "deploy_request.schema_applied",
+      "keyspace.storage",
+      "webhook.test",
+    ),
+  ),
 });
 export type UpdateWebhookOutput = typeof UpdateWebhookOutput.Type;
 

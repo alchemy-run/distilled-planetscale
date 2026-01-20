@@ -8,7 +8,12 @@ export const DeleteKeyspaceInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   keyspace: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}",
+  }),
+);
 export type DeleteKeyspaceInput = typeof DeleteKeyspaceInput.Type;
 
 // Output Schema

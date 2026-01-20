@@ -48,8 +48,7 @@ export interface Annotation {
  * Create an annotation builder for a given symbol and value
  */
 function makeAnnotation<T>(sym: symbol, value: T): Annotation {
-  const fn = <A extends Annotatable>(schema: A): A =>
-    schema.annotations({ [sym]: value }) as A;
+  const fn = <A extends Annotatable>(schema: A): A => schema.annotations({ [sym]: value }) as A;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (fn as any)[annotationMetaSymbol] = [{ symbol: sym, value }];
@@ -219,7 +218,8 @@ export const getAnnotation = <T>(ast: AST.AST, symbol: symbol): T | undefined =>
 /**
  * Get HTTP trait from a schema's AST.
  */
-export const getHttpTrait = (ast: AST.AST): HttpTrait | undefined => getAnnotation<HttpTrait>(ast, httpSymbol);
+export const getHttpTrait = (ast: AST.AST): HttpTrait | undefined =>
+  getAnnotation<HttpTrait>(ast, httpSymbol);
 
 /**
  * Check if a PropertySignature has the pathParam annotation.
@@ -245,7 +245,8 @@ export const getQueryParam = (prop: AST.PropertySignature): string | boolean | u
 /**
  * Get API error code from an error class AST.
  */
-export const getApiErrorCode = (ast: AST.AST): string | undefined => getAnnotation<string>(ast, apiErrorCodeSymbol);
+export const getApiErrorCode = (ast: AST.AST): string | undefined =>
+  getAnnotation<string>(ast, apiErrorCodeSymbol);
 
 /**
  * Extract path parameters from a schema's struct properties.

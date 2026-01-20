@@ -7,7 +7,12 @@ export const GetDeployRequestThrottlerInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   number: Schema.Number.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/throttler" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/throttler",
+  }),
+);
 export type GetDeployRequestThrottlerInput = typeof GetDeployRequestThrottlerInput.Type;
 
 // Output Schema
@@ -20,10 +25,12 @@ export const GetDeployRequestThrottlerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  configurations: Schema.Array(Schema.Struct({
-    keyspace_name: Schema.String,
-    ratio: Schema.Number,
-  })),
+  configurations: Schema.Array(
+    Schema.Struct({
+      keyspace_name: Schema.String,
+      ratio: Schema.Number,
+    }),
+  ),
 });
 export type GetDeployRequestThrottlerOutput = typeof GetDeployRequestThrottlerOutput.Type;
 

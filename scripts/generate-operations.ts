@@ -118,7 +118,8 @@ function getSchemaFromResponse(
 // ============================================================================
 
 interface SchemaGenerationContext {
-  usesSensitive: boolean;
+  usesSensitiveString: boolean;
+  usesSensitiveNullableString: boolean;
 }
 
 function openApiTypeToEffectSchema(
@@ -134,7 +135,13 @@ function openApiTypeToEffectSchema(
       return "Schema.Unknown"; // Prevent infinite recursion
     }
     const resolved = resolveRef(spec, prop.$ref);
-    return openApiTypeToEffectSchema(resolved, spec, indent, new Set([...seenRefs, prop.$ref]), ctx);
+    return openApiTypeToEffectSchema(
+      resolved,
+      spec,
+      indent,
+      new Set([...seenRefs, prop.$ref]),
+      ctx,
+    );
   }
 
   // Handle enum
@@ -150,7 +157,13 @@ function openApiTypeToEffectSchema(
     case "string":
       // Check for sensitive annotation
       if (prop["x-sensitive"]) {
-        if (ctx) ctx.usesSensitive = true;
+        if (ctx) {
+          if (prop["x-nullable"]) {
+            ctx.usesSensitiveNullableString = true;
+          } else {
+            ctx.usesSensitiveString = true;
+          }
+        }
         baseSchema = prop["x-nullable"] ? "SensitiveNullableString" : "SensitiveString";
         // Return early since SensitiveNullableString already handles null
         return baseSchema;
@@ -397,20 +410,28 @@ export type ${inputSchemaName} = typeof ${inputSchemaName}.Type;`;
   return { inputSchemaCode, inputSchemaName };
 }
 
+interface SensitiveImports {
+  usesSensitiveString: boolean;
+  usesSensitiveNullableString: boolean;
+}
+
 function generateOutputSchema(
   operationId: string,
   responseSchema: SchemaObject | null,
   spec: OpenAPISpec,
-): { outputSchemaCode: string; outputSchemaName: string; usesSensitive: boolean } {
+): { outputSchemaCode: string; outputSchemaName: string; sensitiveImports: SensitiveImports } {
   const outputSchemaName = toPascalCase(operationId) + "Output";
-  const ctx: SchemaGenerationContext = { usesSensitive: false };
+  const ctx: SchemaGenerationContext = {
+    usesSensitiveString: false,
+    usesSensitiveNullableString: false,
+  };
 
   if (!responseSchema) {
     return {
       outputSchemaCode: `export const ${outputSchemaName} = Schema.Void;
 export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
       outputSchemaName,
-      usesSensitive: false,
+      sensitiveImports: { usesSensitiveString: false, usesSensitiveNullableString: false },
     };
   }
 
@@ -421,7 +442,10 @@ export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
       outputSchemaCode: `export const ${outputSchemaName} = Schema.Array(${itemSchema});
 export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
       outputSchemaName,
-      usesSensitive: ctx.usesSensitive,
+      sensitiveImports: {
+        usesSensitiveString: ctx.usesSensitiveString,
+        usesSensitiveNullableString: ctx.usesSensitiveNullableString,
+      },
     };
   }
 
@@ -431,7 +455,10 @@ export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
     outputSchemaCode: `export const ${outputSchemaName} = ${schemaCode};
 export type ${outputSchemaName} = typeof ${outputSchemaName}.Type;`,
     outputSchemaName,
-    usesSensitive: ctx.usesSensitive,
+    sensitiveImports: {
+      usesSensitiveString: ctx.usesSensitiveString,
+      usesSensitiveNullableString: ctx.usesSensitiveNullableString,
+    },
   };
 }
 
@@ -466,7 +493,7 @@ function generateOperation(
   const responseSchema = getSchemaFromResponse(spec, successResponse);
 
   // Generate output schema
-  const { outputSchemaCode, outputSchemaName, usesSensitive } = generateOutputSchema(
+  const { outputSchemaCode, outputSchemaName, sensitiveImports } = generateOutputSchema(
     operationId,
     responseSchema,
     spec,
@@ -489,8 +516,16 @@ export const ${functionName} = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
 import { API } from "../client";
 import * as T from "../traits";`;
 
-  if (usesSensitive) {
-    imports += `\nimport { SensitiveString, SensitiveNullableString } from "../sensitive";`;
+  // Add sensitive imports only for the types actually used
+  const sensitiveTypesToImport: string[] = [];
+  if (sensitiveImports.usesSensitiveString) {
+    sensitiveTypesToImport.push("SensitiveString");
+  }
+  if (sensitiveImports.usesSensitiveNullableString) {
+    sensitiveTypesToImport.push("SensitiveNullableString");
+  }
+  if (sensitiveTypesToImport.length > 0) {
+    imports += `\nimport { ${sensitiveTypesToImport.join(", ")} } from "../sensitive";`;
   }
 
   const code = [

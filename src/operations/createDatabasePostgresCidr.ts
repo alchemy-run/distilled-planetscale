@@ -9,7 +9,9 @@ export const CreateDatabasePostgresCidrInput = Schema.Struct({
   schema: Schema.optional(Schema.String),
   role: Schema.optional(Schema.String),
   cidrs: Schema.Array(Schema.String),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/cidrs" }));
+}).pipe(
+  T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/cidrs" }),
+);
 export type CreateDatabasePostgresCidrInput = typeof CreateDatabasePostgresCidrInput.Type;
 
 // Output Schema

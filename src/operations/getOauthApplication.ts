@@ -6,7 +6,12 @@ import * as T from "../traits";
 export const GetOauthApplicationInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   application_id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/oauth-applications/{application_id}" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/oauth-applications/{application_id}",
+  }),
+);
 export type GetOauthApplicationInput = typeof GetOauthApplicationInput.Type;
 
 // Output Schema

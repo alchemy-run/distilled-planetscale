@@ -9,16 +9,23 @@ export const GetBranchSchemaInput = Schema.Struct({
   branch: Schema.String.pipe(T.PathParam()),
   keyspace: Schema.optional(Schema.String),
   namespace: Schema.optional(Schema.String),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/schema" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/schema",
+  }),
+);
 export type GetBranchSchemaInput = typeof GetBranchSchemaInput.Type;
 
 // Output Schema
 export const GetBranchSchemaOutput = Schema.Struct({
-  data: Schema.Array(Schema.Struct({
-    name: Schema.String,
-    html: Schema.String,
-    raw: Schema.String,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      name: Schema.String,
+      html: Schema.String,
+      raw: Schema.String,
+    }),
+  ),
 });
 export type GetBranchSchemaOutput = typeof GetBranchSchemaOutput.Type;
 

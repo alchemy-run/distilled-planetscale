@@ -8,7 +8,12 @@ export const UpdateBranchClusterConfigInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   cluster_size: Schema.String,
-}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/cluster" }));
+}).pipe(
+  T.Http({
+    method: "PATCH",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/cluster",
+  }),
+);
 export type UpdateBranchClusterConfigInput = typeof UpdateBranchClusterConfigInput.Type;
 
 // Output Schema

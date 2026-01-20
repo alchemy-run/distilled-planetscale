@@ -16,15 +16,17 @@ export const ListPublicRegionsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    provider: Schema.String,
-    enabled: Schema.Boolean,
-    public_ip_addresses: Schema.Array(Schema.String),
-    display_name: Schema.String,
-    location: Schema.String,
-    slug: Schema.String,
-  })),
+  data: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      provider: Schema.String,
+      enabled: Schema.Boolean,
+      public_ip_addresses: Schema.Array(Schema.String),
+      display_name: Schema.String,
+      location: Schema.String,
+      slug: Schema.String,
+    }),
+  ),
 });
 export type ListPublicRegionsOutput = typeof ListPublicRegionsOutput.Type;
 

@@ -212,7 +212,7 @@ describe("invoices", () => {
 
     it("can get invoice line items with pagination (when invoice exists)", async () => {
       const organization = await Effect.runPromise(getOrganization());
-      
+
       // First try to get a list of invoices
       const invoicesResult = await runEffect(
         listInvoices({ organization }).pipe(

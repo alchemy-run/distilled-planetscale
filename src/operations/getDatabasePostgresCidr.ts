@@ -7,7 +7,9 @@ export const GetDatabasePostgresCidrInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }));
+}).pipe(
+  T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/cidrs/{id}" }),
+);
 export type GetDatabasePostgresCidrInput = typeof GetDatabasePostgresCidrInput.Type;
 
 // Output Schema

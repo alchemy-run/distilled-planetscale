@@ -1,7 +1,7 @@
 import * as Schema from "effect/Schema";
 import { API } from "../client";
 import * as T from "../traits";
-import { SensitiveString, SensitiveNullableString } from "../sensitive";
+import { SensitiveNullableString } from "../sensitive";
 
 // Input Schema
 export const CreatePasswordInput = Schema.Struct({
@@ -14,7 +14,12 @@ export const CreatePasswordInput = Schema.Struct({
   ttl: Schema.optional(Schema.Number),
   cidrs: Schema.optional(Schema.Array(Schema.String)),
   direct_vtgate: Schema.optional(Schema.Boolean),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/passwords",
+  }),
+);
 export type CreatePasswordInput = typeof CreatePasswordInput.Type;
 
 // Output Schema

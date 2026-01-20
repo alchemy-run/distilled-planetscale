@@ -8,7 +8,12 @@ export const GetQueryPatternsReportStatusInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns/{id}" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns/{id}",
+  }),
+);
 export type GetQueryPatternsReportStatusInput = typeof GetQueryPatternsReportStatusInput.Type;
 
 // Output Schema

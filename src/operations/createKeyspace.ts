@@ -11,7 +11,12 @@ export const CreateKeyspaceInput = Schema.Struct({
   cluster_size: Schema.String,
   extra_replicas: Schema.optional(Schema.Number),
   shards: Schema.optional(Schema.Number),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces",
+  }),
+);
 export type CreateKeyspaceInput = typeof CreateKeyspaceInput.Type;
 
 // Output Schema

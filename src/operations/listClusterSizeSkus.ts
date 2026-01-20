@@ -12,24 +12,26 @@ export const ListClusterSizeSkusInput = Schema.Struct({
 export type ListClusterSizeSkusInput = typeof ListClusterSizeSkusInput.Type;
 
 // Output Schema
-export const ListClusterSizeSkusOutput = Schema.Array(Schema.Struct({
-  name: Schema.String,
-  display_name: Schema.String,
-  cpu: Schema.String,
-  storage: Schema.optional(Schema.NullOr(Schema.Number)),
-  ram: Schema.Number,
-  metal: Schema.Boolean,
-  enabled: Schema.Boolean,
-  provider: Schema.optional(Schema.NullOr(Schema.String)),
-  default_vtgate: Schema.String,
-  default_vtgate_rate: Schema.optional(Schema.NullOr(Schema.Number)),
-  replica_rate: Schema.optional(Schema.NullOr(Schema.Number)),
-  rate: Schema.optional(Schema.NullOr(Schema.Number)),
-  sort_order: Schema.Number,
-  architecture: Schema.optional(Schema.NullOr(Schema.String)),
-  development: Schema.Boolean,
-  production: Schema.Boolean,
-}));
+export const ListClusterSizeSkusOutput = Schema.Array(
+  Schema.Struct({
+    name: Schema.String,
+    display_name: Schema.String,
+    cpu: Schema.String,
+    storage: Schema.optional(Schema.NullOr(Schema.Number)),
+    ram: Schema.Number,
+    metal: Schema.Boolean,
+    enabled: Schema.Boolean,
+    provider: Schema.optional(Schema.NullOr(Schema.String)),
+    default_vtgate: Schema.String,
+    default_vtgate_rate: Schema.optional(Schema.NullOr(Schema.Number)),
+    replica_rate: Schema.optional(Schema.NullOr(Schema.Number)),
+    rate: Schema.optional(Schema.NullOr(Schema.Number)),
+    sort_order: Schema.Number,
+    architecture: Schema.optional(Schema.NullOr(Schema.String)),
+    development: Schema.Boolean,
+    production: Schema.Boolean,
+  }),
+);
 export type ListClusterSizeSkusOutput = typeof ListClusterSizeSkusOutput.Type;
 
 // The operation

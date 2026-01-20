@@ -1,6 +1,5 @@
 import { Effect } from "effect";
 import { describe, expect, it } from "vitest";
-import { PlanetScaleApiError } from "../src/client";
 import { Credentials } from "../src/credentials";
 import { Forbidden, NotFound } from "../src/errors";
 import { listClusterSizeSkus } from "../src/operations/listClusterSizeSkus";
@@ -15,16 +14,6 @@ const NON_EXISTENT_ORG = "this-org-definitely-does-not-exist-12345";
  */
 const isNotFoundOrForbidden = (error: unknown): boolean =>
   error instanceof NotFound || error instanceof Forbidden;
-
-/**
- * Helper to check if an error is any API error type.
- * Includes both specific error types and the generic PlanetScaleApiError.
- */
-const isApiError = (error: unknown): boolean =>
-  error instanceof NotFound ||
-  error instanceof Forbidden ||
-  error instanceof PlanetScaleApiError ||
-  (error !== null && typeof error === "object" && "_tag" in error);
 
 /**
  * Get the organization name from credentials

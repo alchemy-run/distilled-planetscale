@@ -9,7 +9,12 @@ export const DeleteRoleInput = Schema.Struct({
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
   successor: Schema.optional(Schema.String),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}",
+  }),
+);
 export type DeleteRoleInput = typeof DeleteRoleInput.Type;
 
 // Output Schema

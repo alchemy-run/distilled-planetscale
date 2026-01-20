@@ -37,17 +37,13 @@ import * as S from "effect/Schema";
 export const Sensitive = <A, I, R>(
   schema: S.Schema<A, I, R>,
 ): S.Schema<A | Redacted.Redacted<A>, I, R> =>
-  S.transform(
-    schema,
-    S.Union(S.typeSchema(schema), S.RedactedFromSelf(S.typeSchema(schema))),
-    {
-      strict: true,
-      // Decode: wire format → always wrap in Redacted
-      decode: (a) => Redacted.make(a),
-      // Encode: accept both raw and Redacted → extract raw value
-      encode: (v) => (Redacted.isRedacted(v) ? Redacted.value(v) : v),
-    },
-  ).annotations({
+  S.transform(schema, S.Union(S.typeSchema(schema), S.RedactedFromSelf(S.typeSchema(schema))), {
+    strict: true,
+    // Decode: wire format → always wrap in Redacted
+    decode: (a) => Redacted.make(a),
+    // Encode: accept both raw and Redacted → extract raw value
+    encode: (v) => (Redacted.isRedacted(v) ? Redacted.value(v) : v),
+  }).annotations({
     identifier: `Sensitive<${schema.ast.annotations?.identifier ?? "unknown"}>`,
   });
 

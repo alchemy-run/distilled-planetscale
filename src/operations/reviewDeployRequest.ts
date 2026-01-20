@@ -9,7 +9,12 @@ export const ReviewDeployRequestInput = Schema.Struct({
   number: Schema.Number.pipe(T.PathParam()),
   state: Schema.optional(Schema.Literal("commented", "approved")),
   body: Schema.optional(Schema.String),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews",
+  }),
+);
 export type ReviewDeployRequestInput = typeof ReviewDeployRequestInput.Type;
 
 // Output Schema

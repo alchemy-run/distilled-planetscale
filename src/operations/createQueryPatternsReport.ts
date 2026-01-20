@@ -7,7 +7,12 @@ export const CreateQueryPatternsReportInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/query-patterns",
+  }),
+);
 export type CreateQueryPatternsReportInput = typeof CreateQueryPatternsReportInput.Type;
 
 // Output Schema

@@ -7,7 +7,12 @@ export const CancelBranchChangeRequestInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "DELETE", path: "/organizations/{organization}/databases/{database}/branches/{branch}/resizes" }));
+}).pipe(
+  T.Http({
+    method: "DELETE",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/resizes",
+  }),
+);
 export type CancelBranchChangeRequestInput = typeof CancelBranchChangeRequestInput.Type;
 
 // Output Schema

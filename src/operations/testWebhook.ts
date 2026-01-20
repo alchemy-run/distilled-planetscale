@@ -7,7 +7,12 @@ export const TestWebhookInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/webhooks/{id}/test" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/webhooks/{id}/test",
+  }),
+);
 export type TestWebhookInput = typeof TestWebhookInput.Type;
 
 // Output Schema

@@ -8,7 +8,12 @@ export const GetBranchChangeRequestInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/changes/{id}" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/changes/{id}",
+  }),
+);
 export type GetBranchChangeRequestInput = typeof GetBranchChangeRequestInput.Type;
 
 // Output Schema

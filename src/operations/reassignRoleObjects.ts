@@ -9,7 +9,12 @@ export const ReassignRoleObjectsInput = Schema.Struct({
   branch: Schema.String.pipe(T.PathParam()),
   id: Schema.String.pipe(T.PathParam()),
   successor: Schema.String,
-}).pipe(T.Http({ method: "POST", path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/reassign" }));
+}).pipe(
+  T.Http({
+    method: "POST",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/roles/{id}/reassign",
+  }),
+);
 export type ReassignRoleObjectsInput = typeof ReassignRoleObjectsInput.Type;
 
 // Output Schema

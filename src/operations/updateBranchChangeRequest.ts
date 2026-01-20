@@ -10,7 +10,12 @@ export const UpdateBranchChangeRequestInput = Schema.Struct({
   cluster_size: Schema.optional(Schema.String),
   replicas: Schema.optional(Schema.Number),
   parameters: Schema.optional(Schema.Unknown),
-}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/changes" }));
+}).pipe(
+  T.Http({
+    method: "PATCH",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/changes",
+  }),
+);
 export type UpdateBranchChangeRequestInput = typeof UpdateBranchChangeRequestInput.Type;
 
 // Output Schema

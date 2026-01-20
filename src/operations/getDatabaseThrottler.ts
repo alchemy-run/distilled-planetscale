@@ -6,7 +6,9 @@ import * as T from "../traits";
 export const GetDatabaseThrottlerInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/throttler" }));
+}).pipe(
+  T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/throttler" }),
+);
 export type GetDatabaseThrottlerInput = typeof GetDatabaseThrottlerInput.Type;
 
 // Output Schema
@@ -19,10 +21,12 @@ export const GetDatabaseThrottlerOutput = Schema.Struct({
     updated_at: Schema.String,
     deleted_at: Schema.String,
   }),
-  configurations: Schema.Array(Schema.Struct({
-    keyspace_name: Schema.String,
-    ratio: Schema.Number,
-  })),
+  configurations: Schema.Array(
+    Schema.Struct({
+      keyspace_name: Schema.String,
+      ratio: Schema.Number,
+    }),
+  ),
 });
 export type GetDatabaseThrottlerOutput = typeof GetDatabaseThrottlerOutput.Type;
 

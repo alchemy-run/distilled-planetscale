@@ -1,7 +1,6 @@
 import { Effect, Schedule } from "effect";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PlanetScaleApiError } from "../src/client";
-import { Credentials } from "../src/credentials";
 import { Forbidden, NotFound } from "../src/errors";
 import { createDatabase } from "../src/operations/createDatabase";
 import { deleteDatabase } from "../src/operations/deleteDatabase";
@@ -27,7 +26,9 @@ const waitForDatabaseReady = (organization: string, database: string) =>
   Effect.retry(
     getDatabase({ organization, database }).pipe(
       Effect.tap((db) =>
-        Effect.sync(() => process.stderr.write(`[${TEST_SUFFIX}] waiting for database: state=${db.state}\n`)),
+        Effect.sync(() =>
+          process.stderr.write(`[${TEST_SUFFIX}] waiting for database: state=${db.state}\n`),
+        ),
       ),
       Effect.flatMap((db) =>
         db.state === "ready"

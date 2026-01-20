@@ -11,7 +11,12 @@ export const UpdateBouncerResizeRequestInput = Schema.Struct({
   bouncer_size: Schema.optional(Schema.String),
   replicas_per_cell: Schema.optional(Schema.Number),
   parameters: Schema.optional(Schema.Unknown),
-}).pipe(T.Http({ method: "PATCH", path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}/resizes" }));
+}).pipe(
+  T.Http({
+    method: "PATCH",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/bouncers/{bouncer}/resizes",
+  }),
+);
 export type UpdateBouncerResizeRequestInput = typeof UpdateBouncerResizeRequestInput.Type;
 
 // Output Schema

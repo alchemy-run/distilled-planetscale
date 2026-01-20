@@ -7,7 +7,12 @@ export const ListDeployRequestReviewsInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
   database: Schema.String.pipe(T.PathParam()),
   number: Schema.Number.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/deploy-requests/{number}/reviews",
+  }),
+);
 export type ListDeployRequestReviewsInput = typeof ListDeployRequestReviewsInput.Type;
 
 // Output Schema
@@ -17,19 +22,21 @@ export const ListDeployRequestReviewsOutput = Schema.Struct({
   next_page_url: Schema.NullOr(Schema.String),
   prev_page: Schema.NullOr(Schema.Number),
   prev_page_url: Schema.NullOr(Schema.String),
-  data: Schema.Array(Schema.Struct({
-    id: Schema.String,
-    body: Schema.String,
-    html_body: Schema.String,
-    state: Schema.Literal("commented", "approved"),
-    created_at: Schema.String,
-    updated_at: Schema.String,
-    actor: Schema.Struct({
+  data: Schema.Array(
+    Schema.Struct({
       id: Schema.String,
-      display_name: Schema.String,
-      avatar_url: Schema.String,
+      body: Schema.String,
+      html_body: Schema.String,
+      state: Schema.Literal("commented", "approved"),
+      created_at: Schema.String,
+      updated_at: Schema.String,
+      actor: Schema.Struct({
+        id: Schema.String,
+        display_name: Schema.String,
+        avatar_url: Schema.String,
+      }),
     }),
-  })),
+  ),
 });
 export type ListDeployRequestReviewsOutput = typeof ListDeployRequestReviewsOutput.Type;
 

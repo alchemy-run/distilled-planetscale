@@ -69,7 +69,9 @@ export const setupTestDatabase = (suffix?: string) =>
     log(prefix, "checking for existing database...");
 
     const existing = yield* getDatabase({ organization, database: databaseName }).pipe(
-      Effect.tap((db) => Effect.sync(() => log(prefix, `found existing database: state=${db.state}`))),
+      Effect.tap((db) =>
+        Effect.sync(() => log(prefix, `found existing database: state=${db.state}`)),
+      ),
       Effect.catchTag("NotFound", () => {
         log(prefix, "database not found, will create");
         return Effect.succeed(null);

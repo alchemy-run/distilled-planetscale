@@ -8,7 +8,12 @@ export const GetKeyspaceInput = Schema.Struct({
   database: Schema.String.pipe(T.PathParam()),
   branch: Schema.String.pipe(T.PathParam()),
   keyspace: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}" }));
+}).pipe(
+  T.Http({
+    method: "GET",
+    path: "/organizations/{organization}/databases/{database}/branches/{branch}/keyspaces/{keyspace}",
+  }),
+);
 export type GetKeyspaceInput = typeof GetKeyspaceInput.Type;
 
 // Output Schema
