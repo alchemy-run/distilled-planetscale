@@ -5,7 +5,6 @@ import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as Category from "./category";
 import { Credentials } from "./credentials";
-import type { ApiError } from "./errors";
 import {
   BadRequest,
   Conflict,
@@ -71,7 +70,7 @@ export class PlanetScaleParseError extends Schema.TaggedError<PlanetScaleParseEr
  */
 const matchApiError = (
   errorBody: unknown,
-): Effect.Effect<never, ApiError | PlanetScaleApiError> => {
+): Effect.Effect<never, InstanceType<(typeof ERROR_CODE_MAP)[keyof typeof ERROR_CODE_MAP]> | PlanetScaleApiError> => {
   try {
     const parsed = Schema.decodeUnknownSync(ApiErrorResponse)(errorBody);
     const ErrorClass = ERROR_CODE_MAP[parsed.code as keyof typeof ERROR_CODE_MAP];
@@ -90,17 +89,74 @@ const matchApiError = (
   }
 };
 
-// Operation configuration
-interface OperationConfig<I extends Schema.Schema.Any, O extends Schema.Schema.Any> {
+// ============================================================================
+// Error Types
+// ============================================================================
+
+/**
+ * Base API error type - any error class with a message field.
+ */
+export type ApiErrorClass = typeof Unauthorized | typeof Forbidden | typeof NotFound |
+  typeof Conflict | typeof UnprocessableEntity | typeof BadRequest |
+  typeof TooManyRequests | typeof InternalServerError | typeof ServiceUnavailable;
+
+/**
+ * Default errors that apply to ALL operations.
+ * These are infrastructure-level errors that can occur regardless of the operation.
+ */
+export const DEFAULT_ERRORS = [
+  Unauthorized,
+  TooManyRequests,
+  InternalServerError,
+  ServiceUnavailable,
+] as const;
+
+export type DefaultErrors = InstanceType<(typeof DEFAULT_ERRORS)[number]>;
+
+/**
+ * Client-level errors that can occur for any operation.
+ */
+export type ClientErrors =
+  | PlanetScaleApiError
+  | PlanetScaleParseError
+  | HttpClientError.HttpClientError
+  | HttpBody.HttpBodyError;
+
+// ============================================================================
+// Operation Configuration
+// ============================================================================
+
+/**
+ * Operation configuration with optional operation-specific errors.
+ */
+interface OperationConfig<
+  I extends Schema.Schema.Any,
+  O extends Schema.Schema.Any,
+  E extends readonly ApiErrorClass[] = readonly ApiErrorClass[],
+> {
   inputSchema: I;
   outputSchema: O;
+  /**
+   * Operation-specific errors that can be returned by this operation.
+   * These are in addition to the default errors (Unauthorized, TooManyRequests, etc.)
+   * If not specified, no operation-specific errors are included.
+   *
+   * @example
+   * ```ts
+   * errors: [NotFound, Forbidden] as const
+   * ```
+   */
+  errors?: E;
 }
 
-// Paginated operation configuration
+/**
+ * Paginated operation configuration.
+ */
 interface PaginatedOperationConfig<
   I extends Schema.Schema.Any,
   O extends Schema.Schema.Any,
-> extends OperationConfig<I, O> {
+  E extends readonly ApiErrorClass[] = readonly ApiErrorClass[],
+> extends OperationConfig<I, O, E> {
   /** Pagination trait describing the input/output token fields */
   pagination?: PaginatedTrait;
 }
@@ -110,23 +166,21 @@ const getAnnotationLegacy = <T>(schema: Schema.Schema.Any, key: symbol): T | und
   return schema.ast.annotations[key] as T | undefined;
 };
 
-// Common error types for all operations
-type CommonErrors =
-  | ApiError
-  | PlanetScaleApiError
-  | PlanetScaleParseError
-  | HttpClientError.HttpClientError
-  | HttpBody.HttpBodyError;
-
 // API namespace
 export const API = {
-  make: <I extends Schema.Schema.Any, O extends Schema.Schema.Any>(
-    configFn: () => OperationConfig<I, O>,
+  make: <
+    I extends Schema.Schema.Any,
+    O extends Schema.Schema.Any,
+    const E extends readonly ApiErrorClass[] = readonly [],
+  >(
+    configFn: () => OperationConfig<I, O, E>,
   ) => {
     const config = configFn();
     type Input = Schema.Schema.Type<I>;
     type Output = Schema.Schema.Type<O>;
     type Context = Credentials | HttpClient.HttpClient;
+    // Operation-specific errors + default errors + client errors
+    type Errors = InstanceType<E[number]> | DefaultErrors | ClientErrors;
 
     // Read HTTP trait from input schema annotations (new style)
     const httpTrait = Traits.getHttpTrait(config.inputSchema.ast);
@@ -180,7 +234,7 @@ export const API = {
       return Object.keys(body).length > 0 ? body : undefined;
     };
 
-    return (input: Input): Effect.Effect<Output, CommonErrors, Context> =>
+    return (input: Input): Effect.Effect<Output, Errors, Context> =>
       Effect.gen(function* () {
         const { token, apiBaseUrl } = yield* Credentials;
         const client = yield* HttpClient.HttpClient;
@@ -202,7 +256,7 @@ export const API = {
 
         if (response.status >= 400) {
           const errorBody = yield* response.json;
-          return yield* matchApiError(errorBody);
+          return yield* matchApiError(errorBody) as Effect.Effect<never, Errors>;
         }
 
         const responseBody = yield* response.json;
@@ -210,7 +264,7 @@ export const API = {
           Effect.catchTag("ParseError", (cause) =>
             Effect.fail(new PlanetScaleParseError({ body: responseBody, cause })),
           ),
-        ) as Effect.Effect<Output, CommonErrors>;
+        ) as Effect.Effect<Output, Errors>;
       });
   },
 
@@ -235,8 +289,12 @@ export const API = {
    * const allDatabases = listDatabases.items({ organization: "my-org" });
    * ```
    */
-  makePaginated: <I extends Schema.Schema.Any, O extends Schema.Schema.Any>(
-    configFn: () => PaginatedOperationConfig<I, O>,
+  makePaginated: <
+    I extends Schema.Schema.Any,
+    O extends Schema.Schema.Any,
+    const E extends readonly ApiErrorClass[] = readonly [],
+  >(
+    configFn: () => PaginatedOperationConfig<I, O, E>,
   ) => {
     const config = configFn();
     const pagination = config.pagination ?? DefaultPaginationTrait;
@@ -245,14 +303,17 @@ export const API = {
     const baseFn = API.make(() => ({
       inputSchema: config.inputSchema,
       outputSchema: config.outputSchema,
+      errors: config.errors,
     }));
 
     type Input = Schema.Schema.Type<I>;
     type Output = Schema.Schema.Type<O>;
     type Context = Credentials | HttpClient.HttpClient;
+    // Operation-specific errors + default errors + client errors
+    type Errors = InstanceType<E[number]> | DefaultErrors | ClientErrors;
 
     // Stream all pages (full response objects)
-    const pagesFn = (input: Omit<Input, "page">): Stream.Stream<Output, CommonErrors, Context> => {
+    const pagesFn = (input: Omit<Input, "page">): Stream.Stream<Output, Errors, Context> => {
       type State = { page: number; done: boolean };
 
       const unfoldFn = (state: State) =>
@@ -290,7 +351,7 @@ export const API = {
       input: Omit<Input, "page">,
     ): Stream.Stream<
       Output extends PaginatedResponse<infer Item> ? Item : unknown,
-      CommonErrors,
+      Errors,
       Context
     > => {
       return pagesFn(input).pipe(
@@ -300,7 +361,7 @@ export const API = {
         }),
       ) as Stream.Stream<
         Output extends PaginatedResponse<infer Item> ? Item : unknown,
-        CommonErrors,
+        Errors,
         Context
       >;
     };

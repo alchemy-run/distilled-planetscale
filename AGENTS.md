@@ -91,37 +91,62 @@ import * as Operations from "distilled-planetscale/Operations";
 
 ## API Operation Pattern
 
-Operations are defined declaratively using `API.make`. Errors are handled globally - operations do NOT define per-operation error classes.
+Operations are defined declaratively using `API.make`. Each operation specifies which errors it can return via the `errors` tuple, plus default errors that apply to all operations.
 
 ```typescript
 import * as Schema from "effect/Schema";
 import { API } from "../client";
+import { NotFound, Forbidden } from "../errors";
 import * as T from "../traits";
 
 // Input Schema
-export const GetOrganizationInput = Schema.Struct({
+export const GetDatabaseInput = Schema.Struct({
   organization: Schema.String.pipe(T.PathParam()),
-}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}" }));
-export type GetOrganizationInput = typeof GetOrganizationInput.Type;
+  database: Schema.String.pipe(T.PathParam()),
+}).pipe(T.Http({ method: "GET", path: "/organizations/{organization}/databases/{database}" }));
+export type GetDatabaseInput = typeof GetDatabaseInput.Type;
 
 // Output Schema
-export const GetOrganizationOutput = Schema.Struct({
+export const GetDatabaseOutput = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   // ... other fields
 });
-export type GetOrganizationOutput = typeof GetOrganizationOutput.Type;
+export type GetDatabaseOutput = typeof GetDatabaseOutput.Type;
 
-// Define the operation - NO errors array, errors are global
-export const getOrganization = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
-  inputSchema: GetOrganizationInput,
-  outputSchema: GetOrganizationOutput,
+// Define the operation with operation-specific errors
+export const getDatabase = /*@__PURE__*/ /*#__PURE__*/ API.make(() => ({
+  inputSchema: GetDatabaseInput,
+  outputSchema: GetDatabaseOutput,
+  errors: [NotFound, Forbidden] as const,  // Operation-specific errors
 }));
 ```
 
-### Global Error Classes
+### Error System
 
-All operations use the same global error classes defined in `src/errors.ts`:
+Operations have two types of errors:
+
+1. **Default Errors** - Apply to ALL operations automatically:
+   - `Unauthorized` - Authentication failure (401)
+   - `TooManyRequests` - Rate limiting (429)
+   - `InternalServerError` - Server error (500)
+   - `ServiceUnavailable` - Service unavailable (503)
+
+2. **Operation-Specific Errors** - Declared per-operation via `errors` tuple:
+   - `NotFound` - Resource not found (404)
+   - `Forbidden` - Access denied (403)
+   - `Conflict` - Resource conflict (409)
+   - `UnprocessableEntity` - Validation error (422)
+   - `BadRequest` - Invalid request (400)
+
+3. **Client Errors** - Always possible for any operation:
+   - `PlanetScaleApiError` - Fallback for unknown API error codes
+   - `PlanetScaleParseError` - Schema validation failures
+   - `HttpClientError` - Network/connection errors
+
+### Error Classes
+
+All error classes are defined in `src/errors.ts`:
 
 | Error Class           | API Error Code          | Category          |
 | --------------------- | ----------------------- | ----------------- |
@@ -152,16 +177,44 @@ Errors can be annotated with categories for semantic grouping and handling. Cate
 
 | Category             | Description                                      | Built-in Errors                           |
 | -------------------- | ------------------------------------------------ | ----------------------------------------- |
-| `AuthError`          | Authentication/authorization failures (401, 403) | -                                         |
-| `BadRequestError`    | Invalid request parameters (400)                 | -                                         |
-| `ConflictError`      | Resource conflicts (409)                         | -                                         |
-| `NotFoundError`      | Resource not found (404)                         | -                                         |
+| `AuthError`          | Authentication/authorization failures (401, 403) | `Unauthorized`, `Forbidden`               |
+| `BadRequestError`    | Invalid request parameters (400, 422)            | `BadRequest`, `UnprocessableEntity`       |
+| `ConflictError`      | Resource conflicts (409)                         | `Conflict`                                |
+| `NotFoundError`      | Resource not found (404)                         | `NotFound`                                |
 | `QuotaError`         | Quota/limit exceeded                             | -                                         |
-| `ServerError`        | Server-side errors (5xx)                         | `PlanetScaleApiError`, `PlanetScaleError` |
-| `ThrottlingError`    | Rate limiting (429)                              | -                                         |
+| `ServerError`        | Server-side errors (5xx)                         | `InternalServerError`, `ServiceUnavailable`, `PlanetScaleApiError`, `PlanetScaleError` |
+| `ThrottlingError`    | Rate limiting (429)                              | `TooManyRequests`                         |
 | `NetworkError`       | Connection/network failures                      | -                                         |
 | `ParseError`         | Response parsing failures                        | `PlanetScaleParseError`                   |
 | `ConfigurationError` | Missing configuration                            | `ConfigError`                             |
+| `TimeoutError`       | Request timed out                                | -                                         |
+| `RetryableError`     | General retryable marker                         | -                                         |
+
+### Retryable Trait
+
+In addition to categories, errors can be marked as retryable using `withRetryable()`. This is separate from categories and indicates the error should be automatically retried:
+
+```typescript
+import { Schema } from "effect";
+import * as Category from "./category";
+
+// Standard retryable error
+export class TransientError extends Schema.TaggedError<TransientError>()(
+  "TransientError",
+  { message: Schema.String },
+).pipe(Category.withServerError, Category.withRetryable()) {}
+
+// Throttling error (uses longer backoff)
+export class RateLimitError extends Schema.TaggedError<RateLimitError>()(
+  "RateLimitError",
+  { message: Schema.String },
+).pipe(Category.withThrottlingError, Category.withRetryable({ throttling: true })) {}
+```
+
+Built-in retryable errors:
+- `TooManyRequests` - marked with `withRetryable({ throttling: true })`
+- `InternalServerError` - marked with `withRetryable()`
+- `ServiceUnavailable` - marked with `withRetryable()`
 
 ### Adding Categories to Errors
 
@@ -172,9 +225,10 @@ import { Schema } from "effect";
 import * as Category from "./category";
 
 // Custom error with multiple categories
-export class RateLimitError extends Schema.TaggedError<RateLimitError>()("RateLimitError", {
-  retryAfter: Schema.Number,
-}).pipe(Category.withCategory(Category.ThrottlingError, Category.ServerError)) {}
+export class ValidationError extends Schema.TaggedError<ValidationError>()("ValidationError", {
+  field: Schema.String,
+  message: Schema.String,
+}).pipe(Category.withBadRequestError) {}
 ```
 
 ### Catching Errors by Category

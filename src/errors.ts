@@ -84,32 +84,35 @@ export class BadRequest extends Schema.TaggedError<BadRequest>()("BadRequest", {
 /**
  * TooManyRequests - Rate limited (429).
  * Too many requests have been made in a given time period.
+ * Marked as retryable with throttling backoff.
  */
 export class TooManyRequests extends Schema.TaggedError<TooManyRequests>()("TooManyRequests", {
   message: Schema.String,
-}).pipe(Category.withThrottlingError) {}
+}).pipe(Category.withThrottlingError, Category.withRetryable({ throttling: true })) {}
 
 /**
  * InternalServerError - Server error (500).
  * An unexpected error occurred on the PlanetScale server.
+ * Marked as retryable.
  */
 export class InternalServerError extends Schema.TaggedError<InternalServerError>()(
   "InternalServerError",
   {
     message: Schema.String,
   },
-).pipe(Category.withServerError) {}
+).pipe(Category.withServerError, Category.withRetryable()) {}
 
 /**
  * ServiceUnavailable - Service unavailable (503).
  * The PlanetScale service is temporarily unavailable.
+ * Marked as retryable.
  */
 export class ServiceUnavailable extends Schema.TaggedError<ServiceUnavailable>()(
   "ServiceUnavailable",
   {
     message: Schema.String,
   },
-).pipe(Category.withServerError) {}
+).pipe(Category.withServerError, Category.withRetryable()) {}
 
 // ============================================================================
 // Error Code Mapping

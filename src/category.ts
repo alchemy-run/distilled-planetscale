@@ -15,6 +15,8 @@ export const ThrottlingError = "ThrottlingError";
 export const NetworkError = "NetworkError";
 export const ParseError = "ParseError";
 export const ConfigurationError = "ConfigurationError";
+export const TimeoutError = "TimeoutError";
+export const RetryableError = "RetryableError";
 
 export type Category =
   | typeof AuthError
@@ -26,13 +28,26 @@ export type Category =
   | typeof ThrottlingError
   | typeof NetworkError
   | typeof ParseError
-  | typeof ConfigurationError;
+  | typeof ConfigurationError
+  | typeof TimeoutError
+  | typeof RetryableError;
 
 // ============================================================================
 // Category Storage Key
 // ============================================================================
 
 export const categoriesKey = "@distilled-planetscale/error/categories";
+
+/**
+ * Key for storing retryable trait on error prototypes.
+ * Separate from categories - indicates this error should be retried.
+ */
+export const retryableKey = "@distilled-planetscale/error/retryable";
+
+export interface RetryableInfo {
+  /** If true, this is a throttling error (use longer backoff) */
+  throttling?: boolean;
+}
 
 // ============================================================================
 // Category Decorator
@@ -66,6 +81,36 @@ export const withCategory =
     return C as any;
   };
 
+/**
+ * Mark an error class as retryable.
+ * Use with .pipe() on Schema.TaggedError classes.
+ *
+ * @example
+ * ```ts
+ * // Standard retryable error
+ * export class TransientError extends Schema.TaggedError<TransientError>()(
+ *   "TransientError",
+ *   { message: Schema.String },
+ * ).pipe(Category.withRetryable()) {}
+ *
+ * // Throttling error (uses longer backoff)
+ * export class RateLimitError extends Schema.TaggedError<RateLimitError>()(
+ *   "RateLimitError",
+ *   { message: Schema.String },
+ * ).pipe(Category.withRetryable({ throttling: true })) {}
+ * ```
+ */
+export const withRetryable =
+  (info: RetryableInfo = {}) =>
+  <Args extends Array<any>, Ret, C extends { new (...args: Args): Ret }>(
+    C: C,
+  ): C & {
+    new (...args: Args): Ret & { [retryableKey]: RetryableInfo };
+  } => {
+    C.prototype[retryableKey] = info;
+    return C as any;
+  };
+
 // ============================================================================
 // Category Decorators (convenience functions for common categories)
 // ============================================================================
@@ -80,6 +125,8 @@ export const withThrottlingError = withCategory(ThrottlingError);
 export const withNetworkError = withCategory(NetworkError);
 export const withParseError = withCategory(ParseError);
 export const withConfigurationError = withCategory(ConfigurationError);
+export const withTimeoutError = withCategory(TimeoutError);
+export const withRetryableError = withCategory(RetryableError);
 
 // ============================================================================
 // Category Predicates
@@ -117,22 +164,58 @@ export const isParseError = (error: unknown): boolean => hasCategory(error, Pars
 export const isConfigurationError = (error: unknown): boolean =>
   hasCategory(error, ConfigurationError);
 
+export const isTimeoutError = (error: unknown): boolean => hasCategory(error, TimeoutError);
+
+export const isRetryableError = (error: unknown): boolean => hasCategory(error, RetryableError);
+
 // ============================================================================
 // Transient Error Detection (for retry logic)
 // ============================================================================
 
 /**
+ * Check if an error has the retryable trait (set via withRetryable).
+ */
+export const isRetryable = (error: unknown): boolean => {
+  if (Predicate.isObject(error) && Predicate.hasProperty(retryableKey)(error)) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Check if an error is a throttling error.
+ * Either has ThrottlingError category or retryable trait with throttling: true.
+ */
+export const isThrottling = (error: unknown): boolean => {
+  if (Predicate.isObject(error) && Predicate.hasProperty(retryableKey)(error)) {
+    // @ts-expect-error - dynamic property access
+    return error[retryableKey]?.throttling === true;
+  }
+  return hasCategory(error, ThrottlingError);
+};
+
+/**
  * Check if an error is a transient error that should be automatically retried.
  * Transient errors include:
+ * - Errors marked with withRetryable()
+ * - RetryableError category
  * - ThrottlingError (rate limiting)
  * - ServerError (5xx responses)
  * - NetworkError (connection issues)
+ * - TimeoutError (request timed out)
  */
 export const isTransientError = (error: unknown): boolean => {
+  // Check for retryable trait first
+  if (isRetryable(error)) {
+    return true;
+  }
+  // Fall back to category-based checking
   return (
+    hasCategory(error, RetryableError) ||
     hasCategory(error, ThrottlingError) ||
     hasCategory(error, ServerError) ||
-    hasCategory(error, NetworkError)
+    hasCategory(error, NetworkError) ||
+    hasCategory(error, TimeoutError)
   );
 };
 
@@ -199,6 +282,8 @@ export const catchThrottlingError = makeCatcher(ThrottlingError);
 export const catchNetworkError = makeCatcher(NetworkError);
 export const catchParseError = makeCatcher(ParseError);
 export const catchConfigurationError = makeCatcher(ConfigurationError);
+export const catchTimeoutError = makeCatcher(TimeoutError);
+export const catchRetryableError = makeCatcher(RetryableError);
 
 /**
  * Catch errors with specified categories (legacy API, same as catchErrors).
